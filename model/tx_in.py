@@ -1,5 +1,6 @@
 from utils import general_utils
 
+NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # re-added
 TX_IN_SEQUENCE = bytes(8)
 
 
@@ -8,14 +9,14 @@ class TxIn:
     This object holds all required methods to handle all types of TxIns.
     """
 
-    def __init__(self, previous_tx_id, previous_tx_out_index, next_variable_length_bytes, coinbase_or_script_sig, private_key,
-                 sequence=TX_IN_SEQUENCE):
+    def __init__(self, previous_tx_id, previous_tx_index, next_variable_length, coinbase_or_script_sig,
+                 sequence=None, private_key=None):
         self._previous_tx_id = previous_tx_id
-        self._previous_tx_out_index = previous_tx_out_index
-        self._next_variable_length = next_variable_length_bytes  # was removed by Yuval's update
+        self._previous_tx_index = previous_tx_index  # re-named to previous_tx_index
+        self._next_variable_length = next_variable_length  # re-added
         self._coinbase_or_script_sig = coinbase_or_script_sig
-        self._private_key = private_key
         self._sequence = sequence
+        self._private_key = private_key  # changed position to last
 
     # ========== Parsing Methods ========== #
 
@@ -27,14 +28,14 @@ class TxIn:
         :param block_bytes_stream: The bytes stream that holds the coinbase tx in data
         :return: TxIn class object
         """
-        tx_in_parameters = {"previous_tx_id": 32, "previous_tx_out_index": 4, "next_variable_length": "VARINT",
+        tx_in_parameters = {"previous_tx_id": 32, "previous_tx_index": 4, "next_variable_length": "VARINT",
                             "coinbase_or_script_sig": "next_variable_length", "sequence": 8}
         previous_tx_id = block_bytes_stream.read(tx_in_parameters["previous_tx_id"])
-        previous_tx_out_index = block_bytes_stream.read(tx_in_parameters["previous_tx_out_index"])
+        previous_tx_index = block_bytes_stream.read(tx_in_parameters["previous_tx_index"])
         next_variable_length_int, next_variable_length_bytes = general_utils.read_varint(block_bytes_stream)
         coinbase_or_script_sig = block_bytes_stream.read(next_variable_length_int)
         sequence = block_bytes_stream.read(tx_in_parameters["sequence"])
-        return TxIn(previous_tx_id, previous_tx_out_index, next_variable_length_bytes, coinbase_or_script_sig, sequence)
+        return TxIn(previous_tx_id, previous_tx_index, next_variable_length_bytes, coinbase_or_script_sig, sequence)
 
     # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
     def update_previous_tx_id(self):
@@ -127,7 +128,7 @@ class TxIn:
         :return: Tx In bytes as a list
         """
         tx_in_list = []
-        tx_in_list.extend([[self._previous_tx_id], [self._previous_tx_out_index], [self._next_variable_length],
+        tx_in_list.extend([[self._previous_tx_id], [self._previous_tx_index], [self._next_variable_length],
                            [self._coinbase_or_script_sig], self._sequence])
         tx_in_bytes = general_utils.flatten_nested_iterable(tx_in_list)
         return tx_in_bytes
@@ -139,7 +140,7 @@ class TxIn:
         """
         ret_bytes = b''
         ret_bytes += bytes.fromhex(self._previous_tx_id)  # previous tx id
-        ret_bytes += self._previous_tx_out_index.to_bytes(4, byteorder='little')  # prev tx output index
+        ret_bytes += self._previous_tx_index.to_bytes(4, byteorder='little')  # prev tx output index
         # coinbase or script
         coinbase_or_script = bytes(self._coinbase_or_script_sig)  # compute coinbase or script bytes
         ret_bytes += general_utils.write_varint(len(coinbase_or_script))  # coinbase or script len (varint)

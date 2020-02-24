@@ -5,9 +5,9 @@ class TxOut:
     """
     This object holds all required methods to handle all types of TxOuts.
     """
-    def __init__(self, value,  script_pub_key_len_bytes, script_pub_key=None):
+    def __init__(self, value, script_pub_key_len, script_pub_key=None):
         self._value = value
-        self._script_pub_key_len = script_pub_key_len_bytes  # was removed by Yuval's update
+        self._script_pub_key_len = script_pub_key_len  # re-added
         self._script_pub_key = script_pub_key
 
     # ========== Parsing Methods ========== #

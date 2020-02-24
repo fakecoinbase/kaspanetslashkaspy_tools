@@ -3,8 +3,8 @@ from utils import general_utils
 from model.tx_in import TxIn
 from model.tx_out import TxOut
 
-native_subnetwork_id = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-current_version = b'\x01\x00\x00\x00'
+NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+CURRENT_VERSION = b'\x01\x00\x00\x00'
 NATIVE_SUBNETWORK = b'\x00' * 20  # native subnetwork is 20 zero bytes
 VERSION_1 = (1).to_bytes(4, byteorder='little')  # convert int to 32 bites little endian
 LOCKTIME_NO_LOCK = bytes(8)
@@ -17,13 +17,12 @@ class Tx:
         :param num_of_txs_in:  (int) the number of tx inputs
         :param tx_in_list:  A list of inputs (e.g: [('---tx--hash---', output-number, 'script-sig'), (....),...]  )
     """
-
-    def __init__(self, version, _number_of_txs_in, tx_in_list, _number_of_txs_out, tx_out_list, locktime,
-                 subnetwork_id, gas=None, payload_hash=None, payload_length=None, payload=None):
+    def __init__(self, version, num_of_txs_in, tx_in_list, num_of_txs_out, tx_out_list, locktime, subnetwork_id,
+                 gas=None, payload_hash=None, payload_length=None, payload=None):
         self._version = version
-        self._number_of_txs_in = _number_of_txs_in  # I added the bytes bit
+        self._number_of_txs_in = num_of_txs_in  # re-added
         self._tx_in_list = tx_in_list
-        self._number_of_txs_out = _number_of_txs_out  # I added the bytes bit
+        self._number_of_txs_out = num_of_txs_out  # re-added
         self._tx_out_list = tx_out_list
         self._locktime = locktime
         self._subnetwork_id = subnetwork_id
@@ -58,7 +57,7 @@ class Tx:
             tx_out_list.append(tx_out)
         locktime = block_bytes_stream.read(tx_parameters["locktime"])
         subnetwork_id = block_bytes_stream.read(tx_parameters["subnetworkID"])
-        if subnetwork_id == native_subnetwork_id:
+        if subnetwork_id == NATIVE_SUBNETWORK_ID:
             return Tx(version, num_of_txs_in_bytes, tx_in_list, num_of_txs_out_bytes, tx_out_list, locktime,
                       subnetwork_id)
         else:
@@ -66,8 +65,8 @@ class Tx:
             payload_hash = block_bytes_stream.read(tx_parameters["payloadHash"])
             payload_length_int, payload_length_bytes = general_utils.read_varint(block_bytes_stream)
             payload = block_bytes_stream.read(payload_length_int)
-            return Tx(version, num_of_txs_in_bytes, tx_in_list, num_of_txs_out_bytes, tx_out_list, locktime, subnetwork_id, gas, payload_hash,
-                      payload_length_bytes, payload)
+            return Tx(version, num_of_txs_in_bytes, tx_in_list, num_of_txs_out_bytes, tx_out_list, locktime,
+                      subnetwork_id, gas, payload_hash, payload_length_bytes, payload)
 
     # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
 
@@ -104,7 +103,7 @@ class Tx:
 
     def set_tx_in(self, tx_in):
         """ Sets variable "_tx_in" to the received value"""
-        self._tx_in = tx_in
+        self._tx_in_list = tx_in
 
     def set_number_of_txs_out(self, num_of_txs_out):
         """ Sets variable "_number_of_txs_out" to the received value"""
@@ -112,7 +111,7 @@ class Tx:
 
     def set_txs_out(self, tx_out):
         """ Sets variable "_tx_out" to the received value"""
-        self._tx_out = tx_out
+        self._tx_out_list = tx_out
 
     def set_locktime(self, lock_time):
         """ Sets variable "_locktime" to the received value"""
@@ -140,7 +139,7 @@ class Tx:
         """
         :return: Tx in as bytes
         """
-        return self._tx_in
+        return self._tx_in_list
 
     def get_number_of_txs_out(self):
         """
@@ -152,7 +151,7 @@ class Tx:
         """
         :return: Tx out as bytes
         """
-        return self._tx_out
+        return self._tx_out_list
 
     def get_locktime(self):
         """
@@ -178,7 +177,7 @@ class Tx:
         for i in self._tx_out_list:
             tx_list.append(i.get_tx_out_bytes())
         tx_list.extend([[self._locktime], [self._subnetwork_id]])
-        if self._subnetwork_id != native_subnetwork_id:
+        if self._subnetwork_id != NATIVE_SUBNETWORK_ID:
             tx_list.extend([[self._gas], [self._payload_hash], [self._payload_length], [self._payload]])
         tx_bytes = general_utils.flatten_nested_iterable(tx_list)
         return tx_bytes
@@ -195,7 +194,7 @@ class Tx:
         for i in self._tx_out_list:
             tx_list.append(i.get_tx_out_bytes())
         tx_list.extend([[self._locktime], [self._subnetwork_id]])
-        if self._subnetwork_id != native_subnetwork_id:
+        if self._subnetwork_id != NATIVE_SUBNETWORK_ID:
             tx_list.extend([[self._gas], [self._payload_hash], [b"\x00"]])
         tx_bytes = general_utils.build_element_from_list(tx_list)
         return tx_bytes
