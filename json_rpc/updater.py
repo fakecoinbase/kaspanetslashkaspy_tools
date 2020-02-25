@@ -6,9 +6,9 @@ import random
 from io import BytesIO
 import calendar
 import time
-from KOSMOS.JSON_RPC import json_rpc_node, json_rpc_constants
-from model.tx import Tx
-from utils import general_utils
+from kaspy_tools.json_rpc import json_rpc_node, json_rpc_constants
+from kaspy_tools.model.tx import Tx
+from kaspy_tools.utils import general_utils
 
 
 # ========== Update Block Methods ========== #

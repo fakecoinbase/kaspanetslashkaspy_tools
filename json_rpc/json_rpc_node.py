@@ -2,8 +2,8 @@
 This module holds the methods that receive and parse specific data from the NODE for the automation project.
 """
 
-from KOSMOS.JSON_RPC import json_rpc_requests
-from KOSMOS import json_rpc_client
+from kaspy_tools.json_rpc import json_rpc_requests
+from kaspy_tools import json_rpc_client
 
 
 def get_node_tip_hashes_list():

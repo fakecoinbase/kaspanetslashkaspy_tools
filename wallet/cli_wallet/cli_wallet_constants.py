@@ -10,4 +10,4 @@ RECEIVER_ADDRESS = cli_wallet_user.CliWalletUser("7c81dc9ca68977f2b1dcdcc0f33eba
                                                  "kaspatest:qr9my2690xehn4jm6yngeew0awq9vlsrdu92ecrmgv",
                                                  "kaspadev:qr9my2690xehn4jm6yngeew0awq9vlsrdu78xuxrtp")
 
-CLI_WALLET_LOCAL_PATH = "~/GoProjects/src/github.com/kaspanet/kasparov/examples/wallet/"
+CLI_WALLET_LOCAL_PATH = "~/kaspanet/kasparov/examples/wallet/"

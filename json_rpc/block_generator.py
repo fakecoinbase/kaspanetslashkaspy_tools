@@ -2,9 +2,9 @@
 This module holds the methods that handle the process of generating valid and invalid blocks for the automation project.
 """
 
-from model.block import Block
-from utils import general_utils
-from KOSMOS.JSON_RPC import updater
+from kaspy_tools.model.block import Block
+from kaspy_tools.utils import general_utils
+from kaspy_tools.json_rpc import updater
 
 
 # ========== Block generator methods ========== #

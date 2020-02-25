@@ -1,4 +1,4 @@
-from utils import general_utils
+from kaspy_tools.utils import general_utils
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # re-added
 TX_IN_SEQUENCE = bytes(8)

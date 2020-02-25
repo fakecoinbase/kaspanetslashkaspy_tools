@@ -2,13 +2,12 @@
 This module holds the methods that handle all the JSON RPC requests for the automation project.
 """
 
-from utils import general_utils
-import KOSMOS
-from KOSMOS.JSON_RPC import block_generator, json_rpc_requests, json_rpc_node
+from kaspy_tools.utils import general_utils
+from kaspy_tools.json_rpc import block_generator, json_rpc_requests, json_rpc_node
 import logging
-from model.tx_out import TxOut
+from kaspy_tools.model.tx_out import TxOut
 
-local_logger = KOSMOS.logs.config_logger.get_local_logger(__name__)
+# local_logger = KOSMOS.logs.config_logger.get_local_logger(__name__)
 
 
 def submit_valid_block(block_file_path, options=None):

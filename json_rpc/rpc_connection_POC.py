@@ -1,6 +1,6 @@
 import requests
 import json
-from KOSMOS.JSON_RPC import json_rpc_constants
+from json_rpc import json_rpc_constants
 
 
 def main():

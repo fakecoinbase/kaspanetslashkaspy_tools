@@ -4,7 +4,7 @@ This module holds the methods that handle all the JSON-RPC requests for the auto
 
 import requests
 import json
-from KOSMOS.JSON_RPC import json_rpc_constants
+from kaspy_tools.json_rpc import json_rpc_constants
 
 
 def submit_block_request(hex_block, options=None):

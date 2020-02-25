@@ -1,7 +1,7 @@
 import hashlib
-from utils import general_utils
-from model.tx_in import TxIn
-from model.tx_out import TxOut
+from kaspy_tools.utils import general_utils
+from kaspy_tools.model.tx_in import TxIn
+from kaspy_tools.model.tx_out import TxOut
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 CURRENT_VERSION = b'\x01\x00\x00\x00'

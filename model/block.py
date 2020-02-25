@@ -1,7 +1,7 @@
 
 from io import BytesIO
-from model.tx import Tx
-from utils import general_utils
+from kaspy_tools.model.tx import Tx
+from kaspy_tools.utils import general_utils
 
 
 class Block:
