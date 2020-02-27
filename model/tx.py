@@ -4,6 +4,7 @@ from kaspy_tools.model.tx_in import TxIn
 from kaspy_tools.model.tx_out import TxOut
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+COINBASE_SUBNETWORK = ''.join(['0' for i in range(19)]) + '1'
 CURRENT_VERSION = b'\x01\x00\x00\x00'
 NATIVE_SUBNETWORK = b'\x00' * 20  # native subnetwork is 20 zero bytes
 VERSION_1 = (1).to_bytes(4, byteorder='little')  # convert int to 32 bites little endian
