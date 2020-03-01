@@ -2,8 +2,7 @@ class KasparovGet:
     """
     This object holds all the required data to handle a Kasparov GET request.
     """
-    def __init__(self, path, url, parameters):
-        self.path = path
+    def __init__(self, url, parameters):
         self.url = url
         self.parameters = parameters
 
