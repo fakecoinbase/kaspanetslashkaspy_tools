@@ -2,13 +2,13 @@
 This module creates kaspanet transactions.
 """
 import random
-from kaspy_tools import model
+from kaspy_tools import kaspa_model
 import kaspy_tools.utils.general_utils
 import kaspy_tools.utils.base58
-import kaspy_tools.model.tx
-import kaspy_tools.model.tx_in
-import kaspy_tools.model.tx_out
-import kaspy_tools.model.tx_script
+import kaspy_tools.kaspa_model.tx
+import kaspy_tools.kaspa_model.tx_in
+import kaspy_tools.kaspa_model.tx_out
+import kaspy_tools.kaspa_model.tx_script
 import kaspy_tools.utils.elliptic_curve
 from kosmos.k_agent.logs import config_logger
 
@@ -48,10 +48,10 @@ def make_a_single_transaction(in_count, out_count, utxo_list, keys):
     utxo_list, total_value = find_utoxs_with_known_private_keys(in_count, utxo_list, keys)
     out_list = make_p2pkh_output_list(out_count, total_value, keys)
     in_list = make_p2pkh_input_list(utxo_list, keys)
-    new_tx = model.tx.Tx(model.tx.VERSION_1, in_list, out_list, model.tx.LOCKTIME_NO_LOCK, model.tx.NATIVE_SUBNETWORK)
+    new_tx = kaspa_model.tx.Tx(kaspa_model.tx.VERSION_1, in_list, out_list, kaspa_model.tx.LOCKTIME_NO_LOCK, kaspa_model.tx.NATIVE_SUBNETWORK)
     tx_bytes = bytes(new_tx)  # inputs contain no signatures yet
     sign_tx_inputs(in_list, tx_bytes)
-    final_tx = model.tx.Tx(model.tx.VERSION_1, in_list, out_list, model.tx.LOCKTIME_NO_LOCK, model.tx.NATIVE_SUBNETWORK)
+    final_tx = kaspa_model.tx.Tx(kaspa_model.tx.VERSION_1, in_list, out_list, kaspa_model.tx.LOCKTIME_NO_LOCK, kaspa_model.tx.NATIVE_SUBNETWORK)
     local_logger.info('new tx: ' + str(bytes(final_tx)))
     return final_tx
 
@@ -94,9 +94,9 @@ def make_p2pkh_output_list(out_count, total_value, keys):
         public_key_hash = chosen_keys[i][0]
         tx_script = make_script_pub_key(public_key_hash.hex())
         if out_count - i == 1:  # last output
-            new_out = model.tx_out.TxOut(last_out_value, tx_script)
+            new_out = kaspa_model.tx_out.TxOut(last_out_value, tx_script)
         else:
-            new_out = model.tx_out.TxOut(each_out_value, tx_script)
+            new_out = kaspa_model.tx_out.TxOut(each_out_value, tx_script)
         output_list.append(new_out)
 
     return output_list
@@ -125,7 +125,7 @@ def make_p2pkh_input_list(utxo_list, keys):
         pub_hash_bytes = bytes.fromhex(pub_hash)
         private_key, public_key = keys[pub_hash_bytes]
         script_sig = make_sig_script(emtpy_sig, public_key)  # empty bytes as <sig>
-        tx_in = model.tx_in.TxIn(prev_tx, prev_tx_out_index, script_sig, private_key)
+        tx_in = kaspa_model.tx_in.TxIn(prev_tx, prev_tx_out_index, script_sig, private_key)
         in_list.append(tx_in)
     return in_list
 
@@ -162,7 +162,7 @@ def make_sig_script(sig, public_key):
     :return:       A TxScript object describing the script
     """
     script_op_list = [sig, public_key]
-    tx_scr = model.tx_script.TxScript(op_list=script_op_list)
+    tx_scr = kaspa_model.tx_script.TxScript(op_list=script_op_list)
     return tx_scr
 
 
@@ -174,5 +174,5 @@ def make_script_pub_key(public_key_hash):
     """
     script_op_list = ['OP_DUP', 'OP_HASH160', public_key_hash, 'OP_EQUALVERIFY', 'OP_CHECKSIG']
 
-    tx_script = model.tx_script.TxScript(op_list=script_op_list, pubHush=public_key_hash)
+    tx_script = kaspa_model.tx_script.TxScript(op_list=script_op_list, pubHush=public_key_hash)
     return tx_script

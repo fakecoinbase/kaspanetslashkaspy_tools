@@ -1,7 +1,7 @@
 import hashlib
 from kaspy_tools.utils import general_utils
-from kaspy_tools.model.tx_in import TxIn
-from kaspy_tools.model.tx_out import TxOut
+from kaspy_tools.kaspa_model.tx_in import TxIn
+from kaspy_tools.kaspa_model.tx_out import TxOut
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 COINBASE_SUBNETWORK = ''.join(['0' for i in range(19)]) + '1'

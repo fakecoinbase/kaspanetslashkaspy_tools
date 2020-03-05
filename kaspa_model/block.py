@@ -1,6 +1,6 @@
 
 from io import BytesIO
-from kaspy_tools.model.tx import Tx
+from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
 
 

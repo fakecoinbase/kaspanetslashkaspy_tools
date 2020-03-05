@@ -9,7 +9,7 @@ from _datetime import datetime
 
 import kaspy_tools.kaspad.kaspad_utils
 from kaspy_tools.kaspad import json_rpc_client
-from kaspy_tools.model import tx_out
+from kaspy_tools.kaspa_model import tx_out
 from kosmos.k_agent.logs import config_logger
 
 local_logger = config_logger.get_local_logger(__name__)

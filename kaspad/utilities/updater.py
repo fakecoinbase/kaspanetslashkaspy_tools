@@ -7,7 +7,7 @@ from io import BytesIO
 import calendar
 import time
 from kaspy_tools.kaspad import json_rpc_client
-from kaspy_tools.model.tx import Tx
+from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
 
 
