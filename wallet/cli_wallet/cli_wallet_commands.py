@@ -1,6 +1,6 @@
-from wallet.cli_wallet import cli_wallet_constants as cw_constants
-from wallet.cli_wallet import cli_wallet_responses as cw_responses
-from wallet.cli_wallet import cli_wallet_utils as cw_utils
+from kaspy_tools.wallet.cli_wallet import cli_wallet_constants as cw_constants
+from kaspy_tools.wallet.cli_wallet import cli_wallet_responses as cw_responses
+from kaspy_tools.wallet.cli_wallet import cli_wallet_utils as cw_utils
 import time
 import subprocess
 import logging

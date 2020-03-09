@@ -1,7 +1,7 @@
 """
 This module holds the methods that receive and parse specific data from the NODE for the automation project.
 """
-import kaspy_tools.kaspad.kaspad_utils
+import kaspy_tools.kaspad.kaspad_block_utils
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 
 
@@ -68,7 +68,7 @@ def get_block_data_status(block_hash):
     :return: action_status as a string
     """
     response = json_rpc_requests.get_block_request(block_hash)
-    action_status = kaspy_tools.kaspad.kaspad_utils.error_handler(response["error"])
+    action_status = kaspy_tools.kaspad.kaspad_block_utils.error_handler(response["error"])
     return action_status
 
 

@@ -1,5 +1,5 @@
 """
-This module holds the methods that handle all the kaspa-d utils for the automation project.
+This module holds the methods that handle all the kaspa-d block utils for the automation project.
 """
 from kaspy_tools.kaspad.utilities import block_generator
 from kaspy_tools.kaspad import json_rpc_client

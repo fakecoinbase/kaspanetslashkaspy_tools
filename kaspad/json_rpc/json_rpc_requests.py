@@ -39,7 +39,8 @@ def submit_block_request(hex_block, options=None):
         }
     payload_json = json.dumps(payload)
 
-    response = requests.post(url, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     # print(response_json)
     return response, response_json
@@ -79,7 +80,8 @@ def get_block_request(block_hash, sub_network=None):
     payload_json = json.dumps(payload)
 
     # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     # for k, v in response_json.items():
     #     print(k, v)
@@ -108,7 +110,8 @@ def get_best_block_request():
     payload_json = json.dumps(payload)
 
     # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     # for k, v in response_json.items():
     #     print(k, v)
@@ -138,7 +141,8 @@ def get_block_dag_info_request():
     payload_json = json.dumps(payload)
 
     # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     # for k, v in response_json.items():
     #     print(k, v)
@@ -165,7 +169,8 @@ def generate_request(num_blocks):
     payload_json = json.dumps(payload)
 
     # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     return response_json
 
@@ -196,7 +201,8 @@ def get_block_template_request():
     }
     payload_json = json.dumps(payload)
 
-    response = requests.get(url, data=payload_json, headers=headers)
+    response = requests.get(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
     response_json = response.json()
     # for k, v in response_json.items():
     #     print(k, v)
@@ -208,7 +214,7 @@ def get_blocks(node_url, requested_blocks_count):
     This function returns a list of blocks, in binary-hex encoding and verbose encoding.
     The blocks are taken from a node specified in node_url.
         :param node_url: The url of a kaspad node.
-        :requested_blocks_count specify the number of requested blocks
+        :param requested_blocks_count specify the number of requested blocks
     :return: (raw blocks list, verbose blocks list)   None in each part if not requested.
     """
 
@@ -239,3 +245,76 @@ def get_blocks(node_url, requested_blocks_count):
             all_verbose_blocks = all_verbose_blocks[:requested_blocks_count]
             break
     return all_raw_blocks, all_verbose_blocks
+
+
+def submit_raw_tx(tx_hex, options=None):
+    """
+    submitting a pre-defined tx in hex string formant to the node via JSON-RPC.
+
+    :param tx_hex: tx in hexadecimal string
+    :param options: dictionary with key workID {"workId": "value"}
+    :return: returns the original response as well as reponse_json
+        response_json holds 2 dictionaries and 1 variable:
+        * result- {}
+        * error- {code: int, message: "string"}
+        * id
+    """
+    # url = json_rpc_constants.RPC_DEVNET_URL
+    url = json_rpc_constants.LOCAL_NODE_1
+    headers = {'content-type': 'application/json'}
+
+    if options is None:
+        payload = {
+            "method": "sendRawTransaction",
+            "params": [tx_hex],
+            "jsonrpc": "2.0",
+            "id": 0,
+        }
+    else:
+        payload = {
+            "method": "sendRawTransaction",
+            "params": [tx_hex, {"workId": "Jimmy"}],
+            "jsonrpc": "2.0",
+            "id": 0,
+        }
+    payload_json = json.dumps(payload)
+
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response_json = response.json()
+    # print(response_json)
+    return response, response_json
+
+
+def get_mempool_entry_request(tx_id):
+    """
+    retrieving specific mempool entery (raw_tx) data based on tx_id.
+
+    :param tx_id: tx_id of the tx in string format
+    :return: returns a response with 2 dictionaries and 1 variable:
+        * result- {hash: "string", confirmations: int, size: int, height: int, _version: int, versionHex: string,
+                hashMerkleRoot: "string", acceptedIdMerkleRoot: "string", tx: ["string"], time: int, _nonce: int,
+                _bits: "string", difficulty: float, parentHashes: ["string"]}
+        * error- {code: int, message: "string"}
+        * id
+    """
+    url = json_rpc_constants.RPC_DEVNET_URL
+    # url = json_rpc_constants.LOCAL_NODE_1
+    headers = {'content-type': 'application/json'}
+
+    payload = {
+        "method": "getMempoolEntry",
+        "params": [tx_id],
+        "jsonrpc": "2.0",
+        "id": 0
+    }
+
+    payload_json = json.dumps(payload)
+
+    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
+    response = requests.post(url, data=payload_json, headers=headers,
+                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response_json = response.json()
+    # for k, v in response_json.items():
+    #     print(k, v)
+    return response_json

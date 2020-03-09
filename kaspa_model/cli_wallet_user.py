@@ -1,4 +1,4 @@
-from utils import general_utils
+from kaspy_tools.utils import general_utils
 
 
 class CliWalletUser:

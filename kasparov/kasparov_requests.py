@@ -3,13 +3,13 @@ import json
 from automation_testing import constants_devnet
 from kaspy_tools.kasparov.kasparov_rest_objects import KasparovGet, KasparovPost
 
-api_urls = {"blocks": constants_devnet.KASPAROV_URL + "/blocks",
-             "block": constants_devnet.KASPAROV_URL + "/block/",
-             "utxos": constants_devnet.KASPAROV_URL + "/utxos/address/",
-             "transactions": constants_devnet.KASPAROV_URL + "/transactions/address/",
-             "fee-estimates": constants_devnet.KASPAROV_URL + "/fee-estimates",
-             "transaction_id": constants_devnet.KASPAROV_URL + "/transaction/id/",
-             "transaction_hash": constants_devnet.KASPAROV_URL + "/transaction/hash/"}
+api_urls = {"blocks": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/blocks",
+             "block": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/block/",
+             "utxos": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/utxos/address/",
+             "transactions": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/transactions/address/",
+             "fee-estimates": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/fee-estimates",
+             "transaction_id": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/transaction/id/",
+             "transaction_hash": constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/transaction/hash/"}
 
 
 def api_get_requests(request_name, test_args=None, positional_parameters=None):
@@ -37,7 +37,7 @@ def api_post_requests(raw_transaction):
     :param raw_transaction: The raw transaction to be submitted
     :return: The response for the request
     """
-    api_test = KasparovPost(constants_devnet.KASPAROV_URL + "/transaction", raw_transaction)
+    api_test = KasparovPost(constants_devnet.OPEN_DEVNET_KASPAROV_URL + "/transaction", raw_transaction)
     payload_json = json.dumps(api_test.payload)
     response = requests.post(api_test.url, payload_json, api_test.headers)
     return response

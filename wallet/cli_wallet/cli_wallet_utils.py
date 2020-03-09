@@ -1,4 +1,4 @@
-from model.cli_wallet_user import CliWalletUser
+from kaspy_tools.kaspa_model.cli_wallet_user import CliWalletUser
 
 
 def verify_balance_response(received_response, expected_response, expected_value=""):

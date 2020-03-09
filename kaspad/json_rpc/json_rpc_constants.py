@@ -13,8 +13,8 @@ RPC_PORT = 16610
 RPC_USER = 'user'
 RPC_PASSWORD = 'pass'
 
-# The KASPAROV_URL to be used
-RPC_DEVNET_URL = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@btcd-0.daglabs.com" + ":" + str(RPC_PORT)
+# The DEVNET_CLASSIC_KASPAROV_URL to be used
+RPC_DEVNET_URL = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@kaspad-0.daglabs.com" + ":" + str(RPC_PORT)
 
 # Local nodes
 # LOCAL_NODE_1 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:18334"
