@@ -2,9 +2,10 @@
 This file holds all the constant elements that are being used by the kaspa-d automation.
 """
 import os
+from kaspy_tools import kaspy_tools_constants
 
 # Path for the local KASPAD folder
-KASPAD_LOCAL_PATH = os.path.expanduser("~/kaspanet/kaspad")
+KASPAD_LOCAL_PATH = kaspy_tools_constants.LOCAL_GO_PATH + '/src/github.com/kaspanet/kaspad'
 
 # Path for the local run-dev folder
 RUNDEV_LOCAL_PATH = os.path.expanduser("~/kaspanet/stuff/run-dev")

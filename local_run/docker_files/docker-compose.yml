@@ -1,0 +1,78 @@
+version: '3'
+services:
+  first:
+    image: kaspad:latest
+    security_opt:
+      - apparmor=unconfined
+    cap_add:
+      - SYS_PTRACE
+    command: [
+      "./kaspad",
+      "--devnet",
+      "--addrindex",
+      "--acceptanceindex",
+      # "--generate",
+      "--nodnsseed",
+      "--miningaddr=kaspadev:qqfrfccgpw75zdw28veslhzzdx0jn97dcqrat4tmuh",
+      "--rpcuser=user",
+      "--rpcpass=pass",
+      "--rpclisten=127.0.0.1:16615",
+      "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert",
+      "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key",
+      "--notls"
+    ]
+    ports: ["16615:16615", "16611:16611"]
+    network_mode: host
+
+  second:
+    image: kaspad:latest
+    security_opt:
+      - apparmor=unconfined
+    cap_add:
+      - SYS_PTRACE
+    command: [
+      "./kaspad",
+      "--devnet",
+      "--addrindex",
+      "--acceptanceindex",
+      "--connect=127.0.0.1:16611",
+      "--rpcuser=user",
+      "--rpcpass=pass",
+      "--miningaddr=kaspadev:qqfrfccgpw75zdw28veslhzzdx0jn97dcqrat4tmuh",
+      "--rpclisten=127.0.0.1:16616",
+      "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert",
+      "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key",
+      "--notls"
+    ]
+    ports: ["16616:16616"]
+    network_mode: host
+
+  second-debug:
+    image: kaspad:latest
+    security_opt:
+      - apparmor=unconfined
+    cap_add:
+      - SYS_PTRACE
+    command: [
+      "dlv",
+      "--listen=:40000",
+      "--api-version=2",
+      "--headless=true",
+      "exec",
+      "./kaspad",
+      "--",
+      # here starts kaspad parameters
+      "--devnet",
+      "--addrindex",
+      "--acceptanceindex",
+      "--connect=127.0.0.1:16611",
+      "--rpcuser=user",
+      "--rpcpass=pass",
+      "--miningaddr=kaspadev:qqfrfccgpw75zdw28veslhzzdx0jn97dcqrat4tmuh",
+      "--rpclisten=127.0.0.1:16616",
+      "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert",
+      "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key",
+      "--notls"
+    ]
+    ports: ["16615:16615", "40000:40000"]
+    network_mode: host
