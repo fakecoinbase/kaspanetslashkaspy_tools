@@ -10,9 +10,7 @@ import kaspy_tools.kaspa_model.tx_in
 import kaspy_tools.kaspa_model.tx_out
 import kaspy_tools.kaspa_model.tx_script
 import kaspy_tools.utils.elliptic_curve
-from kosmos.k_agent.logs import config_logger
 
-local_logger = config_logger.get_local_logger(__name__)
 
 
 def make_new_transactions(count, utxo_list, keys):

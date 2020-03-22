@@ -8,16 +8,16 @@ from kaspy_tools import kaspy_tools_constants
 KASPAD_LOCAL_PATH = kaspy_tools_constants.LOCAL_GO_PATH + '/src/github.com/kaspanet/kaspad'
 
 # Path for the local run-dev folder
-RUNDEV_LOCAL_PATH = os.path.expanduser("~/kaspanet/stuff/run-dev")
+RUNDEV_LOCAL_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/stuff/run-dev")
 
 # Path for the binary file of a valid empty block
-VALID_BLOCK_EMPTY_PATH = os.path.expanduser("/kaspy_tools/kaspad/blocks_cartridge/valid_block_empty.dat")
+VALID_BLOCK_EMPTY_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/kaspy_tools/kaspad/blocks_cartridge/valid_block_empty.dat")
 
 # Path for the binary file of valid 1848 block
-VALID_1848_BLOCKS_PATH = os.path.expanduser("/kaspy_tools/kaspad/blocks_cartridge/1848_blocks.dat")
+VALID_1848_BLOCKS_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/kaspy_tools/kaspad/blocks_cartridge/1848_blocks.dat")
 
 # Path for the binary file of valid 2138 block
-VALID_2138_BLOCKS_PATH = os.path.expanduser("/kaspy_tools/kaspad/blocks_cartridge/2138_blocks.dat")
+VALID_2138_BLOCKS_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/kaspy_tools/kaspad/blocks_cartridge/2138_blocks.dat")
 
 # The max value possible of uint64
 MAX_UINT64 = 0xffffffffffffffff

@@ -7,12 +7,10 @@ Call download_blocks_and_utxc_set to get the utxo set and the blocks.
 import json
 from _datetime import datetime
 
-import kaspy_tools.kaspad.kaspad_utils
+from kaspy_tools.kaspad import kaspad_block_utils
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model import tx_out
-from kosmos.k_agent.logs import config_logger
 
-local_logger = config_logger.get_local_logger(__name__)
 
 
 def download_blocks_and_utxc_set(url, block_count, save_location=None):
@@ -29,7 +27,7 @@ def download_blocks_and_utxc_set(url, block_count, save_location=None):
     -------
 
     """
-    raw_blocks, verbose_blocks = kaspy_tools.kaspad.kaspad_utils.get_blocks(url, block_count)
+    raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(url, block_count)
     utxo_set = compute_utxo_set(verbose_blocks)
     if save_location is not None:
         save_raw_blocks(raw_blocks, save_location)

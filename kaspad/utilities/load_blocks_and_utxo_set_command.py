@@ -2,7 +2,7 @@ import json
 import datetime
 from kosmos.k_agent.logs import config_logger
 
-local_logger = config_logger.get_local_logger(__name__)
+local_logger = config_logger.get_local_logger('kaspy_tools')
 
 
 def load_raw_blocks_from_file(target_dir, raw_blocks_fname):

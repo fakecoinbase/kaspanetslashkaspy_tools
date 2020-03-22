@@ -5,9 +5,30 @@ A docker-compose.yaml file is used to run containers.
 """
 import os
 import subprocess
+import yaml
+from kaspy_tools.kaspy_tools_constants import LOCAL_RUN_PATH
+from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspad import kaspad_constants
+
+def create_docker_compose_file(address):
+    """
+
+    :param address:
+    :return:
+    """
+    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+    with open(docker_file) as f:
+        data = yaml.load(f, Loader=yaml.FullLoader)
+
+        mining_address = data['services']['first']['command'][5]
+        parts = mining_address.split('=')
+        parts[1] = address.get_address("kaspadev")
+        data['services']['first']['command'][5] = '='.join(parts)
+        # Write output
+        with open(docker_file, 'w') as f:
+            yaml.dump(data, f)
 
 def remove_all_images_and_containers():
     """
@@ -96,6 +117,7 @@ def docker_image_build(service_name, context):
     :param context: context path for Dockerfile command
     :return: None
     """
+    os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH)      # go to directory where docker_files are located
     cmd_args = []
     git_commit = get_git_commit()
     cmd_args.extend(['docker', 'build', '-t'])
@@ -134,4 +156,4 @@ def build_and_run():
         print(pe.stderr)
 
 if __name__ == '__main__':
-    build_and_run()
+    create_docker_compose_file(KaspaAddress())

@@ -1,4 +1,4 @@
-from model.tx_script_codes import op_codes
+from kaspy_tools.kaspa_model.tx_script_codes import op_codes
 
 
 

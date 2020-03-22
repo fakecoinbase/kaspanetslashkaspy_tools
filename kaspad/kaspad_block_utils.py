@@ -7,7 +7,7 @@ from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
 
 
-local_logger = config_logger.get_local_logger(__name__)
+local_logger = config_logger.get_local_logger('kaspy_tools')
 
 
 def error_handler(response_error):

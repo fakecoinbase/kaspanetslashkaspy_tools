@@ -1,6 +1,6 @@
-import utils.new_ecdsa
 import hashlib
-import utils.base58
+from kaspy_tools.utils import new_ecdsa
+from kaspy_tools.utils import base58
 
 # import utils.segwit_addr
 
