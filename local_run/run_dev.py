@@ -12,23 +12,42 @@ from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspad import kaspad_constants
 
-def create_docker_compose_file(address):
+def create_docker_compose_file(mining_address):
     """
 
     :param address:
     :return:
     """
     docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+    save_wif_file = LOCAL_RUN_PATH + '/docker_files/save_mining'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
 
-        mining_address = data['services']['first']['command'][5]
-        parts = mining_address.split('=')
-        parts[1] = address.get_address("kaspadev")
-        data['services']['first']['command'][5] = '='.join(parts)
+        old_address = data['services']['first']['command'][4]
+        parts = old_address.split('=')
+        parts[1] = mining_address.get_address("kaspadev")
+        data['services']['first']['command'][4] = '='.join(parts)
         # Write output
         with open(docker_file, 'w') as f:
             yaml.dump(data, f)
+        with open(save_wif_file, 'w') as mining_f:
+            mining_f.write(mining_address.get_wif())
+
+
+def get_mining_address():
+    """
+    Restore the mining address from the save_mining file, where the private key is stored
+    in wif format.
+    :return: The kaspa address object
+    """
+    save_mining = LOCAL_RUN_PATH + '/docker_files/save_mining'
+    with open(save_mining) as f:
+        wif_data = f.readline()
+
+    mining_address = KaspaAddress(wif_data)
+    return mining_address
+
+
 
 def remove_all_images_and_containers():
     """
@@ -124,6 +143,7 @@ def docker_image_build(service_name, context):
     cmd_args.extend([service_name + ':' + git_commit, context])
     cmd_args.extend(['-f', 'docker_files/Dockerfile'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True)  # command return non-zero good result
+    pass
 
 
 def tag_image_latest(service_name):

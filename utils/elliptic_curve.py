@@ -24,7 +24,7 @@ def make_private_key(base_private_key=None, compressed=True):
     :param compressed: True if a compressed key is requested
     :return: The private key object.
     """
-    private_key = utils.new_ecdsa.ECKey()
+    private_key = new_ecdsa.ECKey()
 
     if base_private_key and type(base_private_key) is bytes:  # got bytes
         private_key = private_key.set(base_private_key, compressed)

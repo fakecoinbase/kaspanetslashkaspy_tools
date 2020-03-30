@@ -5,9 +5,11 @@ class TxOut:
     """
     This object holds all required methods to handle all types of TxOuts.
     """
-    def __init__(self, value, script_pub_key_len, script_pub_key=None):
-        self._value = value
-        self._script_pub_key_len = script_pub_key_len  # re-added
+    def __init__(self, value_bytes=None, script_pub_key_len_bytes=0, script_pub_key_bytes=None, script_pub_key=None):
+        self._value=None
+        self._value_bytes = value_bytes
+        self._script_pub_key_len_bytes = script_pub_key_len_bytes  # re-added
+        self._script_pub_key_bytes = script_pub_key_bytes
         self._script_pub_key = script_pub_key
 
     # ========== Parsing Methods ========== #
@@ -26,15 +28,17 @@ class TxOut:
         script_pub_key = block_bytes_stream.read(script_pub_key_len_int)
         return TxOut(value, script_pub_key_len_bytes, script_pub_key)
 
-    # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
-    def update_value(self):
-        pass
+    @classmethod
+    def tx_out_factory(cls, *, value=0, script_pub_key=None):
+        new_tx_out = cls()
+        new_tx_out.set_value(value)
+        new_tx_out.set_value_bytes(None)
+        new_tx_out._script_pub_key_len = None
+        new_tx_out._script_pub_key_len_bytes = None
+        new_tx_out._script_pub_key = script_pub_key
+        return new_tx_out
 
-    def update_script_pub_key_len(self):
-        pass
 
-    def update_script_pub_key(self):
-        pass
 
     # ========== Set Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
 
@@ -42,14 +46,22 @@ class TxOut:
         """ Sets variable "_value" to the received value"""
         self._value = value
 
+    def set_value_bytes(self, value_bytes):
+        """ Sets variable "_value" to the received value"""
+        self._value_bytes = value_bytes
+
+
     def set_script_pub_key_len(self, script_pub_key_len):
         """ Sets variable "_script_pub_key_len" to the received value"""
         self._script_pub_key_len = script_pub_key_len
 
+
     def set_script_pub_key(self, script_pub_key):
-        """ Sets variable "_script_pub_key" to the received value"""
         self._script_pub_key = script_pub_key
 
+    def set_script_pub_key_bytes(self, script_pub_key_bytes):
+        """ Sets variable "_script_pub_key" to the received value"""
+        self._script_pub_key_bytes = script_pub_key_bytes
     # ========== Get Methods ========== #
 
     def get_value(self):
@@ -58,24 +70,52 @@ class TxOut:
         """
         return self._value
 
-    def get_script_pub_key_len_int(self):
+    def get_value_bytes(self):
+        """
+        :return: value as bytes
+        """
+        if not self._value_bytes:
+            self._value_bytes = (self._value).to_bytes(8, byteorder='little')
+        return self._value_bytes
+
+    def get_script_pub_key_len(self):
         """
         :return: script_pub_key_len as bytes
         """
         return self._script_pub_key_len
 
+    def get_script_pub_key_len_bytes(self):
+        """
+        :return: script_pub_key_len as bytes
+        """
+        if not self._script_pub_key_len_bytes:
+            self._script_pub_key_len_bytes = general_utils.write_varint(self._script_pub_key_len)
+        return self._script_pub_key_len_bytes
+
+
     def get_script_pub_key(self):
+        """
+        :return: script_pub_key as script object
+        """
+        return self._script_pub_key
+
+    def get_script_pub_key_bytes(self):
         """
         :return: script_pub_key as bytes
         """
-        return self._script_pub_key
+        if not self._script_pub_key_bytes:
+            self._script_pub_key_bytes = bytes(self._script_pub_key)
+            self._script_pub_key_len = len(self._script_pub_key_bytes)
+        return self._script_pub_key_bytes
+
 
     def get_tx_out_bytes(self):
         """
         :return: Tx Out bytes as a list
         """
         tx_out_list = []
-        tx_out_list.extend([[self._value], [self._script_pub_key_len], [self._script_pub_key]])
+        tx_out_list.extend([[self.get_value_bytes()], [self.get_script_pub_key_len_bytes()],
+                            [self.get_script_pub_key_bytes()]])
         tx_out_bytes = general_utils.flatten_nested_iterable(tx_out_list)
         return tx_out_bytes
 
@@ -85,9 +125,9 @@ class TxOut:
         :return: The bytes representation of this tx_out object
         """
         ret_bytes = b''
-        ret_bytes += (self._value).to_bytes(8, byteorder='little')    # in Satoshis
-        script_bytes = bytes(self._script_pub_key)
-        script_len = len(script_bytes)
-        ret_bytes += general_utils.write_varint(script_len)
+        ret_bytes += self.get_value_bytes()
+        script_bytes = self.get_script_pub_key_bytes()
+        script_len_bytes = self.get_script_pub_key_len_bytes()
+        ret_bytes += script_len_bytes
         ret_bytes += script_bytes
         return ret_bytes

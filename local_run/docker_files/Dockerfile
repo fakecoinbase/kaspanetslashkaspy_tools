@@ -19,6 +19,6 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -gcflags "all=-N" -a -installsuffix cgo -o kaspad .
+RUN GOOS=linux go build -gcflags "all=-N" -a -installsuffix cgo -o kaspad .
 
 ENTRYPOINT [ "/sbin/tini", "--" ]

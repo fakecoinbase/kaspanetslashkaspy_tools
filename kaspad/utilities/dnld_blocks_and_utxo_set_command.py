@@ -10,6 +10,8 @@ from _datetime import datetime
 from kaspy_tools.kaspad import kaspad_block_utils
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model import tx_out
+from kaspy_tools.kaspa_model import tx_script
+import kaspy_tools.kaspa_model.tx
 
 
 
@@ -107,7 +109,7 @@ def compute_utxo_set(all_verbose_blocks):
     utxo_set = {}
     for block in all_verbose_blocks:
         for tx in block['rawRx']:
-            if tx['subnetwork'] == tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
+            if tx['subnetwork'] == kaspy_tools.kaspa_model.tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
                 utxo_set.update(collect_coinbase_utxo(tx, utxo_set))
             else:
                 utxo_set.update(collect_tx_utxo(tx, utxo_set))
@@ -123,6 +125,7 @@ def collect_tx_utxo(tx, utxo_set):
     :param utxo_set: The set of utxo collected
     :return:
     """
+    # TODO: fix after changes
     # first, go over input, and remove matching utxo outputs
     for index, vin in enumerate(tx['vin']):
         referred_out = (vin['txId'], vin['vout'])
@@ -145,6 +148,10 @@ def collect_coinbase_utxo(tx, utxo_set):
     :return: utxo_set created from coinbase vin inputs
     """
     for index, vout in enumerate(tx['vout']):
-        utxo_set[(tx['txId'], index)] = tx_out.TxOut(vout['value'], 0, vout['scriptPubKey'])
+        scriptPubKey = tx_script.TxScript(pubHush=vout['scriptPubKey']['hex'][6:46])
+        utxo_set[(tx['txId'], index)] = {
+            'output':tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey),
+            'used':False
+        }
 
     return utxo_set

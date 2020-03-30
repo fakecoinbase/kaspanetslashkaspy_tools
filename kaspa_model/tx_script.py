@@ -10,6 +10,7 @@ class TxScript:
         else:
             self._op_list = op_list
         self._pubHush = pubHush
+        self._pubHush_bytes = None
         self._pubKey = pubKey
 
     def script_push(self, value):
@@ -18,6 +19,17 @@ class TxScript:
     def script_pop(self):
         ret_byte = self._script_stack[-1]
         self._script_stack = self._script_stack[:-1]
+
+    def get_pubhash(self):
+        return self._pubHush
+
+    def get_pubhash_bytes(self):
+        if self._pubHush_bytes is None:
+            self._pubHush_bytes = bytes.fromhex(self._pubHush)
+        return self._pubHush_bytes
+
+    def set_pubhash_bytes(self, pub_hash_bytes):
+        self._pubHush_bytes = pub_hash_bytes
 
     def __bytes__(self):
         ret_bytes = b''

@@ -1,0 +1,4 @@
+**/__pycache__
+**/*.pyc
+**/*.yml
+**/save_mining

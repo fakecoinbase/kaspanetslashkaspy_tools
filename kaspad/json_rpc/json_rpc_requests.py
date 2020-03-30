@@ -241,7 +241,7 @@ def get_blocks(node_url, requested_blocks_count):
         next_hash = all_verbose_blocks[-1]['hash']
 
         blocks_count += len(response_json['result']['verboseBlocks'])
-        if blocks_count > requested_blocks_count:
+        if blocks_count >= requested_blocks_count:
             all_verbose_blocks = all_verbose_blocks[:requested_blocks_count]
             break
     return all_raw_blocks, all_verbose_blocks

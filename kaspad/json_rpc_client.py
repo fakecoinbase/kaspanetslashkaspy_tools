@@ -8,6 +8,9 @@ from kaspy_tools.kaspad import kaspad_constants
 def submit_block_request(block_hex, options=None):
     return json_rpc_requests.submit_block_request(block_hex, options)
 
+def submit_raw_transaction_request(tx_hex, options=None):
+    return json_rpc_requests.submit_raw_tx(tx_hex, options)
+
 
 def get_current_tip_hashes():
     """
