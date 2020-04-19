@@ -49,7 +49,7 @@ pseudo_words_codes = {'OP_RESERVED': b'\x50', 'OP_VER': b'\x62', 'OP_VERIF': b'\
                       'OP_NOP1': b'\xb0', 'OP_NOP4': b'\xb3', 'OP_NOP5': b'\xb4', 'OP_NOP6': b'\xb5',
                       'OP_NOP7': b'\xb6', 'OP_NOP8': b'\xb7', 'OP_NOP9': b'\xb8', 'OP_NOP10': b'\xb9'}
 
-def make_op_codes():
+def make_op_codes_to_bytes():
     all_op_codes = {}
     all_op_codes.update(constants_codes)
     all_op_codes.update(flow_control_codes)
@@ -62,4 +62,10 @@ def make_op_codes():
     all_op_codes.update(pseudo_words_codes)
     return all_op_codes
 
-op_codes = make_op_codes()
+# def make_bytes_to_op_codes(op_codes_to_bytes):
+#     all_bytes = {}
+#     for op_code, byte_code in op_codes_to_bytes:
+
+op_codes_to_bytes = make_op_codes_to_bytes()
+bytes_to_op_codes = {op_codes_to_bytes[k]:k for k in op_codes_to_bytes}
+

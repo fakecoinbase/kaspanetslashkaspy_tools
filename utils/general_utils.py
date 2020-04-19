@@ -3,7 +3,8 @@ This module holds what is considered as the "General Utilities" methods for the 
 """
 import hashlib
 from textwrap import wrap
-from collections import Iterable
+#from collections import Iterable
+from collections.abc import Iterable
 
 
 # ========== Hash related methods ========== #

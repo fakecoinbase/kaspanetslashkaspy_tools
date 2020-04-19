@@ -30,11 +30,11 @@ def download_blocks_and_utxc_set(url, block_count, save_location=None):
 
     """
     raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(url, block_count)
-    utxo_set = compute_utxo_set(verbose_blocks)
+    utxo_list = compute_utxo_list(verbose_blocks)
     if save_location is not None:
         save_raw_blocks(raw_blocks, save_location)
-        save_utxo_set(utxo_set, save_location)
-    return utxo_set, verbose_blocks, raw_blocks
+        save_utxo_set(utxo_list, save_location)
+    return utxo_list, verbose_blocks, raw_blocks
 
 
 def make_file_name(save_location, file_type, data_len):
@@ -94,30 +94,28 @@ def save_utxo_set(utxc_set, save_location):
             print(json.dumps([tx_id, out_idx, tx_out.get_value(), tx_out.get_script_pub_key()]), file=utxc_set_file)
 
 
-def compute_utxo_set(all_verbose_blocks):
+def compute_utxo_list(all_verbose_blocks):
     """
     This function works by iterating over all transactions, and extracting all utxo into a
-    utxo dictionary (utxo_set).
+    utxo list.
     Each time an input references an output(utxo), the function removes this utxo from the list.
     It then populate the utxo dictionary with new outputs.
-    The utxo_set keys are tuples of the form:  (transaction_hash, output_index)
-    The values are tx_out objects.
-        :param all_verbose_blocks: A list containing all verbose blocks
-    :return: The utxo_set dictionary
+    :param all_verbose_blocks: A list containing all verbose blocks
+    :return: The utxo_list
     """
 
-    utxo_set = {}
+    utxo_list = [] # keep a list to have them ordered
     for block in all_verbose_blocks:
         for tx in block['rawRx']:
             if tx['subnetwork'] == kaspy_tools.kaspa_model.tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
-                utxo_set.update(collect_coinbase_utxo(tx, utxo_set))
+                collect_coinbase_utxo(tx, utxo_list)
             else:
-                utxo_set.update(collect_tx_utxo(tx, utxo_set))
+                collect_tx_utxo(tx, utxo_list)
 
-    return utxo_set
+    return utxo_list
 
 
-def collect_tx_utxo(tx, utxo_set):
+def collect_tx_utxo(tx, utxo_list):
     """
     Go over the inputs and outputs of a non coinbase transaction.
     Use inputs to delete matching utxo
@@ -129,17 +127,18 @@ def collect_tx_utxo(tx, utxo_set):
     # first, go over input, and remove matching utxo outputs
     for index, vin in enumerate(tx['vin']):
         referred_out = (vin['txId'], vin['vout'])
-        if referred_out in utxo_set:
-            del (utxo_set[referred_out])
+        if referred_out in utxo_list:
+            del (utxo_list[referred_out])
+            utxo_list.remove()
 
     # ..then add outputs from transaction into utxo_set
     for index, vout in enumerate(tx['vout']):
-        utxo_set[(tx['txId'], index)] = tx_out.TxOut(vout['value'], 0, vout['scriptPubKey'])
+        utxo_list[(tx['txId'], index)] = tx_out.TxOut(vout['value'], 0, vout['scriptPubKey'])
 
-    return utxo_set
+    return utxo_list
 
 
-def collect_coinbase_utxo(tx, utxo_set):
+def collect_coinbase_utxo(tx, utxo_list):
     """
     This function gets a json encoded coinbase transaction from a block.
     It convert these vin inputs into a utxo dictionary (encoded the same as in get_utxo_set)
@@ -148,10 +147,13 @@ def collect_coinbase_utxo(tx, utxo_set):
     :return: utxo_set created from coinbase vin inputs
     """
     for index, vout in enumerate(tx['vout']):
-        scriptPubKey = tx_script.TxScript(pubHush=vout['scriptPubKey']['hex'][6:46])
-        utxo_set[(tx['txId'], index)] = {
-            'output':tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey),
+        # scriptPubKey = tx_script.TxScript.script_sig_factory(sig='', public_key=vout['scriptPubKey']['hex'][6:46])
+        scriptPubKey = tx_script.TxScript.parse_tx_script(raw_script=vout['scriptPubKey']['hex'])
+        new_utxo = {
+            'output':tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey,
+                                                 tx_id=tx['txId'], out_index=index),
             'used':False
         }
+        utxo_list.append(new_utxo)
 
-    return utxo_set
+    return utxo_list

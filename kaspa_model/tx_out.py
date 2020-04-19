@@ -5,12 +5,15 @@ class TxOut:
     """
     This object holds all required methods to handle all types of TxOuts.
     """
-    def __init__(self, value_bytes=None, script_pub_key_len_bytes=0, script_pub_key_bytes=None, script_pub_key=None):
+    def __init__(self, value_bytes=None, script_pub_key_len_bytes=0, script_pub_key_bytes=None, script_pub_key=None,
+                 tx_id=None, out_index=None):
         self._value=None
         self._value_bytes = value_bytes
         self._script_pub_key_len_bytes = script_pub_key_len_bytes  # re-added
         self._script_pub_key_bytes = script_pub_key_bytes
         self._script_pub_key = script_pub_key
+        self._tx_id = tx_id
+        self._out_index = out_index
 
     # ========== Parsing Methods ========== #
 
@@ -29,13 +32,15 @@ class TxOut:
         return TxOut(value, script_pub_key_len_bytes, script_pub_key)
 
     @classmethod
-    def tx_out_factory(cls, *, value=0, script_pub_key=None):
+    def tx_out_factory(cls, *, value=0, script_pub_key=None, tx_id=None, out_index=None):
         new_tx_out = cls()
         new_tx_out.set_value(value)
         new_tx_out.set_value_bytes(None)
         new_tx_out._script_pub_key_len = None
         new_tx_out._script_pub_key_len_bytes = None
         new_tx_out._script_pub_key = script_pub_key
+        new_tx_out.set_tx_id(tx_id)
+        new_tx_out.set_out_index(out_index)
         return new_tx_out
 
 
@@ -62,6 +67,14 @@ class TxOut:
     def set_script_pub_key_bytes(self, script_pub_key_bytes):
         """ Sets variable "_script_pub_key" to the received value"""
         self._script_pub_key_bytes = script_pub_key_bytes
+
+    def set_tx_id(self, tx_id):
+        self._tx_id = tx_id
+
+
+    def set_out_index(self, out_index):
+        self._out_index = out_index
+
     # ========== Get Methods ========== #
 
     def get_value(self):
@@ -77,6 +90,7 @@ class TxOut:
         if not self._value_bytes:
             self._value_bytes = (self._value).to_bytes(8, byteorder='little')
         return self._value_bytes
+
 
     def get_script_pub_key_len(self):
         """
@@ -118,6 +132,16 @@ class TxOut:
                             [self.get_script_pub_key_bytes()]])
         tx_out_bytes = general_utils.flatten_nested_iterable(tx_out_list)
         return tx_out_bytes
+
+
+    def get_tx_id(self):
+        return self._tx_id
+
+
+    def get_out_index(self):
+        return self._out_index
+
+
 
     def __bytes__(self):
         """

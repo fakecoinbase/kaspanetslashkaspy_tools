@@ -7,7 +7,7 @@ services:
     - --devnet
     - --acceptanceindex
     - --nodnsseed
-    - --miningaddr=kaspadev:qpsjn5yv9etdwfdeqxc060pk6kxqewch8uc4cc9q5e
+    - --miningaddr=kaspadev:qpzugm9c0r0nrtrha3jhqqty0aj976xa8qxr3t8zte
     - --rpcuser=user
     - --rpcpass=pass
     - --rpclisten=127.0.0.1:16615
@@ -22,7 +22,7 @@ services:
     security_opt:
     - apparmor=unconfined
     volumes:
-    - /home/yuval/Documents/DagLabs/volumes/kaspad/:/root/.kaspad
+    - ~/volumes/kaspad/:/root/.kaspad
   second:
     cap_add:
     - SYS_PTRACE

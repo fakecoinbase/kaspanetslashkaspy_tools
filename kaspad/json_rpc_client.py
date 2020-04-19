@@ -44,6 +44,10 @@ def get_blocks(url, block_count):
     return raw_blocks, verbose_blocks
 
 
+def get_block_template():
+    res = json_rpc_requests.get_block_template_request()
+    return res
+
 def get_genesis_blockhash_from_constants():
     """
     Returns the blockhash value of the genesis block from json_rpc_constants.py as a list.

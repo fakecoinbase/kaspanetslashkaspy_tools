@@ -4,6 +4,7 @@ A Dockerfile is used to build the kaspad image.
 A docker-compose.yaml file is used to run containers.
 """
 import os
+import time
 import subprocess
 import yaml
 from kaspy_tools.kaspy_tools_constants import LOCAL_RUN_PATH
@@ -117,6 +118,7 @@ def run_docker_compose_services(*services, detached=True):
     cmd_args.extend(services)
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
     completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    time.sleep(2)
 
 def get_git_commit():
     """
@@ -174,6 +176,17 @@ def build_and_run():
         run_kaspad_pair()
     except subprocess.CalledProcessError as pe:
         print(pe.stderr)
+
+
+    def clear_volume_files():
+        import os
+        top = os.path.expanduser('~/volumes/kaspad')
+        for root, dirs, files in os.walk(top, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+
 
 if __name__ == '__main__':
     create_docker_compose_file(KaspaAddress())

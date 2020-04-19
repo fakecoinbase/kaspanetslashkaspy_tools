@@ -1,35 +1,16 @@
 # coincurve:
 #     https://github.com/ofek/coincurve
 
+import hashlib
 from coincurve import PrivateKey as ECPrivateKey
-from collections import namedtuple
 from kaspy_tools.kaspa_crypto import format_conversions
 
-# FIELD_SIZE = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-# GROUP_ORDER = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
-# TONELLI_SHANKS_CONSTANT = (FIELD_SIZE + 1) // 4
-
-
-Point = namedtuple('Point', ('x', 'y'))
-
-
-# def parity(num):
-#     return num & 1
-#
-
-# def x_to_y(x, y_parity):
-#
-#     y = pow(x ** 3 + 7, TONELLI_SHANKS_CONSTANT, FIELD_SIZE)
-#
-#     if parity(y) != y_parity:
-#         y = FIELD_SIZE - y
-#
-#     return y
 
 
 class KaspaKeys:
-    """This class represents a point on the elliptic curve secp256k1 and
-    provides all necessary cryptographic functionality.
+    """
+    This class uses the python coincurve (that is based on secp256k1) to
+    provides necessary cryptographic functionality.
 
     :param wif: A private key serialized to the Wallet Import Format. If the
                 argument is not supplied, a new private key will be created.
@@ -61,47 +42,18 @@ class KaspaKeys:
         """The public point serialized to bytes."""
         return self._public_key
 
-    def get_address(self, prefix):
-        """The public address you share with others to receive funds."""
-        if self._address is None:
-            self._address = format_conversions.public_key_to_address(self._public_key, prefix)
+    @property
+    def public_key_hex(self):
+        """The public point serialized to bytes."""
+        return self._public_key.hex()
 
-        return self._address
 
-    # @property
-    # def public_point(self):
-    #     """The public point (x, y)."""
-    #     if self._public_point is None:
-    #         self._public_point = Point(*public_key_to_coords(self._public_key))
-    #     return self._public_point
-
-    def sign(self, data):
-        """Signs some data which can be verified later by others using
-        the public key.
-
-        :param data: The message to sign.
-        :type data: ``bytes``
-        :returns: A signature compliant with BIP-62.
-        :rtype: ``bytes``
-        """
-        return self._pk.sign(data)
-
-    def verify(self, signature, data):
-        """Verifies some data was signed by this private key.
-
-        :param signature: The signature to verify.
-        :type signature: ``bytes``
-        :param data: The data that was supposedly signed.
-        :type data: ``bytes``
-        :rtype: ``bool``
-        """
-        return self._pk.public_key.verify(signature, data)
-
-    def to_hex(self):
-        """:rtype: ``str``"""
+    @property
+    def private_key_hex(self):
         return self._pk.to_hex()
 
-    def to_bytes(self):
+    @property
+    def private_key(self):
         """:rtype: ``bytes``"""
         return self._pk.secret
 
@@ -112,17 +64,7 @@ class KaspaKeys:
             compressed=self.is_compressed()
         )
 
-    def to_der(self):
-        """:rtype: ``bytes``"""
-        return self._pk.to_der()
 
-    def to_pem(self):
-        """:rtype: ``bytes``"""
-        return self._pk.to_pem()
-
-    def to_int(self):
-        """:rtype: ``int``"""
-        return self._pk.to_int()
 
     def is_compressed(self):
         """Returns whether or not this private key corresponds to a compressed
@@ -132,5 +74,14 @@ class KaspaKeys:
         """
         return True if len(self.public_key) == 33 else False
 
-    def __eq__(self, other):
-        return self.to_int() == other.to_int()
+    @staticmethod
+    def double_sha256(data):
+        if type(data) is str:
+            bytes_data = bytes.fromhex(data)
+        else:
+            bytes_data = data
+
+        msg_hash1 = hashlib.new('sha256',bytes_data ).digest()
+        msg_hash2 = hashlib.new('sha256',msg_hash1 ).digest()
+        return msg_hash2
+

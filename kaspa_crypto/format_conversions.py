@@ -1,3 +1,4 @@
+import hashlib
 from kaspy_tools.utils.addr_libs.kaspaaddress import convert as cashaddress
 from coincurve import verify_signature as _vs
 
@@ -35,13 +36,13 @@ def verify_sig(signature, data, public_key):
     return _vs(signature, data, public_key)
 
 
-def address_to_public_key_hash(address):
-    # LEGACYADDRESSDEPRECATION
-    # FIXME: This legacy address support will be removed.
-    address = cashaddress.to_cash_address(address)
-    get_version(address)
-    Address = cashaddress.Address._cash_string(address)
-    return bytes(Address.payload)
+def address_to_public_key_hash(public_key, compressed=False):
+    # First hash256
+    sha_256_digest = hashlib.new('sha256', public_key).digest()
+    # now ripemd160 hash
+    ripemd160_hash = hashlib.new('ripemd160', sha_256_digest ).digest()
+    print('\tripemd160', len(ripemd160_hash), '\t', ripemd160_hash.hex())
+    return ripemd160_hash
 
 
 def get_version(address):

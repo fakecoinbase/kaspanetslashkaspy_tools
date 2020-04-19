@@ -141,7 +141,7 @@ class Tx:
         """
         return self._number_of_txs_in
 
-    def get_tx_in(self):
+    def get_tx_in_list(self):
         """
         :return: Tx in as bytes
         """
