@@ -248,7 +248,7 @@ def update_parent_blocks_data(block_object, block_template):
     #convert tips to bytes and flip
     reversed_tips_hashes_bytes = [ (bytes.fromhex(tip))[::-1]  for tip in tip_hashes_list ]
     block_object.number_of_parent_blocks_bytes = (len(tip_hashes_list)).to_bytes(1,byteorder='little')
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_parent_blocks_data_to_genesis(block_object):
@@ -261,7 +261,7 @@ def update_parent_blocks_data_to_genesis(block_object):
     tip_hashes_len_hex = hex(1).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
     block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash):
@@ -283,7 +283,7 @@ def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash)
     tip_hashes_len_hex = hex(len(tip_hashes_list)).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
     block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_hash_merkle_root(block_object, block_template):
@@ -293,8 +293,8 @@ def update_hash_merkle_root(block_object, block_template):
     :param block_object: The block object that holds the variable to update
     """
     txs_list = block_object.get_block_txs_list_for_hash_merkle_root()
-    hash_merkle_root = calculate_hash_merkle_root(txs_list)
-    block_object.set_hash_merkle_root(hash_merkle_root)
+    hash_merkle_root_bytes = calculate_hash_merkle_root(txs_list)
+    block_object.hash_merkle_root_bytes = hash_merkle_root_bytes
 
 
 def update_id_merkle_root(block_object, block_template):
