@@ -1,4 +1,7 @@
+from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
+
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # re-added
 TX_IN_SEQUENCE = bytes(8)

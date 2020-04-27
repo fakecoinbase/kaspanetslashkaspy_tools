@@ -4,7 +4,7 @@ This file holds all the constant elements that are being used by the JSON-RPC au
 import os
 
 # Path for the local certification file
-CERT_FILE_PATH = os.path.expanduser("~/kaspanet/automation_testing/cert_files/rpc.cert")
+CERT_FILE_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/automation_testing/cert_files/rpc.cert")
 
 # The port number depends on the one written in the .conf file
 RPC_PORT = 16610
@@ -17,10 +17,10 @@ RPC_PASSWORD = 'pass'
 RPC_DEVNET_URL = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@kaspad-0.daglabs.com" + ":" + str(RPC_PORT)
 
 # Local nodes
-# LOCAL_NODE_1 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:18334"
-# LOCAL_NODE_2 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:18335"
-LOCAL_NODE_1 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
-LOCAL_NODE_2 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
+LOCAL_NODE_1 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
+LOCAL_NODE_2 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
+# LOCAL_NODE_1 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
+# LOCAL_NODE_2 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
 
 # Local node loading/teardown verification strings
 LOCAL_NODE_BUILD_VERIFICATION = ["Successfully", "tagged", "kaspad"]

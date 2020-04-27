@@ -1,5 +1,7 @@
+from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
 
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 class TxOut:
     """

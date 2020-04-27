@@ -9,7 +9,7 @@ from kaspy_tools.kaspad.utilities import updater
 
 # ========== Block generator methods ========== #
 
-def generate_valid_block_and_hash(block_file_path):
+def generate_valid_block_and_hash(block_file_path, conn=None):
     """
     Generates a valid blue block using a provided block binary data from the blocks cartridge with updated data from the node
     and local calculations.
@@ -19,7 +19,7 @@ def generate_valid_block_and_hash(block_file_path):
     """
     block_bytes = general_utils.load_binary_file(block_file_path)
     new_block = Block.parse_block(block_bytes)
-    updater.update_all_valid_block_variables(new_block)
+    updater.update_all_valid_block_variables(new_block, conn)
     block_header = new_block.get_block_header_bytes_array()
     block_hash = general_utils.hash_256(block_header)
     reversed_block_hash = general_utils.reverse_bytes(block_hash)
@@ -78,7 +78,7 @@ def generate_modified_block_and_hash(block_file_path, variable_str, invalid_arg_
     return invalid_block, reversed_block_hash
 
 
-def generate_block_to_specific_parent(block_file_path, parent_block_hash):
+def generate_block_to_specific_parent(block_file_path, parent_block_hash, conn=None):
     """
     Generates a block while directing it to a specific set of tips or directly to the "Genesis" block.
 

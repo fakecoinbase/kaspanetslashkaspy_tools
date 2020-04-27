@@ -3,7 +3,7 @@ This module holds what is considered as the "General Utilities" methods for the 
 """
 import hashlib
 from textwrap import wrap
-#from collections import Iterable
+# from collections import Iterable
 from collections.abc import Iterable
 
 
@@ -110,6 +110,7 @@ def read_varint(bytes_stream):
     else:  # everything else is just the integer
         return first_byte, bytes([first_byte])
 
+
 def write_varint(value):
     """
     write_varint creates a bytes object that encodes a value based on the bitcoin varint.
@@ -117,7 +118,7 @@ def write_varint(value):
     :return: bytes object encoding of value parameter
     """
     if (value < 0xfd):
-        return((value).to_bytes(1,byteorder='little'))
+        return value.to_bytes(1, byteorder='little')
     elif value <= 0xffff:
         return b'\xfd' + value.to_bytes(2, byteorder='little')
     elif value <= 0xffffffff:

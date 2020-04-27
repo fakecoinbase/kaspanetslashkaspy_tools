@@ -14,22 +14,10 @@ from kaspy_tools.kaspa_model import tx_script
 import kaspy_tools.kaspa_model.tx
 
 
+def download_blocks_and_utxc_set(block_count, save_location=None, conn=None):
 
-def download_blocks_and_utxc_set(url, block_count, save_location=None):
-    """
-    First downloads blocks, then computes the utxo set.
-    It saves the blocks to a file if requested.
-    Parameters
-    ----------
-    url             pointing to the kaspad (url should include port number)
-    block_count     how many blocks to download
-    save_location   if given, a directory in which to save raw blocks and utxo
+    raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(block_count, conn=conn)
 
-    Returns         3 item tuple with utxo-set,  verbose_blocks, raw_blocks
-    -------
-
-    """
-    raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(url, block_count)
     utxo_list = compute_utxo_list(verbose_blocks)
     if save_location is not None:
         save_raw_blocks(raw_blocks, save_location)

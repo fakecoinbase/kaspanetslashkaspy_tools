@@ -7,7 +7,7 @@ import json
 from kaspy_tools.kaspad.json_rpc import json_rpc_constants
 
 
-def submit_block_request(hex_block, options=None):
+def submit_block_request(hex_block, options=None, conn=None):
     """
     submitting a pre-defined block in hex string formant to the node via JSON-RPC.
 
@@ -19,8 +19,6 @@ def submit_block_request(hex_block, options=None):
         * error- {code: int, message: "string"}
         * id
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     if options is None:
@@ -39,14 +37,13 @@ def submit_block_request(hex_block, options=None):
         }
     payload_json = json.dumps(payload)
 
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # print(response_json)
     return response, response_json
 
 
-def get_block_request(block_hash, sub_network=None):
+def get_block_request(block_hash, sub_network=None, conn=None):
     """
     retrieving specific block data based on it's hash.
 
@@ -59,8 +56,6 @@ def get_block_request(block_hash, sub_network=None):
         * error- {code: int, message: "string"}
         * id
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     if sub_network is None:
@@ -79,16 +74,13 @@ def get_block_request(block_hash, sub_network=None):
         }
     payload_json = json.dumps(payload)
 
-    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # for k, v in response_json.items():
-    #     print(k, v)
     return response_json
 
 
-def get_best_block_request():
+def get_best_block_request(conn=None):
     """
     retrieves the hash and the height of the selected TIP.
 
@@ -97,8 +89,6 @@ def get_best_block_request():
         * error- {code: int, message: "string"}
         * id
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     payload = {
@@ -109,16 +99,13 @@ def get_best_block_request():
     }
     payload_json = json.dumps(payload)
 
-    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # for k, v in response_json.items():
-    #     print(k, v)
     return response_json
 
 
-def get_block_dag_info_request():
+def get_block_dag_info_request(conn=None):
     """
     retrieves DAG information.
 
@@ -128,8 +115,6 @@ def get_block_dag_info_request():
         * error- {code: int, message: "string"}
         * id
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     payload = {
@@ -140,24 +125,19 @@ def get_block_dag_info_request():
     }
     payload_json = json.dumps(payload)
 
-    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # for k, v in response_json.items():
-    #     print(k, v)
     return response_json
 
 
-def generate_request(num_blocks):
+def generate_request(num_blocks, conn=None):
     """
     Generates an X amount of blocks based on received parameter.
 
     :param num_blocks: The amount of blocks to be generated
     :return: String "Done"
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     payload = {
@@ -168,14 +148,13 @@ def generate_request(num_blocks):
     }
     payload_json = json.dumps(payload)
 
-    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
     return response_json
 
 
-def get_block_template_request():
+def get_block_template_request(conn=None):
     """
     Retrieves up to date block template.
 
@@ -189,8 +168,6 @@ def get_block_template_request():
         * error- {code: int, message: "string"}
         * id
     """
-    # url = constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     payload = {
@@ -201,15 +178,13 @@ def get_block_template_request():
     }
     payload_json = json.dumps(payload)
 
-    response = requests.get(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.get(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # for k, v in response_json.items():
-    #     print(k, v)
     return response_json
 
 
-def get_blocks(node_url, requested_blocks_count):
+def get_blocks(requested_blocks_count, conn=None):
     """
     This function returns a list of blocks, in binary-hex encoding and verbose encoding.
     The blocks are taken from a node specified in node_url.
@@ -233,8 +208,8 @@ def get_blocks(node_url, requested_blocks_count):
             payload['params'][2] = next_hash
         payload_json = json.dumps(payload)
 
-        response = requests.get(node_url, data=payload_json, headers=headers, auth=('user', 'pass'),
-                                verify='/home/yuval/GoProjects/src/github.com/kaspanet/devops/devnet/common/rpc.cert')
+        response = requests.get(conn.updated_url, data=payload_json, headers=headers, auth=('user', 'pass'),
+                                verify=conn.cert_file_path)
         response_json = response.json()
         all_verbose_blocks.extend(response_json['result']['verboseBlocks'])
         all_raw_blocks.extend(response_json['result']['rawBlocks'])
@@ -248,7 +223,7 @@ def get_blocks(node_url, requested_blocks_count):
     return all_raw_blocks, all_verbose_blocks
 
 
-def submit_raw_tx(tx_hex, options=None):
+def submit_raw_tx(tx_hex, options=None, conn=None):
     """
     submitting a pre-defined tx in hex string formant to the node via JSON-RPC.
 
@@ -260,8 +235,6 @@ def submit_raw_tx(tx_hex, options=None):
         * error- {code: int, message: "string"}
         * id
     """
-    # url = json_rpc_constants.RPC_DEVNET_URL
-    url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     if options is None:
@@ -280,14 +253,13 @@ def submit_raw_tx(tx_hex, options=None):
         }
     payload_json = json.dumps(payload)
 
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # print(response_json)
     return response, response_json
 
 
-def get_mempool_entry_request(tx_id):
+def get_mempool_entry_request(tx_id, conn=None):
     """
     retrieving specific mempool entery (raw_tx) data based on tx_id.
 
@@ -299,8 +271,6 @@ def get_mempool_entry_request(tx_id):
         * error- {code: int, message: "string"}
         * id
     """
-    url = json_rpc_constants.RPC_DEVNET_URL
-    # url = json_rpc_constants.LOCAL_NODE_1
     headers = {'content-type': 'application/json'}
 
     payload = {
@@ -312,10 +282,27 @@ def get_mempool_entry_request(tx_id):
 
     payload_json = json.dumps(payload)
 
-    # response = requests.post(url, verify=constants.CERT_FILE_PATH, data=payload_json, headers=headers)
-    response = requests.post(url, data=payload_json, headers=headers,
-                             verify=json_rpc_constants.CERT_FILE_PATH)
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
     response_json = response.json()
-    # for k, v in response_json.items():
-    #     print(k, v)
     return response_json
+
+
+
+def get_peer_info_request(conn=None):
+    headers = {'content-type': 'application/json'}
+
+    payload = {
+        "method": "getPeerInfo",
+        "params": [],
+        "jsonrpc": "2.0",
+        "id": 0
+    }
+
+    payload_json = json.dumps(payload)
+
+    response = requests.get(conn.updated_url, data=payload_json, headers=headers,
+                            verify=conn.cert_file_path)
+    response_json = response.json()
+    return response_json
+    pass

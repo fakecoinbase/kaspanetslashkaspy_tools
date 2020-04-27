@@ -1,37 +1,39 @@
 """
 This module holds the methods that handle all the JSON RPC requests for the automation project.
 """
+from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests, json_rpc_node
 from kaspy_tools.kaspad import kaspad_constants
 
+KT_logger = config_logger.get_kaspy_tools_logger()
 
-def submit_block_request(block_hex, options=None):
-    return json_rpc_requests.submit_block_request(block_hex, options)
+def submit_block_request(block_hex, options=None, url=None):
+    return json_rpc_requests.submit_block_request(block_hex, options, url)
 
-def submit_raw_transaction_request(tx_hex, options=None):
-    return json_rpc_requests.submit_raw_tx(tx_hex, options)
+def submit_raw_transaction_request(tx_hex, options=None, conn=None):
+    return json_rpc_requests.submit_raw_tx(tx_hex, options, conn)
 
 
-def get_current_tip_hashes():
+def get_current_tip_hashes(conn=None):
     """
     Returns the current tips hashes using the function in json_rpc_node.py.
 
     :return: The tips hashes as a list
     """
-    return json_rpc_node.get_node_tip_hashes_list()
+    return json_rpc_node.get_node_tip_hashes_list(conn)
 
 
-def get_block_data(block_hash):
+def get_block_data(block_hash, conn=None):
     """
     Returns the requested block data status using the function in json_rpc_node.py.
 
     :param block_hash: Hash of the requested block
     :return: block data status as a string
     """
-    return json_rpc_node.get_block_data_status(block_hash)
+    return json_rpc_node.get_block_data_status(block_hash, conn)
 
 
-def get_blocks(url, block_count):
+def get_blocks(block_count, conn=None):
     """
     Returns the the requested amount of blocks from the Node URL that was provided.
     using the function in json_rpc_node.py.
@@ -40,12 +42,17 @@ def get_blocks(url, block_count):
     :param block_count: The amount of blocks to retrieve
     :return: block data as raw_blocks, verbose_blocks
     """
-    raw_blocks, verbose_blocks = json_rpc_requests.get_blocks(url, block_count)
+    raw_blocks, verbose_blocks = json_rpc_requests.get_blocks(block_count, conn=conn)
     return raw_blocks, verbose_blocks
 
 
-def get_block_template():
-    res = json_rpc_requests.get_block_template_request()
+def get_block_template(conn=None):
+    res = json_rpc_requests.get_block_template_request(conn)
+    if res['result'] is None:
+        KT_logger.error('json-rpc template request failed: ', res['error'])
+    else:
+        KT_logger.info('json-rpc template: %s...', str(res['result'])[:20])
+
     return res
 
 def get_genesis_blockhash_from_constants():
@@ -55,32 +62,32 @@ def get_genesis_blockhash_from_constants():
     return [kaspad_constants.GENESIS_HASH]
 
 
-def get_node_id_merkle_root():
+def get_node_id_merkle_root(conn=None):
     """
     Returns the current node id merkle root using the function in json_rpc_node.py.
     """
-    return json_rpc_node.get_node_id_merkle_root()
+    return json_rpc_node.get_node_id_merkle_root(conn)
 
 
-def get_node_utxo_commitment():
+def get_node_utxo_commitment(conn=None):
     """
     Returns the current node id utxo commitment using the function in json_rpc_node.py.
     """
-    return json_rpc_node.get_node_utxo_commitment()
+    return json_rpc_node.get_node_utxo_commitment(conn)
 
 
-def get_node_bits():
+def get_node_bits(conn=None):
     """
     Returns the current node bits using the function in json_rpc_node.py.
     """
-    return json_rpc_node.get_node_bits()
+    return json_rpc_node.get_node_bits(conn)
 
 
-def get_coinbase_tx_data():
+def get_coinbase_tx_data(conn=None):
     """
     Returns the current node coinbase tx data using the function in json_rpc_node.py.
     """
-    return json_rpc_node.get_coinbase_tx_data()
+    return json_rpc_node.get_coinbase_tx_data(conn)
 
 
 def get_max_uint64_from_constants():
@@ -90,8 +97,14 @@ def get_max_uint64_from_constants():
     return kaspad_constants.MAX_UINT64
 
 
-def get_block_dag_num_of_blocks():
+def get_block_dag_num_of_blocks(conn=None):
     """
     Return current amount of blocks from the node using the function in json_rpc_node.py.
     """
-    return json_rpc_node.get_block_dag_num_of_blocks()
+    return json_rpc_node.get_block_dag_num_of_blocks(conn)
+
+
+
+def get_peer_info(conn=None):
+    info = json_rpc_requests.get_peer_info_request(conn)
+    return info

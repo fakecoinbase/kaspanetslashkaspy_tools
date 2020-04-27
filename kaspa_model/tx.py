@@ -1,7 +1,10 @@
 import hashlib
+from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
 from kaspy_tools.kaspa_model.tx_in import TxIn
 from kaspy_tools.kaspa_model.tx_out import TxOut
+
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 COINBASE_SUBNETWORK = ''.join(['00' for i in range(19)]) + '01'

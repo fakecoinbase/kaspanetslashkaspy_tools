@@ -4,7 +4,6 @@ This module holds all the UPDATE methods for the automation project.
 
 import random
 from io import BytesIO
-import calendar
 import time
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model.tx import Tx
@@ -13,36 +12,40 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object):
+def update_all_valid_block_variables(block_object, conn=None):
     """
     Initiates the VALID updating process for the entire block
 
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(conn=conn)['result']
+
+    update_parent_blocks_data(block_object,block_template)
+    update_all_txs(block_object,block_template)
+    update_hash_merkle_root(block_object,block_template)
+    update_id_merkle_root(block_object,block_template)
+    update_utxo_commitment(block_object,block_template)
+    update_timestamp(block_object,block_template)
+    update_bits(block_object,block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_using_invalid_version_data(block_object, version_int):
+def update_block_variables_using_invalid_version_data(block_object, version_int, url=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "version" value.
 
     :param version_int: The required version as an int
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
     if version_int is None:
         update_version_invalid(block_object)
@@ -50,133 +53,149 @@ def update_block_variables_using_invalid_version_data(block_object, version_int)
         update_version(block_object, version_int)
 
 
-def update_block_variables_without_parent_block_data(block_object):
+def update_block_variables_without_parent_block_data(block_object, url=None):
     """
     Initiates the VALID updating process for the block, ignoring "parent block data" variables
 
     :param block_object: The block object that holds the variables to update
     """
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_without_txs(block_object):
+def update_block_variables_without_txs(block_object, url=None):
     """
     Initiates the VALID updating process for the block, ignoring "Txs" objects
 
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_without_hash_merkle_root(block_object):
+def update_block_variables_without_hash_merkle_root(block_object, url=None):
     """
     Initiates the VALID updating process for the block, ignoring "hash merkle root" variable
 
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_without_id_merkle_root(block_object):
+def update_block_variables_without_id_merkle_root(block_object, url=None):
     """
     Initiates the VALID updating process for the block, ignoring "ID merkle root" variable
 
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_without_utxo_commitment(block_object):
+def update_block_variables_without_utxo_commitment(block_object, url=None):
     """
     Initiates the VALID updating process for the block, ignoring "utxo commitment" variable
 
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value):
+def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value, url=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "timestamp" value.
 
     :param timestamp_value: The value to use as the invalid timestamp
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
     update_timestamp_invalid(block_object, timestamp_value)
-    update_bits(block_object)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_bits(block_object, bits_value):
+def update_block_variables_with_an_invalid_bits(block_object, bits_value, url=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "bits" value.
 
     :param bits_value: The value to use as bits
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
     update_bits_invalid(block_object, bits_value)
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_nonce(block_object, nonce_value):
+def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, url=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "nonce" value.
 
     :param nonce_value: The value to use as nonce
     :param block_object: The block object that holds the variables to update
     """
-    update_parent_blocks_data(block_object)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    block_template = json_rpc_client.get_block_template(url)['result']
+
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce_invalid(block_object, nonce_value)
 
 
-def update_block_variables_parent_block_data_to_provided_block(block_object, parent_block_hash):
+def update_block_variables_parent_block_data_to_provided_block(block_object, parent_block_hash, url=None):
     """
     Initiates the VALID updating process for the block, setting "parent block data" variables to point to a provided
     block hash or to Genesis block.
@@ -184,16 +203,18 @@ def update_block_variables_parent_block_data_to_provided_block(block_object, par
     :param block_object: The block object that holds the variables to update
     :param parent_block_hash: accepts block hash as bytes or the string "genesis"
     """
+    block_template = json_rpc_client.get_block_template(url)['result']
+
     if parent_block_hash.lower() == "genesis":
         update_parent_blocks_data_to_genesis(block_object)
     else:
         update_parent_blocks_data_to_provided_block(block_object, parent_block_hash)
-    update_all_txs(block_object)
-    update_hash_merkle_root(block_object)
-    update_id_merkle_root(block_object)
-    update_utxo_commitment(block_object)
-    update_timestamp(block_object)
-    update_bits(block_object)
+    update_all_txs(block_object, block_template)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
@@ -217,17 +238,17 @@ def update_version_invalid(block_object):
     block_object.set_version(b"")
 
 
-def update_parent_blocks_data(block_object):
+def update_parent_blocks_data(block_object, block_template):
     """
     Updates the block object variables "number of parent blocks" & "parent hashes" from the node.
 
     :param block_object: The block object that holds the variables to update
     """
-    tip_hashes_list = json_rpc_client.get_current_tip_hashes()
-    tip_hashes_len_int = len(tip_hashes_list)
-    tip_hashes_len_hex = hex(tip_hashes_len_int).replace("0x", "").zfill(2)
-    reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
-    block_object.set_number_of_parent_blocks(bytes.fromhex(tip_hashes_len_hex))
+    tip_hashes_list = block_template['parentHashes']
+
+    #convert tips to bytes and flip
+    reversed_tips_hashes_bytes = [ (bytes.fromhex(tip))[::-1]  for tip in tip_hashes_list ]
+    block_object.set_number_of_parent_blocks((len(tip_hashes_list)).to_bytes(1,byteorder='little'))
     block_object.set_parent_hashes(reversed_tips_hashes_bytes)
 
 
@@ -266,7 +287,7 @@ def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash)
     block_object.set_parent_hashes(reversed_tips_hashes_bytes)
 
 
-def update_hash_merkle_root(block_object):
+def update_hash_merkle_root(block_object, block_template):
     """
     Updates the block object variable "hash merkle root".
 
@@ -277,41 +298,37 @@ def update_hash_merkle_root(block_object):
     block_object.set_hash_merkle_root(hash_merkle_root)
 
 
-def update_id_merkle_root(block_object):
+def update_id_merkle_root(block_object, block_template):
     """
     Updates the block object variable "id merkle root" from the node.
 
     :param block_object: The block object that holds the variable to update
     """
-    id_merkle_root = json_rpc_client.get_node_id_merkle_root()
-    id_merkle_root_bytes = general_utils.convert_hex_to_bytes(id_merkle_root)
-    reversed_id_merkle_root = general_utils.reverse_bytes(id_merkle_root_bytes)
+    id_merkle_root = block_template['acceptedIdMerkleRoot']
+    reversed_id_merkle_root = (bytes.fromhex(id_merkle_root))[::-1]
     block_object.set_id_merkle_root(reversed_id_merkle_root)
 
 
-def update_utxo_commitment(block_object):
+def update_utxo_commitment(block_object, block_template):
     """
     Updates the block object variable "utxo commitment" from the node.
 
     :param block_object: The block object that holds the variable to update
     """
-    utxo_commitment = json_rpc_client.get_node_utxo_commitment()
-    utxo_commitment_bytes = general_utils.convert_hex_to_bytes(utxo_commitment)
-    reversed_utxo_commitment = general_utils.reverse_bytes(utxo_commitment_bytes)
+    utxo_commitment = block_template["utxoCommitment"]
+    reversed_utxo_commitment = (bytes.fromhex(utxo_commitment))[::-1]
     block_object.set_utxo_commitment(reversed_utxo_commitment)
 
 
-def update_timestamp(block_object):
+def update_timestamp(block_object, block_template):
     """
     Updates the block object variable "timestamp" using current time.
 
     :param block_object: The block object that holds the variable to update
     """
-    timestamp_int = calendar.timegm(time.gmtime())
-    updated_timestamp_temp = hex(timestamp_int).replace("0x", "")
-    reverse_updated_timestamp_temp = general_utils.reverse_hex(updated_timestamp_temp)
-    updated_timestamp_bytes = general_utils.convert_hex_to_bytes(reverse_updated_timestamp_temp.ljust(16, "0"))
-    block_object.set_timestamp(updated_timestamp_bytes)
+    timestamp_int = int(time.time())
+    timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
+    block_object.set_timestamp(timestamp_bytes)
 
 
 def update_timestamp_invalid(block_object, timestamp_value):
@@ -333,16 +350,17 @@ def update_timestamp_invalid(block_object, timestamp_value):
         block_object.set_timestamp(bytes(timestamp_str, "utf-8"))
 
 
-def update_bits(block_object):
+def update_bits(block_object, block_template):
     """
     Updates the block object variable "bits" from the node.
 
     :param block_object: The block object that holds the variable to update
     """
-    bits = json_rpc_client.get_node_bits()
-    bits_bytes = general_utils.convert_hex_to_bytes(bits)
-    reversed_bits = general_utils.reverse_bytes(bits_bytes)
-    block_object.set_bits(reversed_bits)
+    # bits = json_rpc_client.get_node_bits()
+    # bits_bytes = general_utils.convert_hex_to_bytes(bits)
+    # reversed_bits = general_utils.reverse_bytes(bits_bytes)
+    bits_bytes = (bytes.fromhex(block_template['bits']))[::-1]
+    block_object.set_bits(bits_bytes)
 
 
 def update_bits_invalid(block_object, bits_value):
@@ -396,13 +414,13 @@ def update_nonce_invalid(block_object, nonce_value):
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
 
-def update_all_txs(block_object):
+def update_all_txs(block_object, block_template):
     """
     Updates all tsx data based on information received from the node and from local calculations.
 
     :param block_object: The block object that holds the variable to update
     """
-    coinbase_tx_object = update_coinbase_tx()
+    coinbase_tx_object = update_coinbase_tx(block_template)
     block_object.set_coinbase_tx(coinbase_tx_object)
 
 
@@ -410,14 +428,14 @@ def update_num_of_txs_in_block(tx_object):
     pass
 
 
-def update_coinbase_tx():
+def update_coinbase_tx(block_template):
     """
     Creates a new coinbase_tx_object based on data received from the node (request get_block_template_request()).
 
     :return: new_coinbase_tx object
     """
-    coinbase_tx_hex = json_rpc_client.get_coinbase_tx_data()
-    coinbase_tx_bytes = general_utils.convert_hex_to_bytes(coinbase_tx_hex)
+    coinbase_tx_hex = block_template["coinbaseTxn"]["data"]
+    coinbase_tx_bytes = bytes.fromhex(coinbase_tx_hex)
     coinbase_tx_bytes_stream = BytesIO(coinbase_tx_bytes)
     new_coinbase_tx = Tx.parse_tx(coinbase_tx_bytes_stream)
     return new_coinbase_tx

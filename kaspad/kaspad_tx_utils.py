@@ -6,7 +6,7 @@ from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
 
 
-local_logger = config_logger.get_local_logger('kaspy_tools')
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 
 def error_handler(response_error):
@@ -24,7 +24,7 @@ def error_handler(response_error):
         return message
 
 
-def submit_valid_raw_tx(tx_hex, options=None):
+def submit_valid_raw_tx(tx_hex, options=None, conn=None):
     """
     Submits a raw tx to the DAG-block network.
     Returns the action's response.
@@ -33,5 +33,5 @@ def submit_valid_raw_tx(tx_hex, options=None):
     :param options: Enter specific options that are required else leave as None
     :return: The original response of the submit request, response_json
     """
-    response, response_json = json_rpc_client.submit_raw_transaction_request(tx_hex, options)
+    response, response_json = json_rpc_client.submit_raw_transaction_request(tx_hex, options, conn=conn)
     return response, response_json

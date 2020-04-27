@@ -7,11 +7,26 @@ import os
 import time
 import subprocess
 import yaml
+from kaspy_tools.kaspad.json_rpc import json_rpc_constants
 from kaspy_tools.kaspy_tools_constants import LOCAL_RUN_PATH
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
+from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
 
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspad import kaspad_constants
+
+
+def read_docker_compose():
+    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+    with open(docker_file) as f:
+        data = yaml.load(f, Loader=yaml.FullLoader)
+        return data
+
+def write_docker_compose(yaml_data):
+    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+    with open(docker_file, 'w') as f:
+        yaml.dump(yaml_data, f)
+
 
 def create_docker_compose_file(mining_address):
     """
@@ -19,20 +34,17 @@ def create_docker_compose_file(mining_address):
     :param address:
     :return:
     """
-    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
     save_wif_file = LOCAL_RUN_PATH + '/docker_files/save_mining'
-    with open(docker_file) as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
+    data = read_docker_compose()
 
-        old_address = data['services']['first']['command'][4]
-        parts = old_address.split('=')
-        parts[1] = mining_address.get_address("kaspadev")
-        data['services']['first']['command'][4] = '='.join(parts)
-        # Write output
-        with open(docker_file, 'w') as f:
-            yaml.dump(data, f)
-        with open(save_wif_file, 'w') as mining_f:
-            mining_f.write(mining_address.get_wif())
+    old_address = data['services']['first']['command'][4]
+    parts = old_address.split('=')
+    parts[1] = mining_address.get_address("kaspadev")
+    data['services']['first']['command'][4] = '='.join(parts)
+    # Write output
+    write_docker_compose(yaml_data=data)
+    with open(save_wif_file, 'w') as mining_f:
+        mining_f.write(mining_address.get_wif())
 
 
 def get_mining_address():
@@ -91,18 +103,33 @@ def remove_all_containers():
     completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
 
 
-def run_kaspad_pair(debug=False):
+def run_kaspad_services(debug=False):
     """
     Run 'first' and 'second' of 'second-debug' services from docker-compose.yaml
     :param debug: weather or not to run a debug version of the 2nd service
-    :return: None
+    :return: A list with the connections
     """
+    cons = {}
+    data = read_docker_compose()
+    for srv_name,service in data['services'].items():
+        addr_index = [i for i in range(len(service['command'])) if 'rpclisten' in service['command'][i]][0]
+        ip_addr, port_num = (service['command'][addr_index].split('=')[1]).split(':')
+        user_index = [i for i in range(len(service['command'])) if 'rpcuser' in service['command'][i]][0]
+        pass_index = [i for i in range(len(service['command'])) if 'rpcpass' in service['command'][i]][0]
+        username = (service['command'][user_index].split('=')[1])
+        password = (service['command'][pass_index].split('=')[1])
+        cert_file = json_rpc_constants.CERT_FILE_PATH
+        new_conn = KaspaNode(conn_name=srv_name, ip_addr= ip_addr, port_number=port_num, tls=True,
+                             username=username, password=password, cert_file_path=cert_file)
+        cons[srv_name] =  new_conn
+
     os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files')
     if debug:
         second = 'second-debug'
     else:
         second = 'second'
     run_docker_compose_services('first', second)
+    return cons
 
 def run_docker_compose_services(*services, detached=True):
     """
@@ -173,7 +200,7 @@ def build_and_run():
         remove_all_images_and_containers()
         docker_image_build('kaspad', kaspad_constants.KASPAD_LOCAL_PATH)
         tag_image_latest('kaspad')
-        run_kaspad_pair()
+        run_kaspad_services()
     except subprocess.CalledProcessError as pe:
         print(pe.stderr)
 

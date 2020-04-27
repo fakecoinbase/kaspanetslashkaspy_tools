@@ -1,9 +1,11 @@
 """
 Use this file to create private keys -> public keys -> addresses
 """
-
+from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_crypto.kaspa_keys import KaspaKeys
 from kaspy_tools.kaspa_crypto import format_conversions
+
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 prefixes = ["kaspa", "kaspadev", "kaspareg", "kaspatest", "kaspasim"]
 
@@ -61,12 +63,21 @@ class KaspaAddress:
     def public_key_hex(self):
         return self._key.public_key.hex()
 
+
     def get_public_key_hash(self):
         pub_key = self.public_key
         return format_conversions.address_to_public_key_hash(pub_key)
 
     def get_wif(self):
         return self._key.to_wif()
+
+def make_addresses(count):
+    ret_addresses = {}
+    for i in range(count):
+        addr = KaspaAddress()
+        ret_addresses[addr.get_address(prefix='kaspadev')] = addr
+
+    return ret_addresses
 
 
 if __name__ == "__main__":

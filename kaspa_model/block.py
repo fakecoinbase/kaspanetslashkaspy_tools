@@ -1,27 +1,31 @@
 
 from io import BytesIO
+from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
 
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 class Block:
     """
     This objects holds all the required methods to handle block data.
     """
-    def __init__(self, version, num_of_parent_blocks, parent_hashes, hash_merkle_root,
-                 id_merkle_root, utxo_commitment, timestamp, bits, nonce, num_of_txs_in_block, coinbase_tx, native_txs):
-        self._version = version
-        self._number_of_parent_blocks = num_of_parent_blocks
+    def __init__(self, *, version_bytes=None, num_of_parent_blocks_bytes=None, parent_hashes=None,
+                 hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
+                 timestamp_bytes=None, bits_bytes=None, nonce_bytes=None, num_of_txs_in_block_bytes=None,
+                 coinbase_tx=None, native_tx_list=None):
+        self._version = version_bytes
+        self._number_of_parent_blocks = num_of_parent_blocks_bytes
         self._parent_hashes = parent_hashes
-        self._hash_merkle_root = hash_merkle_root
-        self._id_merkle_root = id_merkle_root
-        self._utxo_commitment = utxo_commitment
-        self._timestamp = timestamp
-        self._bits = bits
-        self._nonce = nonce
-        self._num_of_txs_in_block = num_of_txs_in_block
+        self._hash_merkle_root = hash_merkle_root_bytes
+        self._id_merkle_root = id_merkle_root_bytes
+        self._utxo_commitment = utxo_commitment_bytes
+        self._timestamp = timestamp_bytes
+        self._bits = bits_bytes
+        self._nonce = nonce_bytes
+        self._num_of_txs_in_block = num_of_txs_in_block_bytes
         self._coinbase_tx = coinbase_tx
-        self._native_txs = native_txs
+        self._native_txs = native_tx_list
 
     # ========== Parsing Methods ========== #
 
@@ -37,9 +41,11 @@ class Block:
         block_stream = BytesIO(block_bytes)
         block_header = Block._parse_block_header(block_stream)
         block_body = Block._parse_block_body(block_stream)
-        return Block(block_header[0], block_header[1], block_header[2], block_header[3], block_header[4],
-                     block_header[5],
-                     block_header[6], block_header[7], block_header[8], block_body[0], block_body[1], block_body[2])
+        return Block(version_bytes=block_header[0], num_of_parent_blocks_bytes=block_header[1],
+                     parent_hashes= block_header[2], hash_merkle_root_bytes= block_header[3],
+                     id_merkle_root_bytes=block_header[4], utxo_commitment_bytes=block_header[5],
+                     timestamp_bytes=block_header[6], bits_bytes=block_header[7], nonce_bytes=block_header[8],
+                     num_of_txs_in_block_bytes=block_body[0], coinbase_tx=block_body[1], native_tx_list=block_body[2])
 
     @staticmethod
     def _parse_block_header(block_bytes_stream):

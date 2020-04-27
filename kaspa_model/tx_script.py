@@ -1,5 +1,9 @@
+from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.tx_script_codes import op_codes_to_bytes, bytes_to_op_codes
 from kaspy_tools.utils import general_utils
+
+KT_logger = config_logger.get_kaspy_tools_logger()
+
 
 SIG_HASH_ALL = b'\x01'
 SIGHASH_NONE = b'\x02'

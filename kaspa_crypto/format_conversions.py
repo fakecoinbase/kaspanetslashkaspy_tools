@@ -1,10 +1,14 @@
 import hashlib
+from kaspy_tools.logs import config_logger
+
 from kaspy_tools.utils.addr_libs.kaspaaddress import convert as cashaddress
 from coincurve import verify_signature as _vs
 
 from kaspy_tools.utils.addr_libs.kaspaaddress.base58 import b58decode_check, b58encode_check
 from kaspy_tools.utils.addr_libs.bitcash.crypto import ripemd160_sha256
 from kaspy_tools.utils.addr_libs.bitcash.curve import x_to_y
+
+TEST_logger = config_logger.get_testkits_logger()
 
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
@@ -41,7 +45,8 @@ def address_to_public_key_hash(public_key, compressed=False):
     sha_256_digest = hashlib.new('sha256', public_key).digest()
     # now ripemd160 hash
     ripemd160_hash = hashlib.new('ripemd160', sha_256_digest ).digest()
-    print('\tripemd160', len(ripemd160_hash), '\t', ripemd160_hash.hex())
+    TEST_logger.debug('\tripemd160 %d %s %s', len(ripemd160_hash), '\t', ripemd160_hash.hex())
+
     return ripemd160_hash
 
 

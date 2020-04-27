@@ -67,24 +67,24 @@ def make_new_key_pair(compressed=False):
     return private_key_bytes, pubkey_hex
 
 
-def make_address_hash(public_key, compressed=False):
-    # First hash256
-    digester = hashlib.sha256()
-    if type(public_key) is utils.new_ecdsa.ECKey:
-        public_key.get_bytes()
-    elif type(public_key) is str:
-        public_key = bytes.fromhex(public_key)
-
-    digester.update(public_key)
-    sha_256_digest = digester.digest()
-    print('\tsha256:', len(sha_256_digest), '\t', bytes.hex(sha_256_digest))
-    # now ripemd160 hash
-    ripemd160_digester = hashlib.new('ripemd160')
-    ripemd160_digester.update(sha_256_digest)
-    ripemd160_hash_hex = ripemd160_digester.hexdigest()
-    ripemd160_hash = bytes.fromhex(ripemd160_hash_hex)
-    print('\tripemd160', len(ripemd160_hash), '\t', ripemd160_hash_hex)
-    return ripemd160_hash
+# def make_address_hash(public_key, compressed=False):
+#     # First hash256
+#     digester = hashlib.sha256()
+#     if type(public_key) is utils.new_ecdsa.ECKey:
+#         public_key.get_bytes()
+#     elif type(public_key) is str:
+#         public_key = bytes.fromhex(public_key)
+#
+#     digester.update(public_key)
+#     sha_256_digest = digester.digest()
+#     print('\tsha256:', len(sha_256_digest), '\t', bytes.hex(sha_256_digest))
+#     # now ripemd160 hash
+#     ripemd160_digester = hashlib.new('ripemd160')
+#     ripemd160_digester.update(sha_256_digest)
+#     ripemd160_hash_hex = ripemd160_digester.hexdigest()
+#     ripemd160_hash = bytes.fromhex(ripemd160_hash_hex)
+#     print('\tripemd160', len(ripemd160_hash), '\t', ripemd160_hash_hex)
+#     return ripemd160_hash
 
 
 def to_base58check(pubkey):

@@ -76,7 +76,6 @@ def sign_tx_inputs(in_list, new_tx):
 
     """
     for tx_in in in_list:
-        # private_key = bytes.fromhex(tx_in.private_key)
         private_key = tx_in.private_key
         sign_key = ECKey()
         sign_key.set(private_key, compressed=True)
