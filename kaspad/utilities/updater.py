@@ -225,7 +225,7 @@ def update_version(block_object, version_int):
     :param block_object: The block object that holds the variables to update
     """
     version = bytes([version_int])
-    block_object.set_version(version)
+    block_object.version_bytes = version
 
 
 def update_version_invalid(block_object):
@@ -234,7 +234,7 @@ def update_version_invalid(block_object):
 
     :param block_object: The block object that holds the variables to update
     """
-    block_object.set_version(b"")
+    block_object.version_bytes = b""
 
 
 def update_parent_blocks_data(block_object, block_template):
@@ -247,7 +247,7 @@ def update_parent_blocks_data(block_object, block_template):
 
     #convert tips to bytes and flip
     reversed_tips_hashes_bytes = [ (bytes.fromhex(tip))[::-1]  for tip in tip_hashes_list ]
-    block_object.set_number_of_parent_blocks((len(tip_hashes_list)).to_bytes(1,byteorder='little'))
+    block_object.number_of_parent_blocks_bytes = (len(tip_hashes_list)).to_bytes(1,byteorder='little')
     block_object.set_parent_hashes(reversed_tips_hashes_bytes)
 
 
@@ -260,7 +260,7 @@ def update_parent_blocks_data_to_genesis(block_object):
     tip_hashes_list = json_rpc_client.get_genesis_blockhash_from_constants()
     tip_hashes_len_hex = hex(1).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
-    block_object.set_number_of_parent_blocks(bytes.fromhex(tip_hashes_len_hex))
+    block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
     block_object.set_parent_hashes(reversed_tips_hashes_bytes)
 
 
@@ -282,7 +282,7 @@ def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash)
         tip_hashes_list = [block_hash_hex]
     tip_hashes_len_hex = hex(len(tip_hashes_list)).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
-    block_object.set_number_of_parent_blocks(bytes.fromhex(tip_hashes_len_hex))
+    block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
     block_object.set_parent_hashes(reversed_tips_hashes_bytes)
 
 

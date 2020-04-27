@@ -14,8 +14,10 @@ class Block:
                  hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
                  timestamp_bytes=None, bits_bytes=None, nonce_bytes=None, num_of_txs_in_block_bytes=None,
                  coinbase_tx=None, native_tx_list=None):
-        self._version = version_bytes
-        self._number_of_parent_blocks = num_of_parent_blocks_bytes
+        self._version_bytes = version_bytes
+        self._version = None
+        self._number_of_parent_blocks = None
+        self._number_of_parent_blocks_bytes = num_of_parent_blocks_bytes
         self._parent_hashes = parent_hashes
         self._hash_merkle_root = hash_merkle_root_bytes
         self._id_merkle_root = id_merkle_root_bytes
@@ -27,6 +29,21 @@ class Block:
         self._coinbase_tx = coinbase_tx
         self._native_txs = native_tx_list
 
+    @classmethod
+    def block_factory(cls, version_bytes=None):
+        new_block = cls()
+        new_block._version_bytes = version_bytes
+        new_block._number_of_parent_blocks = num_of_parent_blocks_bytes
+        new_block._parent_hashes = parent_hashes
+        new_block._hash_merkle_root = hash_merkle_root_bytes
+        new_block._id_merkle_root = id_merkle_root_bytes
+        new_block._utxo_commitment = utxo_commitment_bytes
+        new_block._timestamp = timestamp_bytes
+        new_block._bits = bits_bytes
+        new_block._nonce = nonce_bytes
+        new_block._num_of_txs_in_block = num_of_txs_in_block_bytes
+        new_block._coinbase_tx = coinbase_tx
+        new_block._native_txs = native_tx_list
     # ========== Parsing Methods ========== #
 
     @staticmethod
@@ -111,13 +128,21 @@ class Block:
 
     # ========== Set Block Methods ========== #
 
-    def set_version(self, version):
-        """ Sets variable "_version" to the received value"""
-        self._version = version
+    @property
+    def version_bytes(self):
+        """ Gets variable "_version_bytes" to the received value"""
+        if self._version_bytes:
+            return self._version_bytes
+        else:
+            return self._version.to_bytes(4, byteorder='little')
 
-    def set_number_of_parent_blocks(self, num_of_parent_blocks):
-        """ Sets variable "number of parent blocks" to the received value"""
-        self._number_of_parent_blocks = num_of_parent_blocks
+    @property
+    def number_of_parent_blocks_bytes(self):
+        """ Gets variable "number of parent blocks" to the received value"""
+        if not self._number_of_parent_blocks_bytes:
+            self._number_of_parent_blocks_bytes = self._number_of_parent_blocks.to_bytes(1, byteorder='little')
+
+        return self._number_of_parent_blocks_bytes
 
     def set_parent_hashes(self, parent_hashes):
         """ Sets variable "parent hashes" to the received value"""
@@ -159,17 +184,19 @@ class Block:
 
     # ========== Get Methods ========== #
 
-    def get_version(self):
+    @version_bytes.setter
+    def version_bytes(self, version_bytes):
         """
         :return: Version as bytes
         """
-        return self._version
+        self._version_bytes = version_bytes
 
-    def get_number_of_parent_blocks(self):
+    @number_of_parent_blocks_bytes.setter
+    def number_of_parent_blocks_bytes(self, number_of_parent_blocks_bytes):
         """
-        :return: Number of parent blocks as bytes
+        :return: None
         """
-        return self._number_of_parent_blocks
+        self._number_of_parent_blocks_bytes = number_of_parent_blocks_bytes
 
     def get_parent_hashes(self):
         """
@@ -235,7 +262,7 @@ class Block:
         """
         :return: Block header bytes as a list
         """
-        return [self._version, self._number_of_parent_blocks, self._parent_hashes, self._hash_merkle_root,
+        return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes, self._hash_merkle_root,
                 self._id_merkle_root, self._utxo_commitment, self._timestamp, self._bits, self._nonce]
 
     def get_block_header_bytes_array(self):
