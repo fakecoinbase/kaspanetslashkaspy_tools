@@ -12,13 +12,12 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object, conn=None):
+def update_all_valid_block_variables(block_object, block_template, conn=None):
     """
     Initiates the VALID updating process for the entire block
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_client.get_block_template(conn=conn)['result']
 
     update_parent_blocks_data(block_object,block_template)
     update_all_txs(block_object,block_template)
