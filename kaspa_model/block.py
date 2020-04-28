@@ -24,7 +24,8 @@ class Block:
         self._id_merkle_root_bytes = id_merkle_root_bytes
         self._utxo_commitment_bytes = utxo_commitment_bytes
         self._timestamp_bytes = timestamp_bytes
-        self._bits = bits_bytes
+        self._bits_int = None
+        self._bits_bytes = bits_bytes
         self._nonce = nonce_bytes
         self._num_of_txs_in_block = num_of_txs_in_block_bytes
         self._coinbase_tx = coinbase_tx
@@ -33,7 +34,7 @@ class Block:
     @classmethod
     def block_factory(cls, *, version=None, num_of_parent_blocks=None, parent_hashes=None,
                       hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
-                      timestamp_int=None, timestamp_bytes=None):
+                      timestamp_int=None, timestamp_bytes=None, bits_bytes=None, bits_int=None):
         new_block = cls()
         new_block._version = version
         new_block._number_of_parent_blocks = num_of_parent_blocks
@@ -43,7 +44,8 @@ class Block:
         new_block._utxo_commitment_bytes = utxo_commitment_bytes
         new_block._timestamp_int = timestamp_int
         new_block._timestamp_bytes = timestamp_bytes
-        new_block._bits = bits_bytes
+        new_block._bits_int = bits_int
+        new_block._bits_bytes = bits_bytes
         new_block._nonce = nonce_bytes
         new_block._num_of_txs_in_block = num_of_txs_in_block_bytes
         new_block._coinbase_tx = coinbase_tx
@@ -94,10 +96,10 @@ class Block:
         id_merkle_root_bytes = block_bytes_stream.read(header_parameters["idMerkleRoot"])
         utxo_commitment_bytes = block_bytes_stream.read(header_parameters["utxoCommitment"])
         timestamp_bytes = block_bytes_stream.read(header_parameters["timeStamp"])
-        bits = block_bytes_stream.read(header_parameters["bits"])
+        bits_bytes = block_bytes_stream.read(header_parameters["bits"])
         nonce = block_bytes_stream.read(header_parameters["nonce"])
         return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root_bytes,
-                utxo_commitment_bytes, timestamp_bytes, bits, nonce]
+                utxo_commitment_bytes, timestamp_bytes, bits_bytes, nonce]
 
     @staticmethod
     def _parse_block_body(block_bytes_stream):
@@ -179,9 +181,17 @@ class Block:
             self._timestamp_bytes = (self._timestamp_int).to_bytes(8, byteorder='little')
         return self._timestamp_bytes
 
-    def set_bits(self, bits):
-        """ Sets variable "_bits" to the received value"""
-        self._bits = bits
+    @property
+    def bits_bytes(self):
+        if (not self._bits_bytes) and (self._bits_int != None):
+            self._bits_bytes = (self._bits_int).to_bytes(4, byteorder='little')
+        return self._bits_bytes
+
+    @property
+    def bits_int(self):
+        if (not self._bits_int) and (self._bits_bytes != None):
+            self._bits_int = int.from_bytes(self._bits_bytes, byteorder='little')
+        return self._bits_int
 
     def set_nonce(self, nonce):
         """ Sets variable "_nonce" to the received value"""
@@ -237,11 +247,13 @@ class Block:
     def timestamp_int(self, timestamp_int):
         self._timestamp_int = timestamp_int
 
-    def get_bits(self):
-        """
-        :return:  Bits as bytes
-        """
-        return self._bits
+    @bits_int.setter
+    def bits_int(self, bits_int):
+        self._bits_int = bits_int
+
+    @bits_bytes.setter
+    def bits_bytes(self, bits_bytes):
+        self._bits_bytes = bits_bytes
 
     def get_nonce(self):
         """
@@ -273,7 +285,7 @@ class Block:
         """
         return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
                 self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment_bytes,
-                self._timestamp_bytes, self._bits, self._nonce]
+                self._timestamp_bytes, self._bits_bytes, self._nonce]
 
     def get_block_header_bytes_array(self):
         """

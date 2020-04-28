@@ -364,7 +364,7 @@ def update_bits(block_object, block_template):
     # bits_bytes = general_utils.convert_hex_to_bytes(bits)
     # reversed_bits = general_utils.reverse_bytes(bits_bytes)
     bits_bytes = (bytes.fromhex(block_template['bits']))[::-1]
-    block_object.set_bits(bits_bytes)
+    block_object.bits_bytes = bits_bytes
 
 
 def update_bits_invalid(block_object, bits_value):
@@ -375,15 +375,17 @@ def update_bits_invalid(block_object, bits_value):
     :param block_object: The block object that holds the variable to update
     """
     if type(bits_value) is int:
-        updated_bits_temp = hex((bits_value + (1 << 64)) % (1 << 64)).replace("0x", "")
-        reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp)
+        updated_bits_temp_int = (bits_value + (1 << 64) % (1 << 64))
+        updated_bits_temp_hex = hex(updated_bits_temp_int).replace("0x", "")
+        reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp_hex)
         updated_bits_bytes = general_utils.convert_hex_to_bytes(reverse_updated_bits_temp.ljust(16, "0"))
-        block_object.set_bits(updated_bits_bytes)
+        block_object.bits_bytes = updated_bits_bytes
     elif bits_value is None:
         block_object.set_bits(b"")
     else:
+        # TODO - whats that ???
         bits_str = bits_value
-        block_object.set_bits(bytes(bits_str, "utf-8"))
+        block_object.bits_bytes = bytes(bits_str, "utf-8")
 
 
 def update_nonce(block_object):
