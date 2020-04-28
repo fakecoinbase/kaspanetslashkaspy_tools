@@ -1,4 +1,3 @@
-
 from io import BytesIO
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.tx import Tx
@@ -6,10 +5,12 @@ from kaspy_tools.utils import general_utils
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
+
 class Block:
     """
     This objects holds all the required methods to handle block data.
     """
+
     def __init__(self, *, version_bytes=None, num_of_parent_blocks_bytes=None, parent_hashes=None,
                  hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
                  timestamp_bytes=None, bits_bytes=None, nonce_bytes=None, num_of_txs_in_block_bytes=None,
@@ -22,7 +23,7 @@ class Block:
         self._hash_merkle_root_bytes = hash_merkle_root_bytes
         self._id_merkle_root_bytes = id_merkle_root_bytes
         self._utxo_commitment_bytes = utxo_commitment_bytes
-        self._timestamp = timestamp_bytes
+        self._timestamp_bytes = timestamp_bytes
         self._bits = bits_bytes
         self._nonce = nonce_bytes
         self._num_of_txs_in_block = num_of_txs_in_block_bytes
@@ -31,7 +32,8 @@ class Block:
 
     @classmethod
     def block_factory(cls, version=None, num_of_parent_blocks=None, parent_hashes=None,
-                      hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None):
+                      hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
+                      timestamp_bytes=None):
         new_block = cls()
         new_block._version = version
         new_block._number_of_parent_blocks = num_of_parent_blocks
@@ -39,12 +41,13 @@ class Block:
         new_block._hash_merkle_root_bytes = hash_merkle_root_bytes
         new_block._id_merkle_root_bytes = id_merkle_root_bytes
         new_block._utxo_commitment_bytes = utxo_commitment_bytes
-        new_block._timestamp = timestamp_bytes
+        new_block._timestamp_bytes = timestamp_bytes
         new_block._bits = bits_bytes
         new_block._nonce = nonce_bytes
         new_block._num_of_txs_in_block = num_of_txs_in_block_bytes
         new_block._coinbase_tx = coinbase_tx
         new_block._native_txs = native_tx_list
+
     # ========== Parsing Methods ========== #
 
     @staticmethod
@@ -60,7 +63,7 @@ class Block:
         block_header = Block._parse_block_header(block_stream)
         block_body = Block._parse_block_body(block_stream)
         return Block(version_bytes=block_header[0], num_of_parent_blocks_bytes=block_header[1],
-                     parent_hashes= block_header[2], hash_merkle_root_bytes= block_header[3],
+                     parent_hashes=block_header[2], hash_merkle_root_bytes=block_header[3],
                      id_merkle_root_bytes=block_header[4], utxo_commitment_bytes=block_header[5],
                      timestamp_bytes=block_header[6], bits_bytes=block_header[7], nonce_bytes=block_header[8],
                      num_of_txs_in_block_bytes=block_body[0], coinbase_tx=block_body[1], native_tx_list=block_body[2])
@@ -89,11 +92,11 @@ class Block:
         hash_merkle_root_bytes = block_bytes_stream.read(header_parameters["hashMerkleRoot"])
         id_merkle_root_bytes = block_bytes_stream.read(header_parameters["idMerkleRoot"])
         utxo_commitment_bytes = block_bytes_stream.read(header_parameters["utxoCommitment"])
-        timestamp = block_bytes_stream.read(header_parameters["timeStamp"])
+        timestamp_bytes = block_bytes_stream.read(header_parameters["timeStamp"])
         bits = block_bytes_stream.read(header_parameters["bits"])
         nonce = block_bytes_stream.read(header_parameters["nonce"])
-        return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root_bytes, utxo_commitment_bytes,
-                timestamp, bits, nonce]
+        return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root_bytes,
+                utxo_commitment_bytes, timestamp_bytes, bits, nonce]
 
     @staticmethod
     def _parse_block_body(block_bytes_stream):
@@ -163,9 +166,9 @@ class Block:
     def utxo_commitment_bytes(self):
         return self._utxo_commitment_bytes
 
-    def set_timestamp(self, timestamp):
-        """ Sets variable "_timestamp" to the received value"""
-        self._timestamp = timestamp
+    @property
+    def timestamp_bytes(self):
+        return self._timestamp_bytes
 
     def set_bits(self, bits):
         """ Sets variable "_bits" to the received value"""
@@ -209,7 +212,6 @@ class Block:
     def hash_merkle_root_bytes(self, hash_merkle_root_bytes):
         self._hash_merkle_root_bytes = hash_merkle_root_bytes
 
-
     @id_merkle_root_bytes.setter
     def id_merkle_root_bytes(self, id_merkle_root_bytes):
         self._id_merkle_root_bytes = id_merkle_root_bytes
@@ -218,11 +220,9 @@ class Block:
     def utxo_commitment_bytes(self, utxo_commitment_bytes):
         self._utxo_commitment_bytes = utxo_commitment_bytes
 
-    def get_timestamp(self):
-        """
-        :return: Timestamp as bytes
-        """
-        return self._timestamp
+    @timestamp_bytes.setter
+    def timestamp_bytes(self, timestamp_bytes):
+        self._timestamp_bytes = timestamp_bytes
 
     def get_bits(self):
         """
@@ -260,7 +260,7 @@ class Block:
         """
         return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
                 self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment_bytes,
-                self._timestamp, self._bits, self._nonce]
+                self._timestamp_bytes, self._bits, self._nonce]
 
     def get_block_header_bytes_array(self):
         """

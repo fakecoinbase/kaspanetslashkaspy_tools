@@ -327,7 +327,8 @@ def update_timestamp(block_object, block_template):
     """
     timestamp_int = int(time.time())
     timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
-    block_object.set_timestamp(timestamp_bytes)
+    block_object.timestamp_int = timestamp_int
+    block_object.timestamp_bytes = timestamp_bytes
 
 
 def update_timestamp_invalid(block_object, timestamp_value):
@@ -338,15 +339,19 @@ def update_timestamp_invalid(block_object, timestamp_value):
     :param block_object: The block object that holds the variable to update
     """
     if type(timestamp_value) is int:
-        updated_timestamp_temp = hex((timestamp_value + (1 << 64)) % (1 << 64)).replace("0x", "")
+        updated_timestamp_int = (timestamp_value + (1 << 64)) % (1 << 64)
+        updated_timestamp_temp = hex(updated_timestamp_int).replace("0x", "")
         reverse_updated_timestamp_temp = general_utils.reverse_hex(updated_timestamp_temp)
         updated_timestamp_bytes = general_utils.convert_hex_to_bytes(reverse_updated_timestamp_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_timestamp_bytes)
+        block_object.timestamp_bytes = updated_timestamp_bytes
+        block_object.timestamp_int = updated_timestamp_int
     elif timestamp_value is None:
-        block_object.set_timestamp(b"")
+        block_object.timestamp_bytes = b""
+        block_object.timestamp_int = None
     else:
+        # TODO - what's that ???
         timestamp_str = timestamp_value
-        block_object.set_timestamp(bytes(timestamp_str, "utf-8"))
+        block_object.timestamp_bytes = bytes(timestamp_str, "utf-8")
 
 
 def update_bits(block_object, block_template):
@@ -373,12 +378,12 @@ def update_bits_invalid(block_object, bits_value):
         updated_bits_temp = hex((bits_value + (1 << 64)) % (1 << 64)).replace("0x", "")
         reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp)
         updated_bits_bytes = general_utils.convert_hex_to_bytes(reverse_updated_bits_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_bits_bytes)
+        block_object.set_bits(updated_bits_bytes)
     elif bits_value is None:
         block_object.set_bits(b"")
     else:
         bits_str = bits_value
-        block_object.set_timestamp(bytes(bits_str, "utf-8"))
+        block_object.set_bits(bytes(bits_str, "utf-8"))
 
 
 def update_nonce(block_object):
@@ -403,12 +408,12 @@ def update_nonce_invalid(block_object, nonce_value):
         updated_nonce_temp = hex((nonce_value + (1 << 64)) % (1 << 64)).replace("0x", "")
         reverse_updated_nonce_temp = general_utils.reverse_hex(updated_nonce_temp)
         updated_nonce_bytes = general_utils.convert_hex_to_bytes(reverse_updated_nonce_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_nonce_bytes)
+        block_object.set_nonce(updated_nonce_bytes)
     elif nonce_value is None:
         block_object.set_nonce(b"")
     else:
         nonce_str = nonce_value
-        block_object.set_timestamp(bytes(nonce_str, "utf-8"))
+        block_object.set_nonce(bytes(nonce_str, "utf-8"))
 
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
