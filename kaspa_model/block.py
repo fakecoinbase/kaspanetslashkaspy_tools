@@ -31,9 +31,9 @@ class Block:
         self._native_txs = native_tx_list
 
     @classmethod
-    def block_factory(cls, version=None, num_of_parent_blocks=None, parent_hashes=None,
+    def block_factory(cls, *, version=None, num_of_parent_blocks=None, parent_hashes=None,
                       hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
-                      timestamp_bytes=None):
+                      timestamp_int=None, timestamp_bytes=None):
         new_block = cls()
         new_block._version = version
         new_block._number_of_parent_blocks = num_of_parent_blocks
@@ -41,6 +41,7 @@ class Block:
         new_block._hash_merkle_root_bytes = hash_merkle_root_bytes
         new_block._id_merkle_root_bytes = id_merkle_root_bytes
         new_block._utxo_commitment_bytes = utxo_commitment_bytes
+        new_block._timestamp_int = timestamp_int
         new_block._timestamp_bytes = timestamp_bytes
         new_block._bits = bits_bytes
         new_block._nonce = nonce_bytes
@@ -167,7 +168,15 @@ class Block:
         return self._utxo_commitment_bytes
 
     @property
+    def timestamp_int(self):
+        if (not self._timestamp_int) and (self._timestamp_bytes!=None):
+            self._timestamp_int = int.from_bytes(self._timestamp_bytes, byteorder='little')
+        return self._timestamp_int
+
+    @property
     def timestamp_bytes(self):
+        if (not self._timestamp_bytes) and (self._timestamp_int!=None):
+            self._timestamp_bytes = (self._timestamp_int).to_bytes(8, byteorder='little')
         return self._timestamp_bytes
 
     def set_bits(self, bits):
@@ -223,6 +232,10 @@ class Block:
     @timestamp_bytes.setter
     def timestamp_bytes(self, timestamp_bytes):
         self._timestamp_bytes = timestamp_bytes
+
+    @timestamp_int.setter
+    def timestamp_int(self, timestamp_int):
+        self._timestamp_int = timestamp_int
 
     def get_bits(self):
         """
