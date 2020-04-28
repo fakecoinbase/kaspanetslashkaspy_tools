@@ -314,9 +314,9 @@ def update_utxo_commitment(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    utxo_commitment = block_template["utxoCommitment"]
-    reversed_utxo_commitment = (bytes.fromhex(utxo_commitment))[::-1]
-    block_object.set_utxo_commitment(reversed_utxo_commitment)
+    utxo_commitment_hex = block_template["utxoCommitment"]
+    reversed_utxo_commitment_bytes = (bytes.fromhex(utxo_commitment_hex))[::-1]
+    block_object.utxo_commitment_bytes = reversed_utxo_commitment_bytes
 
 
 def update_timestamp(block_object, block_template):

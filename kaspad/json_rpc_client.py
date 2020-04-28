@@ -62,25 +62,25 @@ def get_genesis_blockhash_from_constants():
     return [kaspad_constants.GENESIS_HASH]
 
 
-def get_node_id_merkle_root(conn=None):
-    """
-    Returns the current node id merkle root using the function in json_rpc_node.py.
-    """
-    return json_rpc_node.get_node_id_merkle_root(conn)
+# def get_node_id_merkle_root(conn=None):
+#     """
+#     Returns the current node id merkle root using the function in json_rpc_node.py.
+#     """
+#     return json_rpc_node.get_node_id_merkle_root(conn)
 
 
-def get_node_utxo_commitment(conn=None):
-    """
-    Returns the current node id utxo commitment using the function in json_rpc_node.py.
-    """
-    return json_rpc_node.get_node_utxo_commitment(conn)
+# def get_node_utxo_commitment(conn=None):
+#     """
+#     Returns the current node id utxo commitment using the function in json_rpc_node.py.
+#     """
+#     return json_rpc_node.get_node_utxo_commitment(conn)
 
 
-def get_node_bits(conn=None):
-    """
-    Returns the current node bits using the function in json_rpc_node.py.
-    """
-    return json_rpc_node.get_node_bits(conn)
+# def get_node_bits(conn=None):
+#     """
+#     Returns the current node bits using the function in json_rpc_node.py.
+#     """
+#     return json_rpc_node.get_node_bits(conn)
 
 
 def get_coinbase_tx_data(conn=None):
