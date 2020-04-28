@@ -16,48 +16,48 @@ def get_node_tip_hashes_list(conn=None):
     return tip_hash_list
 
 
-def get_node_bits(url=None):
-    """
-    Retrieves the bits info details from get_block_template_request()
-
-    :return: The "bits" result as a string
-    """
-    response = json_rpc_requests.get_block_template_request(url)
-    bits = response["result"]["bits"]
-    return bits
-
-
-def get_node_utxo_commitment(url=None):
-    """
-    Retrieves the current block dag utxo commitment from get_block_template_request()
-
-    :return: utxo commitment as a string
-    """
-    response = json_rpc_requests.get_block_template_request(url)
-    utxo_commitment = response["result"]["utxoCommitment"]
-    return utxo_commitment
+# def get_node_bits(url=None):
+#     """
+#     Retrieves the bits info details from get_block_template_request()
+#
+#     :return: The "bits" result as a string
+#     """
+#     response = json_rpc_requests.get_block_template_request(url)
+#     bits = response["result"]["bits"]
+#     return bits
 
 
-def get_node_id_merkle_root(url=None):
-    """
-    Retrieves the current block dag accepted id merkle root from get_block_template_request()
+# def get_node_utxo_commitment(url=None):
+#     """
+#     Retrieves the current block dag utxo commitment from get_block_template_request()
+#
+#     :return: utxo commitment as a string
+#     """
+#     response = json_rpc_requests.get_block_template_request(url)
+#     utxo_commitment = response["result"]["utxoCommitment"]
+#     return utxo_commitment
 
-    :return: id merkle root as a string
-    """
-    response = json_rpc_requests.get_block_template_request(url)
-    id_merkle_root = response["result"]["acceptedIdMerkleRoot"]
-    return id_merkle_root
+
+# def get_node_id_merkle_root(url=None):
+#     """
+#     Retrieves the current block dag accepted id merkle root from get_block_template_request()
+#
+#     :return: id merkle root as a string
+#     """
+#     response = json_rpc_requests.get_block_template_request(url)
+#     id_merkle_root = response["result"]["acceptedIdMerkleRoot"]
+#     return id_merkle_root
 
 
-def get_coinbase_tx_data(url=None):
-    """
-    Retrieves the current block dag coinbase tx data from get_block_template_request()
-
-    :return: coinbase_tx_data as a string
-    """
-    response = json_rpc_requests.get_block_template_request(url)
-    tx_data = response["result"]["coinbaseTxn"]["data"]
-    return tx_data
+# def get_coinbase_tx_data(url=None):
+#     """
+#     Retrieves the current block dag coinbase tx data from get_block_template_request()
+#
+#     :return: coinbase_tx_data as a string
+#     """
+#     response = json_rpc_requests.get_block_template_request(url)
+#     tx_data = response["result"]["coinbaseTxn"]["data"]
+#     return tx_data
 
 
 def get_block_data_status(block_hash, url=None):

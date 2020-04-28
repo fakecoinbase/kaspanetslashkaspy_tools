@@ -303,9 +303,9 @@ def update_id_merkle_root(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    id_merkle_root = block_template['acceptedIdMerkleRoot']
-    reversed_id_merkle_root = (bytes.fromhex(id_merkle_root))[::-1]
-    block_object.set_id_merkle_root(reversed_id_merkle_root)
+    id_merkle_root_hex = block_template['acceptedIdMerkleRoot']
+    reversed_id_merkle_root_bytes = (bytes.fromhex(id_merkle_root_hex))[::-1]
+    block_object.id_merkle_root_bytes = reversed_id_merkle_root_bytes
 
 
 def update_utxo_commitment(block_object, block_template):

@@ -20,7 +20,7 @@ class Block:
         self._number_of_parent_blocks_bytes = num_of_parent_blocks_bytes
         self._parent_hashes = parent_hashes
         self._hash_merkle_root_bytes = hash_merkle_root_bytes
-        self._id_merkle_root = id_merkle_root_bytes
+        self._id_merkle_root_bytes = id_merkle_root_bytes
         self._utxo_commitment = utxo_commitment_bytes
         self._timestamp = timestamp_bytes
         self._bits = bits_bytes
@@ -31,13 +31,13 @@ class Block:
 
     @classmethod
     def block_factory(cls, version=None, num_of_parent_blocks=None, parent_hashes=None,
-                      hash_merkle_root_bytes=None):
+                      hash_merkle_root_bytes=None, id_merkle_root_bytes=None):
         new_block = cls()
         new_block._version = version
         new_block._number_of_parent_blocks = num_of_parent_blocks
         new_block._parent_hashes = parent_hashes
         new_block._hash_merkle_root_bytes = hash_merkle_root_bytes
-        new_block._id_merkle_root = id_merkle_root_bytes
+        new_block._id_merkle_root_bytes = id_merkle_root_bytes
         new_block._utxo_commitment = utxo_commitment_bytes
         new_block._timestamp = timestamp_bytes
         new_block._bits = bits_bytes
@@ -87,12 +87,12 @@ class Block:
             parent_hashes_to_get -= 1
 
         hash_merkle_root_bytes = block_bytes_stream.read(header_parameters["hashMerkleRoot"])
-        id_merkle_root = block_bytes_stream.read(header_parameters["idMerkleRoot"])
+        id_merkle_root_bytes = block_bytes_stream.read(header_parameters["idMerkleRoot"])
         utxo_commitment = block_bytes_stream.read(header_parameters["utxoCommitment"])
         timestamp = block_bytes_stream.read(header_parameters["timeStamp"])
         bits = block_bytes_stream.read(header_parameters["bits"])
         nonce = block_bytes_stream.read(header_parameters["nonce"])
-        return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root, utxo_commitment,
+        return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root_bytes, utxo_commitment,
                 timestamp, bits, nonce]
 
     @staticmethod
@@ -154,9 +154,10 @@ class Block:
     def hash_merkle_root_bytes(self):
         return self._hash_merkle_root_bytes
 
-    def set_id_merkle_root(self, id_merkle_root):
-        """ Sets variable "id merkle root" to the received value"""
-        self._id_merkle_root = id_merkle_root
+    @property
+    def id_merkle_root_bytes(self):
+        """ Gets variable "id merkle root" to the received value"""
+        return self._id_merkle_root_bytes
 
     def set_utxo_commitment(self, utxo_commitment):
         """ Sets variable "utxo commitment" to the received value"""
@@ -207,13 +208,11 @@ class Block:
     @hash_merkle_root_bytes.setter
     def hash_merkle_root_bytes(self, hash_merkle_root_bytes):
         self._hash_merkle_root_bytes = hash_merkle_root_bytes
-        
 
-    def get_id_merkle_root(self):
-        """
-        :return: ID merkle root as bytes
-        """
-        return self._id_merkle_root
+
+    @id_merkle_root_bytes.setter
+    def id_merkle_root_bytes(self, id_merkle_root_bytes):
+        self._id_merkle_root_bytes = id_merkle_root_bytes
 
     def get_utxo_commitment(self):
         """
@@ -262,7 +261,7 @@ class Block:
         :return: Block header bytes as a list
         """
         return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
-                self._hash_merkle_root_bytes, self._id_merkle_root, self._utxo_commitment,
+                self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment,
                 self._timestamp, self._bits, self._nonce]
 
     def get_block_header_bytes_array(self):
