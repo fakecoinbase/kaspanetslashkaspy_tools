@@ -396,7 +396,7 @@ def update_nonce(block_object):
     """
     block_header_list = block_object.get_block_header_list()
     nonce = calculate_nonce(block_header_list)
-    block_object.set_nonce(nonce)
+    block_object.nonce_bytes = nonce
 
 
 def update_nonce_invalid(block_object, nonce_value):
@@ -410,12 +410,13 @@ def update_nonce_invalid(block_object, nonce_value):
         updated_nonce_temp = hex((nonce_value + (1 << 64)) % (1 << 64)).replace("0x", "")
         reverse_updated_nonce_temp = general_utils.reverse_hex(updated_nonce_temp)
         updated_nonce_bytes = general_utils.convert_hex_to_bytes(reverse_updated_nonce_temp.ljust(16, "0"))
-        block_object.set_nonce(updated_nonce_bytes)
+        block_object.nonce_bytes = updated_nonce_bytes
     elif nonce_value is None:
-        block_object.set_nonce(b"")
+        block_object.nonce_bytes = b""
     else:
+        # TODO ????
         nonce_str = nonce_value
-        block_object.set_nonce(bytes(nonce_str, "utf-8"))
+        block_object.nonce_bytes = bytes(nonce_str, "utf-8")
 
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
