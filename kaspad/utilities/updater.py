@@ -431,10 +431,6 @@ def update_all_txs(block_object, block_template):
     block_object.set_coinbase_tx(coinbase_tx_object)
 
 
-def update_num_of_txs_in_block(tx_object):
-    pass
-
-
 def update_coinbase_tx(block_template):
     """
     Creates a new coinbase_tx_object based on data received from the node (request get_block_template_request()).

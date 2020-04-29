@@ -27,7 +27,8 @@ class Block:
         self._bits_int = None
         self._bits_bytes = bits_bytes
         self._nonce_bytes = nonce_bytes
-        self._num_of_txs_in_block = num_of_txs_in_block_bytes
+        self._num_of_txs_in_block_int = None
+        self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
         self._coinbase_tx = coinbase_tx
         self._native_txs = native_tx_list
 
@@ -35,7 +36,7 @@ class Block:
     def block_factory(cls, *, version=None, num_of_parent_blocks=None, parent_hashes=None,
                       hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
                       timestamp_int=None, timestamp_bytes=None, bits_bytes=None, bits_int=None,
-                      nonce_bytes=None):
+                      nonce_bytes=None, num_of_txs_in_block_int=None, num_of_txs_in_block_bytes=None):
         new_block = cls()
         new_block._version = version
         new_block._number_of_parent_blocks = num_of_parent_blocks
@@ -48,7 +49,8 @@ class Block:
         new_block._bits_int = bits_int
         new_block._bits_bytes = bits_bytes
         new_block._nonce_bytes = nonce_bytes
-        new_block._num_of_txs_in_block = num_of_txs_in_block_bytes
+        new_block._num_of_txs_in_block_int = num_of_txs_in_block_int
+        new_block._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
         new_block._coinbase_tx = coinbase_tx
         new_block._native_txs = native_tx_list
 
@@ -198,9 +200,17 @@ class Block:
     def nonce_bytes(self):
         return self._nonce_bytes
 
-    def set_num_of_txs_in_block(self, num_of_txs_in_block):
-        """ Sets variable "num of txs in block" to the received value"""
-        self._num_of_txs_in_block = num_of_txs_in_block
+    @property
+    def num_of_txs_in_block_int(self):
+        if (self._num_of_txs_in_block_int == None) and (self._num_of_txs_in_block_bytes != None):
+            self._num_of_txs_in_block_int = general_utils.read_varint(BytesIO(self._num_of_txs_in_block_bytes))
+        return self._num_of_txs_in_block_int
+
+    @property
+    def num_of_txs_in_block_bytes(self):
+        if (self._num_of_txs_in_block_bytes == None) and (self._num_of_txs_in_block_int != None):
+            self._num_of_txs_in_block_bytes = general_utils.write_varint(self._num_of_txs_in_block_int)
+        return self._num_of_txs_in_block_bytes
 
     def set_coinbase_tx(self, coinbase_tx_object):
         self._coinbase_tx = coinbase_tx_object
@@ -260,11 +270,13 @@ class Block:
     def nonce_bytes(self, nonce_bytes):
         self._nonce_bytes = nonce_bytes
 
-    def get_num_of_txs_in_block(self):
-        """
-        :return: Number of "txs in" in the block as bytes
-        """
-        return self._num_of_txs_in_block
+    @num_of_txs_in_block_int.setter
+    def num_of_txs_in_block_int(self, num_of_txs_in_block_int):
+        self._num_of_txs_in_block_int = num_of_txs_in_block_int
+
+    @num_of_txs_in_block_bytes.setter
+    def num_of_txs_in_block_bytes(self, num_of_txs_in_block_bytes):
+        self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
 
     def get_coinbase_tx(self):
         """
@@ -303,7 +315,7 @@ class Block:
         for tx in self._native_txs:
             native_tx_list = tx.get_tx_bytes()
             native_txs_list.append(native_tx_list)
-        return [self._num_of_txs_in_block, coinbase_tx_list, native_txs_list]
+        return [self._num_of_txs_in_block_bytes, coinbase_tx_list, native_txs_list]
 
     def get_block_body_bytes_array(self):
         """
