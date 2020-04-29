@@ -428,7 +428,7 @@ def update_all_txs(block_object, block_template):
     :param block_object: The block object that holds the variable to update
     """
     coinbase_tx_object = update_coinbase_tx(block_template)
-    block_object.set_coinbase_tx(coinbase_tx_object)
+    block_object.coinbase_tx_obj = coinbase_tx_object
 
 
 def update_coinbase_tx(block_template):

@@ -83,12 +83,12 @@ def get_genesis_blockhash_from_constants():
 #     return json_rpc_node.get_node_bits(conn)
 
 
-def get_coinbase_tx_data(conn=None):
-    """
-    Returns the current node coinbase tx data using the function in json_rpc_node.py.
-    """
-    return json_rpc_node.get_coinbase_tx_data(conn)
-
+# def get_coinbase_tx_data(conn=None):
+#     """
+#     Returns the current node coinbase tx data using the function in json_rpc_node.py.
+#     """
+#     return json_rpc_node.get_coinbase_tx_data(conn)
+#
 
 def get_max_uint64_from_constants():
     """
