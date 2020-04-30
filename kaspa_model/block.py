@@ -45,9 +45,10 @@ class Block:
         self._bits_int = None
         self._bits_bytes = bits_bytes
         self._nonce_bytes = nonce_bytes
+        self._nonce_int = int.from_bytes(self._nonce_bytes, byteorder='little')
         self._num_of_txs_in_block_int = None
         self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
-        self._coinbase_tx_obj=None
+        self._coinbase_tx_obj = None
         self._coinbase_tx_bytes = coinbase_tx_bytes
         self._native_tx_list_of_objs = native_tx_list_of_objs
 
@@ -91,6 +92,7 @@ class Block:
         new_block._bits_int = bits_int
         new_block._bits_bytes = bits_bytes
         new_block._nonce_bytes = nonce_bytes
+        new_block._nonce_int = None
         new_block._num_of_txs_in_block_int = num_of_txs_in_block_int
         new_block._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
         new_block._coinbase_tx_obj = coinbase_tx_obj
@@ -115,7 +117,8 @@ class Block:
                      parent_hashes=block_header[2], hash_merkle_root_bytes=block_header[3],
                      id_merkle_root_bytes=block_header[4], utxo_commitment_bytes=block_header[5],
                      timestamp_bytes=block_header[6], bits_bytes=block_header[7], nonce_bytes=block_header[8],
-                     num_of_txs_in_block_bytes=block_body[0], coinbase_tx_bytes=block_body[1], native_tx_list_of_objs=block_body[2])
+                     num_of_txs_in_block_bytes=block_body[0], coinbase_tx_bytes=block_body[1],
+                     native_tx_list_of_objs=block_body[2])
 
     @staticmethod
     def _parse_block_header(block_bytes_stream):
@@ -198,7 +201,7 @@ class Block:
         :return: version as bytes
         """
         if (self._version_bytes == None) and (self._version_int != None):
-            self.version_bytes =  self._version_int.to_bytes(4, byteorder='little')
+            self.version_bytes = self._version_int.to_bytes(4, byteorder='little')
         return self._version_bytes
 
     @property
@@ -250,7 +253,7 @@ class Block:
         Gets UNIX epoch timestamp.
         :return: Epoch as int.
         """
-        if (not self._timestamp_int) and (self._timestamp_bytes!=None):
+        if (not self._timestamp_int) and (self._timestamp_bytes != None):
             self._timestamp_int = int.from_bytes(self._timestamp_bytes, byteorder='little')
         return self._timestamp_int
 
@@ -260,7 +263,7 @@ class Block:
         Gets UNIX epoch timestamp.
         :return: Epoch as bytes.
         """
-        if (not self._timestamp_bytes) and (self._timestamp_int!=None):
+        if (not self._timestamp_bytes) and (self._timestamp_int != None):
             self._timestamp_bytes = (self._timestamp_int).to_bytes(8, byteorder='little')
         return self._timestamp_bytes
 
@@ -291,6 +294,28 @@ class Block:
         :return: 'nonce as bytes
         """
         return self._nonce_bytes
+
+    @property
+    def nonce_int(self):
+        """
+        Get the 'nonce' value
+        :return: 'nonce as int
+        """
+        return self._nonce_int
+
+    @property
+    def target_int(self):
+        nonce_int = self.nonce_int
+        exponent = self.bits_bytes[-1]
+        coefficient = int.from_bytes(self.bits_bytes[:-1], "little")
+        target = coefficient * 256 ** (exponent - 3)
+        return target
+
+    @property
+    def block_header_hash(self):
+        dbl_hash = general_utils.hash_256(self.block_header_bytes)
+        block_hash = int.from_bytes(dbl_hash, "little")
+        return block_hash
 
     @property
     def num_of_txs_in_block_int(self):
@@ -450,6 +475,16 @@ class Block:
         """
         self._nonce_bytes = nonce_bytes
 
+    @nonce_int.setter
+    def nonce_int(self, nonce_int):
+        """
+        Sets 'nonce'
+        :param nonce_bytes:
+        :return: None
+        """
+        self._nonce_int = nonce_int
+        self.nonce_bytes = self._nonce_int.to_bytes(8, byteorder='little')
+
     @num_of_txs_in_block_int.setter
     def num_of_txs_in_block_int(self, num_of_txs_in_block_int):
         """
@@ -495,21 +530,25 @@ class Block:
         """
         self._native_tx_list_of_objs = native_tx_list_of_objs
 
-    def get_block_header_list(self):
-        """
-        :return: Block header bytes as a list
-        """
-        return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
-                self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment_bytes,
-                self._timestamp_bytes, self._bits_bytes, self._nonce_bytes]
+    # def get_block_header_list(self):
+    #     """
+    #     :return: Block header bytes as a list
+    #     """
+    #     return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
+    #             self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment_bytes,
+    #             self._timestamp_bytes, self._bits_bytes, self._nonce_bytes]
 
-    def get_block_header_bytes_array(self):
+    @property
+    def block_header_bytes(self):
         """
-        :return: Block header bytes as an array
+        :return: Block header bytes object
         """
-        block_header_list = self.get_block_header_list()
-        block_header_bytes_array = general_utils.build_element_from_list(block_header_list)
-        return block_header_bytes_array
+        pass
+        block_header_bytes = self._version_bytes + self._number_of_parent_blocks_bytes + \
+                             b''.join(self._parent_hashes) + self._hash_merkle_root_bytes + \
+                             self._id_merkle_root_bytes + self._utxo_commitment_bytes + \
+                             self._timestamp_bytes + self._bits_bytes + self._nonce_bytes
+        return block_header_bytes
 
     def get_block_body_list(self):
         """

@@ -35,7 +35,8 @@ def generate_valid_block_and_hash(block_file_path, conn=None):
     new_block = Block.parse_block(block_bytes)
     block_template = json_rpc_client.get_block_template(conn=conn)['result']
     updater.update_all_valid_block_variables(new_block, block_template, conn)
-    block_header = new_block.get_block_header_bytes_array()
+    # block_header = new_block.get_block_header_bytes_array()
+    block_header = new_block.block_header_bytes
     block_hash = general_utils.hash_256(block_header)
     reversed_block_hash = general_utils.reverse_bytes(block_hash)
     block_body = new_block.get_block_body_bytes_array()

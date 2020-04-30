@@ -5,6 +5,7 @@ This module holds all the UPDATE methods for the automation project.
 import random
 from io import BytesIO
 import time
+from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
@@ -394,8 +395,9 @@ def update_nonce(block_object):
 
     :param block_object: The block object that holds the variable to update
     """
-    block_header_list = block_object.get_block_header_list()
-    nonce = calculate_nonce(block_header_list)
+    # block_header_list = block_object.get_block_header_list()
+    # nonce = calculate_nonce(block_header_list)
+    nonce = calculate_nonce(block_object)
     block_object.nonce_bytes = nonce
 
 
@@ -451,42 +453,59 @@ def update_native_txs(tx_object):
 # ========== Calculate Nonce method ========== #
 
 
-def calculate_nonce(block_header_list):
+# def calculate_nonce(block_header_list):
+#     """
+#     Looks for a hash that will be smaller than the target.
+#
+#     :param block_header_list: The block header bytes parsed as a list
+#     :return: New nonce as bytes
+#     """
+#     block_header_list = block_header_list
+#     block_header = general_utils.build_element_from_list(block_header_list)
+#     bits = block_header_list[-2]
+#     original_nonce = block_header_list[-1]
+#     nonce = block_header_list[-1]
+#     while True:  # Runs until a nonce smaller than Target is found
+#         nonce_int = int.from_bytes(nonce, "little")
+#         exponent = bits[-1]
+#         coefficient = int.from_bytes(bits[:-1], "little")
+#         target = coefficient * 256 ** (exponent - 3)
+#         # print("target: " + str(target))
+#         block_hash = int.from_bytes(general_utils.hash_256(block_header), "little")
+#         # print("block_hash: " + str(block_hash))
+#
+#         if block_hash >= target:
+#             # If nonce == original nonce or nonce_int > than MAX_UINT64 generate a random nonce
+#             if nonce == original_nonce or nonce_int > json_rpc_client.get_max_uint64_from_constants():
+#                 nonce_int = random.randint(0, json_rpc_client.get_max_uint64_from_constants())
+#                 nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
+#                 nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+#             else:
+#                 nonce_int += 1
+#                 nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
+#                 nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+#
+#             block_header_list[-1] = nonce
+#             block_header = general_utils.build_element_from_list(block_header_list)
+#         else:
+#             return nonce
+
+def calculate_nonce(block_object):
     """
     Looks for a hash that will be smaller than the target.
 
     :param block_header_list: The block header bytes parsed as a list
     :return: New nonce as bytes
     """
-    block_header_list = block_header_list
-    block_header = general_utils.build_element_from_list(block_header_list)
-    bits = block_header_list[-2]
-    original_nonce = block_header_list[-1]
-    nonce = block_header_list[-1]
-    while True:  # Runs until a nonce smaller than Target is found
-        nonce_int = int.from_bytes(nonce, "little")
-        exponent = bits[-1]
-        coefficient = int.from_bytes(bits[:-1], "little")
-        target = coefficient * 256 ** (exponent - 3)
-        # print("target: " + str(target))
-        block_hash = int.from_bytes(general_utils.hash_256(block_header), "little")
-        # print("block_hash: " + str(block_hash))
+    target = block_object.target_int
+    hash = block_object.block_header_hash
 
-        if block_hash >= target:
-            # If nonce == original nonce or nonce_int > than MAX_UINT64 generate a random nonce
-            if nonce == original_nonce or nonce_int > json_rpc_client.get_max_uint64_from_constants():
-                nonce_int = random.randint(0, json_rpc_client.get_max_uint64_from_constants())
-                nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
-                nonce = general_utils.convert_hex_to_bytes(nonce_hex)
-            else:
-                nonce_int += 1
-                nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
-                nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+    while hash >= target:
+        block_object.nonce_int = (block_object.nonce_int + 1 ) % kaspad_constants.MAX_UINT64
+        hash = block_object.block_header_hash
 
-            block_header_list[-1] = nonce
-            block_header = general_utils.build_element_from_list(block_header_list)
-        else:
-            return nonce
+
+    return block_object.nonce_bytes
 
 
 # ========== Calculate Hash Merkle Root methods ========== #
