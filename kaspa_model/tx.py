@@ -22,19 +22,20 @@ class Tx:
         :param tx_in_list:  A list of inputs (e.g: [('---tx--hash---', output-number, 'script-sig'), (....),...]  )
     """
 
-    def __init__(self, version=None, num_of_txs_in=0, tx_in_list=None, num_of_txs_out=0, tx_out_list=None,
-                 locktime_bytes=None, subnetwork_id=None, gas=None, payload_hash=None, payload_length=None, payload=None):
-        self._version_bytes = version
-        self._number_of_txs_in = num_of_txs_in  # re-added
+    def __init__(self, *, version_bytes=None,num_of_txs_in_bytes=0, tx_in_list=None,
+                 num_of_txs_out_bytes=0, tx_out_list=None, locktime_bytes=None, subnetwork_id_bytes=None,
+                 gas_bytes=None, payload_hash_bytes=None, payload_length_bytes=None, payload_bytes=None):
+        self._version_bytes = version_bytes
+        self._number_of_txs_in_bytes = num_of_txs_in_bytes  # re-added
         self._tx_in_list = tx_in_list
-        self._number_of_txs_out = num_of_txs_out  # re-added
+        self._number_of_txs_out_bytes = num_of_txs_out_bytes  # re-added
         self._tx_out_list = tx_out_list
         self._locktime_bytes = locktime_bytes
-        self._subnetwork_id = subnetwork_id
-        self._gas = gas
-        self._payload_hash = payload_hash
-        self._payload_length = payload_length
-        self._payload = payload
+        self._subnetwork_id_bytes = subnetwork_id_bytes
+        self._gas_bytes = gas_bytes
+        self._payload_hash_bytes = payload_hash_bytes
+        self._payload_length_bytes = payload_length_bytes
+        self._payload_bytes = payload_bytes
 
     @classmethod
     def tx_factory(cls, *, version_bytes=None, tx_in_list=None, tx_out_list=None, locktime=None, subnetwork_id=None,
@@ -64,7 +65,7 @@ class Tx:
         tx_parameters = {"version": 4, "numTxIns": "VARINT", "TX_IN": "TX_IN x numTuxIns",
                          "numTxOut": "VARINT", "TX_OUT": "TX_OUT x numTxOuts", "locktime": 8, "subnetworkID": 20,
                          "gas": 8, "payloadHash": 32, "payloadLength": "VARINT", "payload": "payloadLength"}
-        version = block_bytes_stream.read(tx_parameters["version"])
+        version_bytes = block_bytes_stream.read(tx_parameters["version"])
         num_of_txs_in_int, num_of_txs_in_bytes = general_utils.read_varint(block_bytes_stream)
         tx_in_list = []
         for i in range(num_of_txs_in_int):  # loops through all txs in
@@ -75,18 +76,23 @@ class Tx:
         for i in range(num_of_txs_out_int):  # loops through all txs out
             tx_out = TxOut.parse_tx_out(block_bytes_stream)
             tx_out_list.append(tx_out)
-        locktime = block_bytes_stream.read(tx_parameters["locktime"])
-        subnetwork_id = block_bytes_stream.read(tx_parameters["subnetworkID"])
-        if subnetwork_id == NATIVE_SUBNETWORK_ID:
-            return Tx(version, num_of_txs_in_bytes, tx_in_list, num_of_txs_out_bytes, tx_out_list, locktime,
-                      subnetwork_id)
+        locktime_bytes = block_bytes_stream.read(tx_parameters["locktime"])
+        subnetwork_id_bytes = block_bytes_stream.read(tx_parameters["subnetworkID"])
+        if subnetwork_id_bytes == NATIVE_SUBNETWORK_ID:
+            return Tx(version_bytes=version_bytes,
+                      num_of_txs_in_bytes=num_of_txs_in_bytes, tx_in_list=tx_in_list,
+                      num_of_txs_out_bytes=num_of_txs_out_bytes, tx_out_list=tx_out_list,
+                      locktime_bytes=locktime_bytes, subnetwork_id_bytes=subnetwork_id_bytes)
         else:
-            gas = block_bytes_stream.read(tx_parameters["gas"])
-            payload_hash = block_bytes_stream.read(tx_parameters["payloadHash"])
+            gas_bytes = block_bytes_stream.read(tx_parameters["gas"])
+            payload_hash_bytes = block_bytes_stream.read(tx_parameters["payloadHash"])
             payload_length_int, payload_length_bytes = general_utils.read_varint(block_bytes_stream)
-            payload = block_bytes_stream.read(payload_length_int)
-            return Tx(version, num_of_txs_in_bytes, tx_in_list, num_of_txs_out_bytes, tx_out_list, locktime,
-                      subnetwork_id, gas, payload_hash, payload_length_bytes, payload)
+            payload_bytes = block_bytes_stream.read(payload_length_int)
+            return Tx(version_bytes=version_bytes, num_of_txs_in_bytes=num_of_txs_in_bytes, tx_in_list=tx_in_list,
+                      num_of_txs_out_bytes=num_of_txs_out_bytes, tx_out_list=tx_out_list,
+                      locktime_bytes=locktime_bytes, subnetwork_id_bytes=subnetwork_id_bytes,
+                      gas_bytes=gas_bytes, payload_hash_bytes=payload_hash_bytes,
+                      payload_length_bytes=payload_length_bytes, payload_bytes=payload_bytes)
 
     # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
 
@@ -200,22 +206,41 @@ class Tx:
         tx_bytes = general_utils.flatten_nested_iterable(tx_list)
         return tx_bytes
 
-    def get_tx_bytes_for_hash_merkle_root(self):
-        """
-        :return: Tx bytes array in a format specifically required for calculating the hash merkle root
-        """
-        tx_list = []
-        tx_list.extend([[self._version_bytes], [self._number_of_txs_in]])
-        for i in self._tx_in_list:
-            tx_list.append(i.get_tx_in_bytes())
-        tx_list.extend([[self._number_of_txs_out]])
-        for i in self._tx_out_list:
-            tx_list.append(i.get_tx_out_bytes())
-        tx_list.extend([[self.get_locktime_bytes()], [self._subnetwork_id]])
-        if self._subnetwork_id != NATIVE_SUBNETWORK_ID:
-            tx_list.extend([[self._gas], [self._payload_hash], [b"\x00"]])
-        tx_bytes = general_utils.build_element_from_list(tx_list)
-        return tx_bytes
+    # def get_tx_bytes_for_hash_merkle_root(self):
+    #     """
+    #     :return: Tx bytes array in a format specifically required for calculating the hash merkle root
+    #     """
+    #     tx_list = []
+    #     tx_list.extend([[self._version_bytes], [self._number_of_txs_in]])
+    #     for i in self._tx_in_list:
+    #         tx_list.append(i.get_tx_in_bytes())
+    #     tx_list.extend([[self._number_of_txs_out]])
+    #     for i in self._tx_out_list:
+    #         tx_list.append(i.get_tx_out_bytes())
+    #     tx_list.extend([[self.get_locktime_bytes()], [self._subnetwork_id]])
+    #     if self._subnetwork_id != NATIVE_SUBNETWORK_ID:
+    #         tx_list.extend([[self._gas], [self._payload_hash], [b"\x00"]])
+    #     tx_bytes = general_utils.build_element_from_list(tx_list)
+    #     return tx_bytes
+
+    # def get_tx_bytes_for_hash_merkle_root(self):
+    #     """
+    #     :return: Tx bytes array in a format specifically required for calculating the hash merkle root
+    #     """
+    #     tx_bytes = b''
+    #     tx_bytes += self._version_bytes
+    #     tx_bytes += self._number_of_txs_in
+    #     for i in self._tx_in_list:
+    #         tx_bytes +=  bytes(i)
+    #     tx_bytes += self._number_of_txs_out
+    #     for i in self._tx_out_list:
+    #         tx_bytes += bytes(i)
+    #     tx_bytes += self.get_locktime_bytes()
+    #     tx_bytes += self._subnetwork_id
+    #
+    #     if self._subnetwork_id != NATIVE_SUBNETWORK_ID:
+    #         tx_bytes += self._gas + self._payload_hash + b'\x00'
+    #     return tx_bytes
 
     def __bytes__(self):
         ret_bytes = b''

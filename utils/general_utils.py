@@ -130,16 +130,16 @@ def write_varint(value):
 # ========== Misc element related methods ========== #
 
 
-def build_element_from_list(element_list):
-    """
-    Returns an element (for example: block header/block body) as a bytes array from given list.
-
-    :param element_list: The element as a list
-    :return: The block element as bytes
-    """
-    element_list = list(flatten_nested_iterable(element_list))
-    block_element_bytes = b"".join(element_list)
-    return block_element_bytes
+# def build_element_from_list(element_list):
+#     """
+#     Returns an element (for example: block header/block body) as a bytes array from given list.
+#
+#     :param element_list: The element as a list
+#     :return: The block element as bytes
+#     """
+#     element_list = list(flatten_nested_iterable(element_list))
+#     block_element_bytes = b"".join(element_list)
+#     return block_element_bytes
 
 
 def flatten_nested_iterable(nested_iterable):

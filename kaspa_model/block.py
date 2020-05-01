@@ -569,16 +569,18 @@ class Block:
         block_body_bytes_array = general_utils.build_element_from_list(block_body_list)
         return block_body_bytes_array
 
-    def get_block_txs_list_for_hash_merkle_root(self):
+    @property
+    def block_txs_list_as_bytes(self):
         """
         Returns the Txs bytes as a list, not including the "payload length" & the "payload".
 
         :return: Txs bytes as a list
         """
-        coinbase_tx_bytes = self._coinbase_tx_obj.get_tx_bytes_for_hash_merkle_root()
         txs_list = []
+        # first append the coinbase tx
+        txs_list.append(bytes(self._coinbase_tx_obj))
         for tx in self._native_tx_list_of_objs:
-            native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
+            # native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
+            native_tx_bytes = bytes(tx)
             txs_list.append(native_tx_bytes)
-        txs_list.insert(0, coinbase_tx_bytes)
         return txs_list

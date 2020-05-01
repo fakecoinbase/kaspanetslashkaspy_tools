@@ -293,7 +293,8 @@ def update_hash_merkle_root(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    txs_list = block_object.get_block_txs_list_for_hash_merkle_root()
+    # txs_list = block_object.get_block_txs_list_for_hash_merkle_root()
+    txs_list = block_object.block_txs_list_as_bytes
     hash_merkle_root_bytes = calculate_hash_merkle_root(txs_list)
     block_object.hash_merkle_root_bytes = hash_merkle_root_bytes
 
