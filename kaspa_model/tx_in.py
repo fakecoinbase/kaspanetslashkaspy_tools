@@ -207,9 +207,8 @@ class TxIn:
         :return: The bytes representation of this tx_in object
         """
         ret_bytes = b''
-        tx_id_bytes = self.previous_tx_id_bytes[::-1]
-        transposed_bytes = tx_id_bytes
-        ret_bytes += transposed_bytes
+        tx_id_bytes = self.previous_tx_id_bytes
+        ret_bytes += tx_id_bytes
         ret_bytes += self.previous_tx_out_index_bytes
         # coinbase or script
         script_bytes = bytes(self.sig_script)  # compute coinbase or script bytes

@@ -545,9 +545,9 @@ class Block:
         """
         pass
         block_header_bytes = self._version_bytes + self._number_of_parent_blocks_bytes + \
-                             b''.join(self._parent_hashes) + self._hash_merkle_root_bytes + \
-                             self._id_merkle_root_bytes + self._utxo_commitment_bytes + \
-                             self._timestamp_bytes + self._bits_bytes + self._nonce_bytes
+                             b''.join(self.parent_hashes) + self.hash_merkle_root_bytes + \
+                             self.id_merkle_root_bytes + self.utxo_commitment_bytes + \
+                             self.timestamp_bytes + self.bits_bytes + self.nonce_bytes
         return block_header_bytes
 
     def get_block_body_list(self):
@@ -559,7 +559,7 @@ class Block:
         for tx in self._native_tx_list_of_objs:
             native_tx_bytes = tx.get_tx_bytes()
             native_txs_list.append(native_tx_bytes)
-        return [self._num_of_txs_in_block_bytes, coinbase_tx_list, native_txs_list]
+        return [self.num_of_txs_in_block_bytes, coinbase_tx_list, native_txs_list]
 
     def get_block_body_bytes_array(self):
         """
@@ -578,9 +578,9 @@ class Block:
         """
         txs_list = []
         # first append the coinbase tx
-        txs_list.append(bytes(self._coinbase_tx_obj))
+        txs_list.append(self._coinbase_tx_obj.get_tx_bytes_for_hash_merkle_root())
         for tx in self._native_tx_list_of_objs:
             # native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
-            native_tx_bytes = bytes(tx)
+            native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
             txs_list.append(native_tx_bytes)
         return txs_list
