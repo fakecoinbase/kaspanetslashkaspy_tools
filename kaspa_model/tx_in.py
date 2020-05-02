@@ -61,8 +61,8 @@ class TxIn:
 
 
     @classmethod
-    def tx_in_factory(cls, *, previous_tx_id=None, previous_tx_out_index=None, script=None,
-                      script_pub_key=None, empty_script=None, sequence=None, private_key=None):
+    def tx_in_factory(cls, *, previous_tx_id_bytes=None, previous_tx_out_index=None, sig_script=None,
+                      script_pub_key=None, empty_script=None, sequence_bytes=None, private_key=None):
         """
         Creates a new TxIn object. Holds bytes values and "logical" values (like int).
         Later 'get' functions create bytes values lazily.
@@ -76,30 +76,21 @@ class TxIn:
         :return: The new TxIn object
         """
         new_tx_in = cls()
-
-        new_tx_in.previous_tx_id(previous_tx_id)
-        new_tx_in.previous_tx_id_bytes = None
+        new_tx_in.previous_tx_id_bytes = previous_tx_id_bytes
         new_tx_in.previous_tx_out_index = previous_tx_out_index
         new_tx_in.previous_tx_out_index_bytes = None
 
-        new_tx_in.sig_script = script
+        new_tx_in.sig_script = sig_script
         new_tx_in.script_pub_key = script_pub_key
         new_tx_in.empty_script = empty_script
-        new_tx_in.sequence_bytes = None
+        new_tx_in.sequence_bytes = sequence_bytes
         new_tx_in.private_key = private_key
         return new_tx_in
 
     # ========== Get Tx Methods ========== #
 
     @property
-    def previous_tx_id(self):
-        """ Gets variable "_previous_tx_id" to the received value"""
-        return self._previous_tx_id
-
-    @property
     def previous_tx_id_bytes(self):
-        if (self._previous_tx_id_bytes == None) and (self._previous_tx_id != None):
-            self._previous_tx_id_bytes = bytes.fromhex(self._previous_tx_id)
         return self._previous_tx_id_bytes
 
     @property
@@ -139,10 +130,6 @@ class TxIn:
 
     # ========== Get Methods ========== #
 
-    @previous_tx_id.setter
-    def previous_tx_id(self, previous_tx_id):
-        self._previous_tx_id = previous_tx_id
-
     @previous_tx_id_bytes.setter
     def previous_tx_id_bytes(self, previous_tx_id_bytes):
         self._previous_tx_id_bytes = previous_tx_id_bytes
@@ -174,7 +161,7 @@ class TxIn:
 
     @sequence_bytes.setter
     def sequence_bytes(self, sequence_bytes):
-        self._sequence = sequence_bytes
+        self._sequence_bytes = sequence_bytes
 
 
     @private_key.setter
@@ -186,7 +173,7 @@ class TxIn:
         :return: TxIn bytes array in a format specifically required for calculating the previous tx ID
         """
         tx_list = []
-        tx_list.extend([self._previous_tx_id, self._previous_tx_out_index, self._sequence])
+        tx_list.extend([self.previous_tx_id_bytes, self._previous_tx_out_index, self._sequence])
         tx_in_bytes = general_utils.flatten_nested_iterable(tx_list)
         return tx_in_bytes
 

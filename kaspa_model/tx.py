@@ -22,15 +22,13 @@ class Tx:
         :param tx_in_list:  A list of inputs (e.g: [('---tx--hash---', output-number, 'script-sig'), (....),...]  )
     """
 
-    def __init__(self, *, version_bytes=None, number_of_tx_inputs_bytes=0, tx_input_list=None,
-                 number_of_tx_outputs_bytes=0, tx_output_list=None, locktime_bytes=None, subnetwork_id_bytes=None,
+    def __init__(self, *, version_bytes=None, number_of_tx_inputs_bytes=None, tx_input_list=None,
+                 number_of_tx_outputs_bytes=None, tx_output_list=None, locktime_bytes=None, subnetwork_id_bytes=None,
                  gas_bytes=None, payload_hash_bytes=None, payload_length_bytes=None, payload_bytes=None):
         self._version_bytes = version_bytes
         self._number_of_tx_inputs_bytes = number_of_tx_inputs_bytes
-        self._number_of_tx_inputs_int = None
         self._tx_input_list = tx_input_list
         self._number_of_tx_outputs_bytes = number_of_tx_outputs_bytes
-        self._number_of_tx_outputs_int = None
         self._tx_output_list = tx_output_list
         self._locktime_bytes = locktime_bytes
         self._locktime_int = None
@@ -42,16 +40,15 @@ class Tx:
         self._payload_bytes = payload_bytes
 
     @classmethod
-    def tx_factory(cls, *, version_bytes=None, tx_in_list=None, tx_out_list=None, locktime=None, subnetwork_id=None,
-                   gas=None, payload_hash=None, payload=None):
+    def tx_factory(cls, *, version_bytes=None, tx_in_list=None, tx_out_list=None, locktime_int=None,
+                   subnetwork_id_bytes=None, gas_bytes=None, payload_hash=None, payload=None):
         new_tx = cls()
-        new_tx.set_version_bytes(version_bytes)
-        new_tx.set_tx_in_list(tx_in_list)
-        new_tx.set_tx_out_list(tx_out_list)
-        new_tx.set_locktime(locktime)
-        new_tx.set_locktime_bytes(None)
-        new_tx.set_subnetwork_id(subnetwork_id)
-        new_tx._gas = gas
+        new_tx.version_bytes = version_bytes
+        new_tx.tx_input_list = tx_in_list
+        new_tx.tx_output_list = tx_out_list
+        new_tx.locktime_int = locktime_int
+        new_tx.subnetwork_id_bytes = subnetwork_id_bytes
+        new_tx.gas_bytes = gas_bytes
         new_tx._payload_hash = payload_hash
         new_tx._payload = payload
         return new_tx
@@ -113,17 +110,12 @@ class Tx:
         """
         :return: Number of txs in as bytes
         """
-        if (self._number_of_tx_inputs_bytes == None) and (self._number_of_tx_inputs_int != None):
-            self._number_of_tx_inputs_bytes = general_utils.write_varint(self._number_of_tx_inputs_int)
+        if (self._number_of_tx_inputs_bytes == None) and (self._tx_input_list != None):
+            self._number_of_tx_inputs_bytes = general_utils.write_varint(len(self._tx_input_list))
 
         return self._number_of_tx_inputs_bytes
 
-    @property
-    def number_of_tx_inputs_int(self):
-        """
-        :return: Number of txs in as bytes
-        """
-        return self._number_of_tx_inputs_int
+
 
     @property
     def tx_input_list(self):
@@ -137,17 +129,11 @@ class Tx:
         """
         :return: Number of txs out as bytes
         """
-        if (self._number_of_tx_outputs_bytes == None) and (self._number_of_tx_outputs_int != None):
-            self._number_of_tx_outputs_bytes = general_utils.write_varint(self._number_of_tx_outputs_int)
+        if (self._number_of_tx_outputs_bytes == None) and (self._tx_output_list != None):
+            self._number_of_tx_outputs_bytes = general_utils.write_varint(len(self._tx_output_list))
 
         return self._number_of_tx_outputs_bytes
 
-    @property
-    def number_of_tx_outputs_int(self):
-        """
-        :return: Number of txs out as bytes
-        """
-        return self._number_of_tx_outputs_int
 
     @property
     def tx_output_list(self):
@@ -232,6 +218,15 @@ class Tx:
     def locktime_int(self, locktime_int):
         """ Sets variable "_locktime" to the received value"""
         self._locktime_int = locktime_int
+
+    @subnetwork_id_bytes.setter
+    def subnetwork_id_bytes(self, subnetwork_id_bytes):
+        self._subnetwork_id_bytes = subnetwork_id_bytes
+
+    @gas_bytes.setter
+    def gas_bytes(self, gas_bytes):
+        """ Sets variable "_gas_bytes" to the received value"""
+        self._gas_bytes = gas_bytes
 
 
 # ******** Serialization functions **********
@@ -322,7 +317,7 @@ class Tx:
 
         ret_bytes += self.locktime_bytes
         ret_bytes += self.subnetwork_id_bytes
-        if self.subnetwork_id_bytes == NATIVE_SUBNETWORK:
+        if self.subnetwork_id_bytes != NATIVE_SUBNETWORK:
             ret_bytes += self.gas_bytes
             ret_bytes += self.payload_hash_bytes
             ret_bytes += self.payload_length_bytes
