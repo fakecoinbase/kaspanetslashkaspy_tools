@@ -6,7 +6,7 @@ from kaspy_tools.kaspa_model.tx_out import TxOut
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
-NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# NATIVE_SUBNETWORK_ID = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 COINBASE_SUBNETWORK = ''.join(['00' for i in range(19)]) + '01'
 CURRENT_VERSION = b'\x01\x00\x00\x00'
 NATIVE_SUBNETWORK = b'\x00' * 20  # native subnetwork is 20 zero bytes
@@ -79,7 +79,7 @@ class Tx:
             tx_output_list.append(tx_out)
         locktime_bytes = block_bytes_stream.read(tx_parameters["locktime"])
         subnetwork_id_bytes = block_bytes_stream.read(tx_parameters["subnetworkID"])
-        if subnetwork_id_bytes == NATIVE_SUBNETWORK_ID:
+        if subnetwork_id_bytes == NATIVE_SUBNETWORK:
             return Tx(version_bytes=version_bytes,
                       number_of_tx_inputs_bytes=number_of_txs_inputs_bytes, tx_input_list=tx_input_list,
                       number_of_tx_outputs_bytes=number_of_tx_outputs_bytes, tx_output_list=tx_output_list,
@@ -243,7 +243,7 @@ class Tx:
         for output in self._tx_output_list:
             tx_list.append(bytes(output))
         tx_list.extend([[self._locktime_bytes], [self.subnetwork_id_bytes]])
-        if self.subnetwork_id_bytes != NATIVE_SUBNETWORK_ID:
+        if self.subnetwork_id_bytes != NATIVE_SUBNETWORK:
             tx_list.extend([[self.gas_bytes], [self.payload_hash_bytes], [self.payload_length_bytes], [self.payload_bytes]])
         tx_bytes = general_utils.flatten_nested_iterable(tx_list)
         return tx_bytes

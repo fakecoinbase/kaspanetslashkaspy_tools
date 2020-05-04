@@ -45,7 +45,7 @@ class Block:
         self._bits_int = None
         self._bits_bytes = bits_bytes
         self._nonce_bytes = nonce_bytes
-        self._nonce_int = int.from_bytes(self._nonce_bytes, byteorder='little')
+        # self._nonce_int = int.from_bytes(self._nonce_bytes, byteorder='little')
         self._num_of_txs_in_block_int = None
         self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
         self._coinbase_tx_obj = None
@@ -91,13 +91,22 @@ class Block:
         new_block._timestamp_bytes = timestamp_bytes
         new_block._bits_int = bits_int
         new_block._bits_bytes = bits_bytes
-        new_block._nonce_bytes = nonce_bytes
-        new_block._nonce_int = None
-        new_block._num_of_txs_in_block_int = num_of_txs_in_block_int
-        new_block._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
+        if nonce_bytes == None:
+            new_block._nonce_bytes = b'\x00' * 8
+            new_block._nonce_int = 0
+        else:
+            new_block._nonce_bytes = nonce_bytes
+            new_block._nonce_int = int.from_bytes(new_block.nonce_bytes, byteorder='little')
+
         new_block._coinbase_tx_obj = coinbase_tx_obj
         new_block._coinbase_tx_bytes = coinbase_tx_bytes
-        new_block._native_tx_list_of_objs = native_tx_list_of_objs
+        if native_tx_list_of_objs is None:
+            new_block._native_tx_list_of_objs = []
+        else:
+            new_block._native_tx_list_of_objs = native_tx_list_of_objs
+
+        new_block.num_of_txs_in_block_int = len(new_block.native_tx_list_of_objs) + 1
+        return new_block
 
     # ========== Parsing Methods ========== #
 
@@ -530,6 +539,12 @@ class Block:
         """
         self._native_tx_list_of_objs = native_tx_list_of_objs
 
+    def add_native_transaction(self, tx_obj):
+        self.num_of_txs_in_block_int += 1
+        temp = self.num_of_txs_in_block_bytes   # to update it
+        self.native_tx_list_of_objs.append(tx_obj)
+
+
     # def get_block_header_list(self):
     #     """
     #     :return: Block header bytes as a list
@@ -543,7 +558,6 @@ class Block:
         """
         :return: Block header bytes object
         """
-        pass
         block_header_bytes = self._version_bytes + self._number_of_parent_blocks_bytes + \
                              b''.join(self.parent_hashes) + self.hash_merkle_root_bytes + \
                              self.id_merkle_root_bytes + self.utxo_commitment_bytes + \

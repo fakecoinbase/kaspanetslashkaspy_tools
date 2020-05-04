@@ -5,6 +5,7 @@ This module holds all the UPDATE methods for the automation project.
 import random
 from io import BytesIO
 import time
+from kaspy_tools.kaspa_crypto.merkle_root import MerkleTree
 from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model.tx import Tx
@@ -13,15 +14,15 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object, block_template, conn=None):
+def update_all_valid_block_variables(block_object, block_template, conn=None,  native_txs=None):
     """
     Initiates the VALID updating process for the entire block
 
     :param block_object: The block object that holds the variables to update
     """
-
+    update_block_version(block_object,block_template)
     update_parent_blocks_data(block_object,block_template)
-    update_all_txs(block_object,block_template)
+    update_all_txs(block_object,block_template, native_txs)
     update_hash_merkle_root(block_object,block_template)
     update_id_merkle_root(block_object,block_template)
     update_utxo_commitment(block_object,block_template)
@@ -237,6 +238,10 @@ def update_version_invalid(block_object):
     """
     block_object.version_bytes = b""
 
+def update_block_version(block_object,block_template):
+    version_int = block_template['version']
+    block_object.version_bytes = version_int.to_bytes(4,byteorder='little')
+
 
 def update_parent_blocks_data(block_object, block_template):
     """
@@ -424,7 +429,7 @@ def update_nonce_invalid(block_object, nonce_value):
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
 
-def update_all_txs(block_object, block_template):
+def update_all_txs(block_object, block_template, native_txs=None):
     """
     Updates all tsx data based on information received from the node and from local calculations.
 
@@ -432,6 +437,8 @@ def update_all_txs(block_object, block_template):
     """
     coinbase_tx_object = update_coinbase_tx(block_template)
     block_object.coinbase_tx_obj = coinbase_tx_object
+    for tx in native_txs:
+        block_object.add_native_transaction(tx)
 
 
 def update_coinbase_tx(block_template):
@@ -519,8 +526,9 @@ def calculate_hash_merkle_root(txs_list):
     :return: hash merkle root as bytes
     """
     txs_hashes_list = hash_txs(txs_list)
-    hash_merkle_root_hex = loop_through_txs_hashes_list(txs_hashes_list)
-    return hash_merkle_root_hex
+    # hash_merkle_root_hex = loop_through_txs_hashes_list(txs_hashes_list)
+    hash_merkle_root = MerkleTree.merkle_root(txs_hashes_list)
+    return hash_merkle_root
 
 
 def hash_txs(txs_list):
@@ -537,32 +545,3 @@ def hash_txs(txs_list):
     return txs_hashes_list
 
 
-def loop_through_txs_hashes_list(txs_hashes_list):
-    """
-    Loops through the txs hashes list until it find the hash merkle root
-
-    :param txs_hashes_list: List of the hashes for all txs in the block
-    :return: Hash merkle root as bytes array
-    """
-    original_list = txs_hashes_list
-    new_list = []
-
-    if len(original_list) == 1:
-        hash_merkle_root = original_list[0]
-        # reversed_hash_merkle_root = general_utils.reverse_bytes(hash_merkle_root)
-        return hash_merkle_root
-
-    if len(original_list) > 1 and len(original_list) % 2 != 0:
-        last_tx_hash = original_list[-1]
-        original_list.append(last_tx_hash)
-
-    if len(original_list) > 1 and len(original_list) % 2 == 0:
-        for i in range(0, len(original_list), 2):
-            hash1 = original_list[i]
-            hash2 = original_list[i + 1]
-            combined_hashes_bytes = hash1 + hash2
-            new_hash_bytes = general_utils.hash_256(combined_hashes_bytes)
-            new_list.append(new_hash_bytes)
-
-    hash_merkle_root = loop_through_txs_hashes_list(new_list)
-    return hash_merkle_root

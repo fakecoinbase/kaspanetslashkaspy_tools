@@ -30,5 +30,3 @@ def generate_transactions_from_genesis(*, addr_count=100, tx_count=100, block_co
 
     tx_list = make_new_transactions(tx_count, utxo_list, addresses)
     return tx_list, v_blocks
-
-

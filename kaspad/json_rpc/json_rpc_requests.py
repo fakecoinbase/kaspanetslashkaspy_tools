@@ -220,6 +220,8 @@ def get_blocks(requested_blocks_count, conn=None):
             all_verbose_blocks = all_verbose_blocks[:requested_blocks_count]
             all_raw_blocks = all_raw_blocks[:requested_blocks_count]
             break
+        if len(response_json) < 1000:
+            break
     return all_raw_blocks, all_verbose_blocks
 
 
