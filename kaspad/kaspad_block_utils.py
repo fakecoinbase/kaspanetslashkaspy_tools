@@ -25,18 +25,19 @@ def error_handler(response_error):
         return message
 
 
-def submit_valid_block(*, block_file_path, options=None, conn=None):
+def submit_valid_block(*, conn=None, native_txs=None):
     """
-    Builds and submit a valid block based on the file path and subnetwork options that were provided to the DAG-block network.
-    Returns the action's response parsed by the "error_handler" method as well as the block hash as a hex string.
+    Builds and submit a valid block based on a block template.
+    Returns the action's response parsed by the "error_handler" method
+    as well as the block hash as a hex string.
 
-    :param block_file_path: The path of the block binary file
-    :param options: Enter specific options that are required, for example: like a sub-network, else leave as None
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    block_bytes, block_hash = block_generator.generate_valid_block_and_hash(block_file_path, conn)
+    # block_bytes, block_hash = block_generator.generate_valid_block_and_hash(block_file_path, conn)
+    block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs)
+
     block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex, options, conn)
+    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -178,4 +179,5 @@ def generate_valid_block_and_hash(block_path, conn=None):
     """
     Returns a valid block that was not submitted using the function in block_generator.py.
     """
-    return block_generator.generate_valid_block_and_hash(block_path, conn)
+    # return block_generator.generate_valid_block_and_hash(block_path, conn)
+    return block_generator.generate_valid_block_from_template(conn=conn)

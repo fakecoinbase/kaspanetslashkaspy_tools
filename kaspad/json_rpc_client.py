@@ -7,8 +7,8 @@ from kaspy_tools.kaspad import kaspad_constants
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
-def submit_block_request(block_hex, options=None, url=None):
-    return json_rpc_requests.submit_block_request(block_hex, options, url)
+def submit_block_request(*, block_hex, options=None, conn=None):
+    return json_rpc_requests.submit_block_request(block_hex, options, conn=conn)
 
 def submit_raw_transaction_request(tx_hex, options=None, conn=None):
     return json_rpc_requests.submit_raw_tx(tx_hex, options, conn)
