@@ -54,8 +54,8 @@ def make_a_single_transaction(*, in_count, out_count, utxo_list, addresses, fees
 
     new_tx =  kaspa_model.tx.Tx.tx_factory(version_bytes=kaspa_model.tx.VERSION_1,
                                            tx_in_list=in_list, tx_out_list=out_list,
-                                           subnetwork_id=kaspa_model.tx.NATIVE_SUBNETWORK, locktime=0,
-                                           gas=None, payload_hash=None, payload=None)
+                                           subnetwork_id_bytes=kaspa_model.tx.NATIVE_SUBNETWORK, locktime_int=0,
+                                           gas_bytes=None, payload_hash=None, payload=None)
 
     sign_tx_inputs(in_list, new_tx)
     # local_logger.info('new tx: ' + str(bytes(final_tx)))
@@ -80,20 +80,20 @@ def sign_tx_inputs(in_list, new_tx):
         sign_key = ECKey()
         sign_key.set(private_key, compressed=True)
         public_key = sign_key.get_pubkey().get_bytes()
-        tx_in.set_sig_script(tx_in.get_script_pub_key())
+        tx_in.sig_script = tx_in.script_pub_key
         msg = bytes(new_tx) + (1).to_bytes(4, byteorder='little')   # TODO why??
         dbl_hash = KaspaKeys.double_sha256(msg)
         sig = sign_key.sign_schnorr(dbl_hash)
         new_script = tx_script.TxScript.script_sig_factory(sig, public_key, tx_script.SIG_HASH_ALL)
-        tx_in.set_signed_script(new_script)
-        tx_in.set_sig_script(tx_in.get_empty_script())
+        tx_in.signed_script = new_script
+        tx_in.sig_script = tx_in.empty_script
     restore_tx_scripts(new_tx)
     return None
 
 def restore_tx_scripts(new_tx):
-    in_list = new_tx.get_tx_in_list()
-    for input in in_list:
-        input.set_sig_script(input.get_signed_script())
+    input_list = new_tx.tx_input_list
+    for input in input_list:
+        input.sig_script = input.signed_script
 
 
 
@@ -149,17 +149,17 @@ def make_p2pkh_input_list(in_count, utxo_list, addresses):
     keys = {addr.get_public_key_hash() : addr for addr in addresses.values()}
     # make_sig_script
     for utxo in utxo_list:
-        prev_tx = utxo['output'].get_tx_id()
+        prev_tx_bytes = bytes.fromhex(utxo['output'].get_tx_id())[::-1]
         prev_tx_out_index = utxo['output'].get_out_index()
         pub_hash_bytes = utxo['output'].get_script_pub_key().get_pubhash_bytes()
         matched_address = keys[pub_hash_bytes]
         private_key, public_key = matched_address.private_key, matched_address.public_key
-        script_sig = tx_script.TxScript.empty_script()
-        sequence = 0xffffffff
+        sig_script = tx_script.TxScript.empty_script()
+        sequence_bytes = (0).to_bytes(8,byteorder='little')
         script_pub_key = utxo['output'].get_script_pub_key()
-        new_tx_in = tx_in.TxIn.tx_in_factory(previous_tx_id=prev_tx, previous_tx_out_index=prev_tx_out_index,
-                                 script=script_sig, script_pub_key=script_pub_key, empty_script=script_sig,
-                                 sequence=sequence, private_key=private_key)
+        new_tx_in = tx_in.TxIn.tx_in_factory(previous_tx_id_bytes=prev_tx_bytes, previous_tx_out_index=prev_tx_out_index,
+                                 sig_script=sig_script, script_pub_key=script_pub_key, empty_script=sig_script,
+                                 sequence_bytes=sequence_bytes, private_key=private_key)
         in_list.append(new_tx_in)
     return in_list
 

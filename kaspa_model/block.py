@@ -1,4 +1,3 @@
-
 from io import BytesIO
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.tx import Tx
@@ -6,26 +5,99 @@ from kaspy_tools.utils import general_utils
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
+
 class Block:
     """
-    This objects holds all the required methods to handle block data.
+    A kaspanet block.
     """
+
     def __init__(self, *, version_bytes=None, num_of_parent_blocks_bytes=None, parent_hashes=None,
                  hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
                  timestamp_bytes=None, bits_bytes=None, nonce_bytes=None, num_of_txs_in_block_bytes=None,
-                 coinbase_tx=None, native_tx_list=None):
-        self._version = version_bytes
-        self._number_of_parent_blocks = num_of_parent_blocks_bytes
+                 coinbase_tx_bytes=None, native_tx_list_of_objs=None):
+        """
+        A constructor for a block. Due to historical reasons accept most fields in raw bytes form.
+        Don't use it to create a new Block object.
+        Instead, use the block_factory class method.
+        :param version_bytes:  The Block version
+        :param num_of_parent_blocks_bytes: Number of parent blocks
+        :param parent_hashes: A list of hash values (already in bytes)
+        :param hash_merkle_root_bytes: Hash Merkle root for the txs in this block.
+        :param id_merkle_root_bytes:   Hash Merkle root for txs accepted by this block.
+        :param utxo_commitment_bytes: UTXO commitment
+        :param timestamp_bytes:  Timestamp (unix epoch) in bytes
+        :param bits_bytes:    The 'bits' value used for mining.
+        :param nonce_bytes:   The nonce value.
+        :param num_of_txs_in_block_bytes:  A VarInt value (bytes) specifying the number of txs
+                    present in this block (including coinbase).
+        :param coinbase_tx_bytes:  The coinbase tx (in bytes)
+        :param native_tx_list_of_objs: A list containing bytes representations of all native txs.
+        """
+        self._version_bytes = version_bytes
+        self._version_int = None
+        self._number_of_parent_blocks = None
+        self._number_of_parent_blocks_bytes = num_of_parent_blocks_bytes
         self._parent_hashes = parent_hashes
-        self._hash_merkle_root = hash_merkle_root_bytes
-        self._id_merkle_root = id_merkle_root_bytes
-        self._utxo_commitment = utxo_commitment_bytes
-        self._timestamp = timestamp_bytes
-        self._bits = bits_bytes
-        self._nonce = nonce_bytes
-        self._num_of_txs_in_block = num_of_txs_in_block_bytes
-        self._coinbase_tx = coinbase_tx
-        self._native_txs = native_tx_list
+        self._hash_merkle_root_bytes = hash_merkle_root_bytes
+        self._id_merkle_root_bytes = id_merkle_root_bytes
+        self._utxo_commitment_bytes = utxo_commitment_bytes
+        self._timestamp_bytes = timestamp_bytes
+        self._bits_int = None
+        self._bits_bytes = bits_bytes
+        self._nonce_bytes = nonce_bytes
+        self._nonce_int = int.from_bytes(self._nonce_bytes, byteorder='little')
+        self._num_of_txs_in_block_int = None
+        self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
+        self._coinbase_tx_obj = None
+        self._coinbase_tx_bytes = coinbase_tx_bytes
+        self._native_tx_list_of_objs = native_tx_list_of_objs
+
+    @classmethod
+    def block_factory(cls, *, version_int=None, version_bytes=None, num_of_parent_blocks=None, parent_hashes=None,
+                      hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
+                      timestamp_int=None, timestamp_bytes=None, bits_bytes=None, bits_int=None,
+                      nonce_bytes=None, num_of_txs_in_block_int=None, num_of_txs_in_block_bytes=None,
+                      coinbase_tx_obj=None, coinbase_tx_bytes=None, native_tx_list_of_objs=None):
+        """
+        Use this method to create a new block.
+        In general, if a field has a 'logical' and bytes values, you can specify just one of these.
+        :param version:
+        :param num_of_parent_blocks:
+        :param parent_hashes:
+        :param hash_merkle_root_bytes:
+        :param id_merkle_root_bytes:
+        :param utxo_commitment_bytes:
+        :param timestamp_int:
+        :param timestamp_bytes:
+        :param bits_bytes:
+        :param bits_int:
+        :param nonce_bytes:
+        :param num_of_txs_in_block_int:
+        :param num_of_txs_in_block_bytes:
+        :param coinbase_tx_obj:
+        :param coinbase_tx_bytes:
+        :param native_tx_list_of_objs:
+        :return:  A new Block
+        """
+        new_block = cls()
+        new_block._version_int = version_int
+        new_block._version_bytes = version_bytes
+        new_block._number_of_parent_blocks = num_of_parent_blocks
+        new_block._parent_hashes = parent_hashes
+        new_block._hash_merkle_root_bytes = hash_merkle_root_bytes
+        new_block._id_merkle_root_bytes = id_merkle_root_bytes
+        new_block._utxo_commitment_bytes = utxo_commitment_bytes
+        new_block._timestamp_int = timestamp_int
+        new_block._timestamp_bytes = timestamp_bytes
+        new_block._bits_int = bits_int
+        new_block._bits_bytes = bits_bytes
+        new_block._nonce_bytes = nonce_bytes
+        new_block._nonce_int = None
+        new_block._num_of_txs_in_block_int = num_of_txs_in_block_int
+        new_block._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
+        new_block._coinbase_tx_obj = coinbase_tx_obj
+        new_block._coinbase_tx_bytes = coinbase_tx_bytes
+        new_block._native_tx_list_of_objs = native_tx_list_of_objs
 
     # ========== Parsing Methods ========== #
 
@@ -42,10 +114,11 @@ class Block:
         block_header = Block._parse_block_header(block_stream)
         block_body = Block._parse_block_body(block_stream)
         return Block(version_bytes=block_header[0], num_of_parent_blocks_bytes=block_header[1],
-                     parent_hashes= block_header[2], hash_merkle_root_bytes= block_header[3],
+                     parent_hashes=block_header[2], hash_merkle_root_bytes=block_header[3],
                      id_merkle_root_bytes=block_header[4], utxo_commitment_bytes=block_header[5],
                      timestamp_bytes=block_header[6], bits_bytes=block_header[7], nonce_bytes=block_header[8],
-                     num_of_txs_in_block_bytes=block_body[0], coinbase_tx=block_body[1], native_tx_list=block_body[2])
+                     num_of_txs_in_block_bytes=block_body[0], coinbase_tx_bytes=block_body[1],
+                     native_tx_list_of_objs=block_body[2])
 
     @staticmethod
     def _parse_block_header(block_bytes_stream):
@@ -58,7 +131,7 @@ class Block:
         header_parameters = {"version": 4, "numParentBlocks": 1, "parentHashes": 32, "hashMerkleRoot": 32,
                              "idMerkleRoot": 32, "utxoCommitment": 32, "timeStamp": 8, "bits": 4, "nonce": 8}
 
-        version = block_bytes_stream.read(header_parameters["version"])
+        version_bytes = block_bytes_stream.read(header_parameters["version"])
         num_of_parent_blocks = block_bytes_stream.read(header_parameters["numParentBlocks"])
         num_of_parent_blocks_int = general_utils.int_from_little_endian(num_of_parent_blocks)
         parent_hashes_to_get = num_of_parent_blocks_int
@@ -68,14 +141,14 @@ class Block:
             parent_hashes.append(p_hash)
             parent_hashes_to_get -= 1
 
-        hash_merkle_root = block_bytes_stream.read(header_parameters["hashMerkleRoot"])
-        id_merkle_root = block_bytes_stream.read(header_parameters["idMerkleRoot"])
-        utxo_commitment = block_bytes_stream.read(header_parameters["utxoCommitment"])
-        timestamp = block_bytes_stream.read(header_parameters["timeStamp"])
-        bits = block_bytes_stream.read(header_parameters["bits"])
-        nonce = block_bytes_stream.read(header_parameters["nonce"])
-        return [version, num_of_parent_blocks, parent_hashes, hash_merkle_root, id_merkle_root, utxo_commitment,
-                timestamp, bits, nonce]
+        hash_merkle_root_bytes = block_bytes_stream.read(header_parameters["hashMerkleRoot"])
+        id_merkle_root_bytes = block_bytes_stream.read(header_parameters["idMerkleRoot"])
+        utxo_commitment_bytes = block_bytes_stream.read(header_parameters["utxoCommitment"])
+        timestamp_bytes = block_bytes_stream.read(header_parameters["timeStamp"])
+        bits_bytes = block_bytes_stream.read(header_parameters["bits"])
+        nonce_bytes = block_bytes_stream.read(header_parameters["nonce"])
+        return [version_bytes, num_of_parent_blocks, parent_hashes, hash_merkle_root_bytes, id_merkle_root_bytes,
+                utxo_commitment_bytes, timestamp_bytes, bits_bytes, nonce_bytes]
 
     @staticmethod
     def _parse_block_body(block_bytes_stream):
@@ -87,14 +160,14 @@ class Block:
         """
         num_of_txs_in_block_int, num_of_txs_in_block_bytes = general_utils.read_varint(block_bytes_stream)
 
-        coinbase_tx = Tx.parse_tx(block_bytes_stream)
+        coinbase_tx_obj = Tx.parse_tx(block_bytes_stream)
 
-        native_txs_list = []
+        native_tx_list_of_objs = []
         for i in range(num_of_txs_in_block_int - 1):
-            native_tx = Tx.parse_tx(block_bytes_stream)
-            native_txs_list.append(native_tx)
+            native_tx_obj = Tx.parse_tx(block_bytes_stream)
+            native_tx_list_of_objs.append(native_tx_obj)
 
-        return [num_of_txs_in_block_bytes, coinbase_tx, native_txs_list]
+        return [num_of_txs_in_block_bytes, coinbase_tx_obj, native_tx_list_of_objs]
 
     # ========== Rebuilding Methods ========== #
 
@@ -109,153 +182,384 @@ class Block:
         """
         return block_header + block_body
 
-    # ========== Set Block Methods ========== #
+    # ========== Get Block Methods ========== #
 
-    def set_version(self, version):
-        """ Sets variable "_version" to the received value"""
-        self._version = version
-
-    def set_number_of_parent_blocks(self, num_of_parent_blocks):
-        """ Sets variable "number of parent blocks" to the received value"""
-        self._number_of_parent_blocks = num_of_parent_blocks
-
-    def set_parent_hashes(self, parent_hashes):
-        """ Sets variable "parent hashes" to the received value"""
-        self._parent_hashes = parent_hashes
-
-    def set_hash_merkle_root(self, hash_merkle_root):
-        """ Sets variable "hash merkle root" to the received value"""
-        self._hash_merkle_root = hash_merkle_root
-
-    def set_id_merkle_root(self, id_merkle_root):
-        """ Sets variable "id merkle root" to the received value"""
-        self._id_merkle_root = id_merkle_root
-
-    def set_utxo_commitment(self, utxo_commitment):
-        """ Sets variable "utxo commitment" to the received value"""
-        self._utxo_commitment = utxo_commitment
-
-    def set_timestamp(self, timestamp):
-        """ Sets variable "_timestamp" to the received value"""
-        self._timestamp = timestamp
-
-    def set_bits(self, bits):
-        """ Sets variable "_bits" to the received value"""
-        self._bits = bits
-
-    def set_nonce(self, nonce):
-        """ Sets variable "_nonce" to the received value"""
-        self._nonce = nonce
-
-    def set_num_of_txs_in_block(self, num_of_txs_in_block):
-        """ Sets variable "num of txs in block" to the received value"""
-        self._num_of_txs_in_block = num_of_txs_in_block
-
-    def set_coinbase_tx(self, coinbase_tx_object):
-        self._coinbase_tx = coinbase_tx_object
-
-    def set_native_txs(self):
-        pass
-
-    # ========== Get Methods ========== #
-
-    def get_version(self):
+    @property
+    def version_int(self):
         """
-        :return: Version as bytes
+        Get the value of the version field as an int.
+        :return: version as int
         """
-        return self._version
+        if (self._version_int == None) and (self._version_bytes != None):
+            self._version_int = int.from_bytes(self._version_bytes, byteorder='little')
+        return self._version_int
 
-    def get_number_of_parent_blocks(self):
+    @property
+    def version_bytes(self):
         """
-        :return: Number of parent blocks as bytes
+        Get the value of version as bytes.
+        :return: version as bytes
         """
-        return self._number_of_parent_blocks
+        if (self._version_bytes == None) and (self._version_int != None):
+            self.version_bytes = self._version_int.to_bytes(4, byteorder='little')
+        return self._version_bytes
 
-    def get_parent_hashes(self):
+    @property
+    def number_of_parent_blocks_bytes(self):
         """
-        :return: Parent hashes as bytes
+        Gets the number of parents.
+        :return: Number of parents as a single byte
+        """
+        if not self._number_of_parent_blocks_bytes:
+            self._number_of_parent_blocks_bytes = self._number_of_parent_blocks.to_bytes(1, byteorder='little')
+
+        return self._number_of_parent_blocks_bytes
+
+    @property
+    def parent_hashes(self):
+        """
+        Gets parent hash value.
+        :return: A list with the hashes (as bytes)
         """
         return self._parent_hashes
 
-    def get_hash_merkle_root(self):
+    @property
+    def hash_merkle_root_bytes(self):
         """
-        :return: Hash merkle root as bytes
+        Gets the Merkle root value of txs in this block.
+        :return: Bytes representation of Merkle root
         """
-        return self._hash_merkle_root
+        return self._hash_merkle_root_bytes
 
-    def get_id_merkle_root(self):
+    @property
+    def id_merkle_root_bytes(self):
         """
-        :return: ID merkle root as bytes
+        Gets the Merkle root value of txs accepted in this block.
+        :return: A bytes representation of Merkle root.
         """
-        return self._id_merkle_root
+        return self._id_merkle_root_bytes
 
-    def get_utxo_commitment(self):
+    @property
+    def utxo_commitment_bytes(self):
         """
-        :return: Utxo commitment as bytes
+        Get UTXO commitment
+        :return: A bytes value of the UTXO commitment.
         """
-        return self._utxo_commitment
+        return self._utxo_commitment_bytes
 
-    def get_timestamp(self):
+    @property
+    def timestamp_int(self):
         """
-        :return: Timestamp as bytes
+        Gets UNIX epoch timestamp.
+        :return: Epoch as int.
         """
-        return self._timestamp
+        if (not self._timestamp_int) and (self._timestamp_bytes != None):
+            self._timestamp_int = int.from_bytes(self._timestamp_bytes, byteorder='little')
+        return self._timestamp_int
 
-    def get_bits(self):
+    @property
+    def timestamp_bytes(self):
         """
-        :return:  Bits as bytes
+        Gets UNIX epoch timestamp.
+        :return: Epoch as bytes.
         """
-        return self._bits
+        if (not self._timestamp_bytes) and (self._timestamp_int != None):
+            self._timestamp_bytes = (self._timestamp_int).to_bytes(8, byteorder='little')
+        return self._timestamp_bytes
 
-    def get_nonce(self):
+    @property
+    def bits_bytes(self):
         """
-        :return: Nonce as bytes
+        Gets the 'bits' balue.
+        :return: The 'bits' value (bytes).
         """
-        return self._nonce
+        if (not self._bits_bytes) and (self._bits_int != None):
+            self._bits_bytes = (self._bits_int).to_bytes(4, byteorder='little')
+        return self._bits_bytes
 
-    def get_num_of_txs_in_block(self):
+    @property
+    def bits_int(self):
         """
-        :return: Number of "txs in" in the block as bytes
+        Gets the 'bits' balue.
+        :return: The 'bits' value (int).
         """
-        return self._num_of_txs_in_block
+        if (not self._bits_int) and (self._bits_bytes != None):
+            self._bits_int = int.from_bytes(self._bits_bytes, byteorder='little')
+        return self._bits_int
 
-    def get_coinbase_tx(self):
+    @property
+    def nonce_bytes(self):
         """
-        :return: Coinbase tx class object
+        Get the 'nonce' value
+        :return: 'nonce as bytes
         """
-        return self._coinbase_tx
+        return self._nonce_bytes
 
-    def get_native_txs(self):
+    @property
+    def nonce_int(self):
         """
-        :return: List of all the native txs class objects
+        Get the 'nonce' value
+        :return: 'nonce as int
         """
-        return self._native_txs
+        return self._nonce_int
 
-    def get_block_header_list(self):
-        """
-        :return: Block header bytes as a list
-        """
-        return [self._version, self._number_of_parent_blocks, self._parent_hashes, self._hash_merkle_root,
-                self._id_merkle_root, self._utxo_commitment, self._timestamp, self._bits, self._nonce]
+    @property
+    def target_int(self):
+        nonce_int = self.nonce_int
+        exponent = self.bits_bytes[-1]
+        coefficient = int.from_bytes(self.bits_bytes[:-1], "little")
+        target = coefficient * 256 ** (exponent - 3)
+        return target
 
-    def get_block_header_bytes_array(self):
+    @property
+    def block_header_hash(self):
+        dbl_hash = general_utils.hash_256(self.block_header_bytes)
+        block_hash = int.from_bytes(dbl_hash, "little")
+        return block_hash
+
+    @property
+    def num_of_txs_in_block_int(self):
         """
-        :return: Block header bytes as an array
+        Gets the number of Txs in this block
+        :return: A VarInt value
         """
-        block_header_list = self.get_block_header_list()
-        block_header_bytes_array = general_utils.build_element_from_list(block_header_list)
-        return block_header_bytes_array
+        if (self._num_of_txs_in_block_int == None) and (self._num_of_txs_in_block_bytes != None):
+            self._num_of_txs_in_block_int = general_utils.read_varint(BytesIO(self._num_of_txs_in_block_bytes))
+        return self._num_of_txs_in_block_int
+
+    @property
+    def num_of_txs_in_block_bytes(self):
+        """
+        Gets the number of Txs in this block
+        :return: bytes representation of this number.
+        """
+        if (self._num_of_txs_in_block_bytes == None) and (self._num_of_txs_in_block_int != None):
+            self._num_of_txs_in_block_bytes = general_utils.write_varint(self._num_of_txs_in_block_int)
+        return self._num_of_txs_in_block_bytes
+
+    @property
+    def coinbase_tx_obj(self):
+        """
+        The single coinbase Tx in this block
+        :return: coinbase Tx as a Tx object
+        """
+        if (self._coinbase_tx_obj == None) and (self._coinbase_tx_bytes != None):
+            self._coinbase_tx_obj = Tx.parse_tx(self._coinbase_tx_bytes)
+        return self._coinbase_tx_obj
+
+    @property
+    def coinbase_tx_bytes(self):
+        """
+        The single coinbase Tx in this block
+        :return: coinbase Tx as a bytes object.
+        """
+        if (self._coinbase_tx_bytes == None) and (self._coinbase_tx_obj != None):
+            self._coinbase_tx_bytes = bytes(self._coinbase_tx_obj)
+        return self._coinbase_tx_bytes
+
+    @property
+    def native_tx_list_of_objs(self):
+        """
+        Gets a list of native tx in this block.
+        :return: a list of Tx objs
+        """
+        return self._native_tx_list_of_objs
+
+    # ========== Set Methods ========== #
+
+    @version_bytes.setter
+    def version_bytes(self, version_bytes):
+        """
+        Set 'version'
+        :param version_bytes: version in bytes
+        :return: None
+        """
+        self._version_bytes = version_bytes
+
+    @version_int.setter
+    def version_int(self, version_int):
+        """
+        Set 'version'
+        :param version_bytes: version as an int
+        :return: None
+        """
+        self._version_int = version_int
+
+    @number_of_parent_blocks_bytes.setter
+    def number_of_parent_blocks_bytes(self, number_of_parent_blocks_bytes):
+        """
+        Sets number of parents
+        :param number_of_parent_blocks_bytes:
+        :return: None
+        """
+        self._number_of_parent_blocks_bytes = number_of_parent_blocks_bytes
+
+    @parent_hashes.setter
+    def parent_hashes(self, parent_hashes):
+        """
+        Sets the list of parent hashes.
+        :param parent_hashes: List of hashes (bytes)
+        :return: None
+        """
+        self._parent_hashes = parent_hashes
+
+    @hash_merkle_root_bytes.setter
+    def hash_merkle_root_bytes(self, hash_merkle_root_bytes):
+        """
+        Sets the Merkle root
+        :param hash_merkle_root_bytes:
+        :return: None
+        """
+        self._hash_merkle_root_bytes = hash_merkle_root_bytes
+
+    @id_merkle_root_bytes.setter
+    def id_merkle_root_bytes(self, id_merkle_root_bytes):
+        """
+        Sets the accepted id Merkle root
+        :param id_merkle_root_bytes:
+        :return: None
+        """
+        self._id_merkle_root_bytes = id_merkle_root_bytes
+
+    @utxo_commitment_bytes.setter
+    def utxo_commitment_bytes(self, utxo_commitment_bytes):
+        """
+        Sets the UTXO commitment
+        :param utxo_commitment_bytes:
+        :return: None
+        """
+        self._utxo_commitment_bytes = utxo_commitment_bytes
+
+    @timestamp_bytes.setter
+    def timestamp_bytes(self, timestamp_bytes):
+        """
+        Sets the timestamp (bytes)
+        :param timestamp_bytes:
+        :return: None
+        """
+        self._timestamp_bytes = timestamp_bytes
+
+    @timestamp_int.setter
+    def timestamp_int(self, timestamp_int):
+        """
+        Sets the timestamp (int)
+        :param timestamp_int:
+        :return: None
+        """
+        self._timestamp_int = timestamp_int
+
+    @bits_int.setter
+    def bits_int(self, bits_int):
+        """
+        Sets the 'bits' value (int).
+        :param bits_int:
+        :return: None
+        """
+        self._bits_int = bits_int
+
+    @bits_bytes.setter
+    def bits_bytes(self, bits_bytes):
+        """
+        Sets the 'bits' value (bytes)
+        :param bits_bytes:
+        :return: None
+        """
+        self._bits_bytes = bits_bytes
+
+    @nonce_bytes.setter
+    def nonce_bytes(self, nonce_bytes):
+        """
+        Sets 'nonce'
+        :param nonce_bytes:
+        :return: None
+        """
+        self._nonce_bytes = nonce_bytes
+
+    @nonce_int.setter
+    def nonce_int(self, nonce_int):
+        """
+        Sets 'nonce'
+        :param nonce_bytes:
+        :return: None
+        """
+        self._nonce_int = nonce_int
+        self.nonce_bytes = self._nonce_int.to_bytes(8, byteorder='little')
+
+    @num_of_txs_in_block_int.setter
+    def num_of_txs_in_block_int(self, num_of_txs_in_block_int):
+        """
+        Sets number of txs in block (int)
+        :param num_of_txs_in_block_int:
+        :return: None
+        """
+        self._num_of_txs_in_block_int = num_of_txs_in_block_int
+
+    @num_of_txs_in_block_bytes.setter
+    def num_of_txs_in_block_bytes(self, num_of_txs_in_block_bytes):
+        """
+        Sets number of txs in block (bytes)
+        :param num_of_txs_in_block_int:
+        :return: None
+        """
+        self._num_of_txs_in_block_bytes = num_of_txs_in_block_bytes
+
+    @coinbase_tx_obj.setter
+    def coinbase_tx_obj(self, coinbase_tx_obj):
+        """
+        Sets coinbase tx into block (tx as obj)
+        :param coinbase_tx_obj:
+        :return: None
+        """
+        self._coinbase_tx_obj = coinbase_tx_obj
+
+    @coinbase_tx_bytes.setter
+    def coinbase_tx_bytes(self, coinbase_tx_bytes):
+        """
+        Sets coinbase tx into block (tx as bytes)
+        :param coinbase_tx_obj:
+        :return: None
+        """
+        self._coinbase_tx_bytes = coinbase_tx_bytes
+
+    @native_tx_list_of_objs.setter
+    def native_tx_list_of_objs(self, native_tx_list_of_objs):
+        """
+        Sets list of native tx (objects)
+        :param native_tx_list_of_objs:
+        :return:
+        """
+        self._native_tx_list_of_objs = native_tx_list_of_objs
+
+    # def get_block_header_list(self):
+    #     """
+    #     :return: Block header bytes as a list
+    #     """
+    #     return [self._version_bytes, self._number_of_parent_blocks_bytes, self._parent_hashes,
+    #             self._hash_merkle_root_bytes, self._id_merkle_root_bytes, self._utxo_commitment_bytes,
+    #             self._timestamp_bytes, self._bits_bytes, self._nonce_bytes]
+
+    @property
+    def block_header_bytes(self):
+        """
+        :return: Block header bytes object
+        """
+        pass
+        block_header_bytes = self._version_bytes + self._number_of_parent_blocks_bytes + \
+                             b''.join(self.parent_hashes) + self.hash_merkle_root_bytes + \
+                             self.id_merkle_root_bytes + self.utxo_commitment_bytes + \
+                             self.timestamp_bytes + self.bits_bytes + self.nonce_bytes
+        return block_header_bytes
 
     def get_block_body_list(self):
         """
         :return: Block body bytes as a list
         """
-        coinbase_tx_list = self._coinbase_tx.get_tx_bytes()
+        coinbase_tx_list = self._coinbase_tx_obj.get_tx_bytes()
         native_txs_list = []
-        for tx in self._native_txs:
-            native_tx_list = tx.get_tx_bytes()
-            native_txs_list.append(native_tx_list)
-        return [self._num_of_txs_in_block, coinbase_tx_list, native_txs_list]
+        for tx in self._native_tx_list_of_objs:
+            native_tx_bytes = tx.get_tx_bytes()
+            native_txs_list.append(native_tx_bytes)
+        return [self.num_of_txs_in_block_bytes, coinbase_tx_list, native_txs_list]
 
     def get_block_body_bytes_array(self):
         """
@@ -265,16 +569,18 @@ class Block:
         block_body_bytes_array = general_utils.build_element_from_list(block_body_list)
         return block_body_bytes_array
 
-    def get_block_txs_list_for_hash_merkle_root(self):
+    @property
+    def block_txs_list_as_bytes(self):
         """
         Returns the Txs bytes as a list, not including the "payload length" & the "payload".
 
         :return: Txs bytes as a list
         """
-        coinbase_tx_bytes = self._coinbase_tx.get_tx_bytes_for_hash_merkle_root()
         txs_list = []
-        for tx in self._native_txs:
+        # first append the coinbase tx
+        txs_list.append(self._coinbase_tx_obj.get_tx_bytes_for_hash_merkle_root())
+        for tx in self._native_tx_list_of_objs:
+            # native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
             native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
             txs_list.append(native_tx_bytes)
-        txs_list.insert(0, coinbase_tx_bytes)
         return txs_list

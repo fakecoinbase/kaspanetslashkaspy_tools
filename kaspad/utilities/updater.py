@@ -5,6 +5,7 @@ This module holds all the UPDATE methods for the automation project.
 import random
 from io import BytesIO
 import time
+from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
@@ -12,13 +13,12 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object, conn=None):
+def update_all_valid_block_variables(block_object, block_template, conn=None):
     """
     Initiates the VALID updating process for the entire block
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_client.get_block_template(conn=conn)['result']
 
     update_parent_blocks_data(block_object,block_template)
     update_all_txs(block_object,block_template)
@@ -226,7 +226,7 @@ def update_version(block_object, version_int):
     :param block_object: The block object that holds the variables to update
     """
     version = bytes([version_int])
-    block_object.set_version(version)
+    block_object.version_bytes = version
 
 
 def update_version_invalid(block_object):
@@ -235,7 +235,7 @@ def update_version_invalid(block_object):
 
     :param block_object: The block object that holds the variables to update
     """
-    block_object.set_version(b"")
+    block_object.version_bytes = b""
 
 
 def update_parent_blocks_data(block_object, block_template):
@@ -248,8 +248,8 @@ def update_parent_blocks_data(block_object, block_template):
 
     #convert tips to bytes and flip
     reversed_tips_hashes_bytes = [ (bytes.fromhex(tip))[::-1]  for tip in tip_hashes_list ]
-    block_object.set_number_of_parent_blocks((len(tip_hashes_list)).to_bytes(1,byteorder='little'))
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.number_of_parent_blocks_bytes = (len(tip_hashes_list)).to_bytes(1,byteorder='little')
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_parent_blocks_data_to_genesis(block_object):
@@ -261,8 +261,8 @@ def update_parent_blocks_data_to_genesis(block_object):
     tip_hashes_list = json_rpc_client.get_genesis_blockhash_from_constants()
     tip_hashes_len_hex = hex(1).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
-    block_object.set_number_of_parent_blocks(bytes.fromhex(tip_hashes_len_hex))
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash):
@@ -283,8 +283,8 @@ def update_parent_blocks_data_to_provided_block(block_object, parent_block_hash)
         tip_hashes_list = [block_hash_hex]
     tip_hashes_len_hex = hex(len(tip_hashes_list)).replace("0x", "").zfill(2)
     reversed_tips_hashes_bytes = general_utils.reverse_parent_hash_hex_to_bytes(tip_hashes_list)
-    block_object.set_number_of_parent_blocks(bytes.fromhex(tip_hashes_len_hex))
-    block_object.set_parent_hashes(reversed_tips_hashes_bytes)
+    block_object.number_of_parent_blocks_bytes = bytes.fromhex(tip_hashes_len_hex)
+    block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
 def update_hash_merkle_root(block_object, block_template):
@@ -293,9 +293,10 @@ def update_hash_merkle_root(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    txs_list = block_object.get_block_txs_list_for_hash_merkle_root()
-    hash_merkle_root = calculate_hash_merkle_root(txs_list)
-    block_object.set_hash_merkle_root(hash_merkle_root)
+    # txs_list = block_object.get_block_txs_list_for_hash_merkle_root()
+    txs_list = block_object.block_txs_list_as_bytes
+    hash_merkle_root_bytes = calculate_hash_merkle_root(txs_list)
+    block_object.hash_merkle_root_bytes = hash_merkle_root_bytes
 
 
 def update_id_merkle_root(block_object, block_template):
@@ -304,9 +305,9 @@ def update_id_merkle_root(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    id_merkle_root = block_template['acceptedIdMerkleRoot']
-    reversed_id_merkle_root = (bytes.fromhex(id_merkle_root))[::-1]
-    block_object.set_id_merkle_root(reversed_id_merkle_root)
+    id_merkle_root_hex = block_template['acceptedIdMerkleRoot']
+    reversed_id_merkle_root_bytes = (bytes.fromhex(id_merkle_root_hex))[::-1]
+    block_object.id_merkle_root_bytes = reversed_id_merkle_root_bytes
 
 
 def update_utxo_commitment(block_object, block_template):
@@ -315,9 +316,9 @@ def update_utxo_commitment(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    utxo_commitment = block_template["utxoCommitment"]
-    reversed_utxo_commitment = (bytes.fromhex(utxo_commitment))[::-1]
-    block_object.set_utxo_commitment(reversed_utxo_commitment)
+    utxo_commitment_hex = block_template["utxoCommitment"]
+    reversed_utxo_commitment_bytes = (bytes.fromhex(utxo_commitment_hex))[::-1]
+    block_object.utxo_commitment_bytes = reversed_utxo_commitment_bytes
 
 
 def update_timestamp(block_object, block_template):
@@ -328,7 +329,8 @@ def update_timestamp(block_object, block_template):
     """
     timestamp_int = int(time.time())
     timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
-    block_object.set_timestamp(timestamp_bytes)
+    block_object.timestamp_int = timestamp_int
+    block_object.timestamp_bytes = timestamp_bytes
 
 
 def update_timestamp_invalid(block_object, timestamp_value):
@@ -339,15 +341,19 @@ def update_timestamp_invalid(block_object, timestamp_value):
     :param block_object: The block object that holds the variable to update
     """
     if type(timestamp_value) is int:
-        updated_timestamp_temp = hex((timestamp_value + (1 << 64)) % (1 << 64)).replace("0x", "")
+        updated_timestamp_int = (timestamp_value + (1 << 64)) % (1 << 64)
+        updated_timestamp_temp = hex(updated_timestamp_int).replace("0x", "")
         reverse_updated_timestamp_temp = general_utils.reverse_hex(updated_timestamp_temp)
         updated_timestamp_bytes = general_utils.convert_hex_to_bytes(reverse_updated_timestamp_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_timestamp_bytes)
+        block_object.timestamp_bytes = updated_timestamp_bytes
+        block_object.timestamp_int = updated_timestamp_int
     elif timestamp_value is None:
-        block_object.set_timestamp(b"")
+        block_object.timestamp_bytes = b""
+        block_object.timestamp_int = None
     else:
+        # TODO - what's that ???
         timestamp_str = timestamp_value
-        block_object.set_timestamp(bytes(timestamp_str, "utf-8"))
+        block_object.timestamp_bytes = bytes(timestamp_str, "utf-8")
 
 
 def update_bits(block_object, block_template):
@@ -360,7 +366,7 @@ def update_bits(block_object, block_template):
     # bits_bytes = general_utils.convert_hex_to_bytes(bits)
     # reversed_bits = general_utils.reverse_bytes(bits_bytes)
     bits_bytes = (bytes.fromhex(block_template['bits']))[::-1]
-    block_object.set_bits(bits_bytes)
+    block_object.bits_bytes = bits_bytes
 
 
 def update_bits_invalid(block_object, bits_value):
@@ -371,15 +377,17 @@ def update_bits_invalid(block_object, bits_value):
     :param block_object: The block object that holds the variable to update
     """
     if type(bits_value) is int:
-        updated_bits_temp = hex((bits_value + (1 << 64)) % (1 << 64)).replace("0x", "")
-        reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp)
+        updated_bits_temp_int = (bits_value + (1 << 64) % (1 << 64))
+        updated_bits_temp_hex = hex(updated_bits_temp_int).replace("0x", "")
+        reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp_hex)
         updated_bits_bytes = general_utils.convert_hex_to_bytes(reverse_updated_bits_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_bits_bytes)
+        block_object.bits_bytes = updated_bits_bytes
     elif bits_value is None:
         block_object.set_bits(b"")
     else:
+        # TODO - whats that ???
         bits_str = bits_value
-        block_object.set_timestamp(bytes(bits_str, "utf-8"))
+        block_object.bits_bytes = bytes(bits_str, "utf-8")
 
 
 def update_nonce(block_object):
@@ -388,9 +396,10 @@ def update_nonce(block_object):
 
     :param block_object: The block object that holds the variable to update
     """
-    block_header_list = block_object.get_block_header_list()
-    nonce = calculate_nonce(block_header_list)
-    block_object.set_nonce(nonce)
+    # block_header_list = block_object.get_block_header_list()
+    # nonce = calculate_nonce(block_header_list)
+    nonce = calculate_nonce(block_object)
+    block_object.nonce_bytes = nonce
 
 
 def update_nonce_invalid(block_object, nonce_value):
@@ -404,12 +413,13 @@ def update_nonce_invalid(block_object, nonce_value):
         updated_nonce_temp = hex((nonce_value + (1 << 64)) % (1 << 64)).replace("0x", "")
         reverse_updated_nonce_temp = general_utils.reverse_hex(updated_nonce_temp)
         updated_nonce_bytes = general_utils.convert_hex_to_bytes(reverse_updated_nonce_temp.ljust(16, "0"))
-        block_object.set_timestamp(updated_nonce_bytes)
+        block_object.nonce_bytes = updated_nonce_bytes
     elif nonce_value is None:
-        block_object.set_nonce(b"")
+        block_object.nonce_bytes = b""
     else:
+        # TODO ????
         nonce_str = nonce_value
-        block_object.set_timestamp(bytes(nonce_str, "utf-8"))
+        block_object.nonce_bytes = bytes(nonce_str, "utf-8")
 
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
@@ -421,11 +431,7 @@ def update_all_txs(block_object, block_template):
     :param block_object: The block object that holds the variable to update
     """
     coinbase_tx_object = update_coinbase_tx(block_template)
-    block_object.set_coinbase_tx(coinbase_tx_object)
-
-
-def update_num_of_txs_in_block(tx_object):
-    pass
+    block_object.coinbase_tx_obj = coinbase_tx_object
 
 
 def update_coinbase_tx(block_template):
@@ -448,42 +454,59 @@ def update_native_txs(tx_object):
 # ========== Calculate Nonce method ========== #
 
 
-def calculate_nonce(block_header_list):
+# def calculate_nonce(block_header_list):
+#     """
+#     Looks for a hash that will be smaller than the target.
+#
+#     :param block_header_list: The block header bytes parsed as a list
+#     :return: New nonce as bytes
+#     """
+#     block_header_list = block_header_list
+#     block_header = general_utils.build_element_from_list(block_header_list)
+#     bits = block_header_list[-2]
+#     original_nonce = block_header_list[-1]
+#     nonce = block_header_list[-1]
+#     while True:  # Runs until a nonce smaller than Target is found
+#         nonce_int = int.from_bytes(nonce, "little")
+#         exponent = bits[-1]
+#         coefficient = int.from_bytes(bits[:-1], "little")
+#         target = coefficient * 256 ** (exponent - 3)
+#         # print("target: " + str(target))
+#         block_hash = int.from_bytes(general_utils.hash_256(block_header), "little")
+#         # print("block_hash: " + str(block_hash))
+#
+#         if block_hash >= target:
+#             # If nonce == original nonce or nonce_int > than MAX_UINT64 generate a random nonce
+#             if nonce == original_nonce or nonce_int > json_rpc_client.get_max_uint64_from_constants():
+#                 nonce_int = random.randint(0, json_rpc_client.get_max_uint64_from_constants())
+#                 nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
+#                 nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+#             else:
+#                 nonce_int += 1
+#                 nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
+#                 nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+#
+#             block_header_list[-1] = nonce
+#             block_header = general_utils.build_element_from_list(block_header_list)
+#         else:
+#             return nonce
+
+def calculate_nonce(block_object):
     """
     Looks for a hash that will be smaller than the target.
 
     :param block_header_list: The block header bytes parsed as a list
     :return: New nonce as bytes
     """
-    block_header_list = block_header_list
-    block_header = general_utils.build_element_from_list(block_header_list)
-    bits = block_header_list[-2]
-    original_nonce = block_header_list[-1]
-    nonce = block_header_list[-1]
-    while True:  # Runs until a nonce smaller than Target is found
-        nonce_int = int.from_bytes(nonce, "little")
-        exponent = bits[-1]
-        coefficient = int.from_bytes(bits[:-1], "little")
-        target = coefficient * 256 ** (exponent - 3)
-        # print("target: " + str(target))
-        block_hash = int.from_bytes(general_utils.hash_256(block_header), "little")
-        # print("block_hash: " + str(block_hash))
+    target = block_object.target_int
+    hash = block_object.block_header_hash
 
-        if block_hash >= target:
-            # If nonce == original nonce or nonce_int > than MAX_UINT64 generate a random nonce
-            if nonce == original_nonce or nonce_int > json_rpc_client.get_max_uint64_from_constants():
-                nonce_int = random.randint(0, json_rpc_client.get_max_uint64_from_constants())
-                nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
-                nonce = general_utils.convert_hex_to_bytes(nonce_hex)
-            else:
-                nonce_int += 1
-                nonce_hex = hex(nonce_int).replace("0x", "").zfill(16)
-                nonce = general_utils.convert_hex_to_bytes(nonce_hex)
+    while hash >= target:
+        block_object.nonce_int = (block_object.nonce_int + 1 ) % kaspad_constants.MAX_UINT64
+        hash = block_object.block_header_hash
 
-            block_header_list[-1] = nonce
-            block_header = general_utils.build_element_from_list(block_header_list)
-        else:
-            return nonce
+
+    return block_object.nonce_bytes
 
 
 # ========== Calculate Hash Merkle Root methods ========== #

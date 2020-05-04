@@ -1,3 +1,4 @@
+from io import BytesIO
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.tx_script_codes import op_codes_to_bytes, bytes_to_op_codes
 from kaspy_tools.utils import general_utils
@@ -18,9 +19,11 @@ class TxScript:
 
 
     @classmethod
-    def parse_tx_script(cls, *, raw_script=''):
+    def parse_tx_script(cls, *, raw_script='', length=0):
         if type(raw_script) is str:     # i.e:  hex string
             script_bytes = bytes.fromhex(raw_script)
+        elif type(raw_script) is BytesIO:
+            script_bytes = raw_script.read(length)
         else:               # type(raw_script) is bytes
             script_bytes = raw_script
         new_script = cls()
