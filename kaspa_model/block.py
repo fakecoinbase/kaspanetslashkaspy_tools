@@ -279,7 +279,7 @@ class Block:
     @property
     def bits_bytes(self):
         """
-        Gets the 'bits' balue.
+        Gets the 'bits' value.
         :return: The 'bits' value (bytes).
         """
         if (not self._bits_bytes) and (self._bits_int != None):
