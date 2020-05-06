@@ -50,16 +50,16 @@ def address_to_public_key_hash(public_key, compressed=False):
     return ripemd160_hash
 
 
-def get_version(address):
-    address = cashaddress.Address._cash_string(address)
-
-    if address.version == 'P2PKH':
-        return 'main'
-    elif address.version == 'P2PKH-TESTNET':
-        return 'test'
-    else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet P2PKH address.'.format(address.version))
+# def get_version(address):
+#     address = cashaddress.Address._cash_string(address)
+#
+#     if address.version == 'P2PKH':
+#         return 'main'
+#     elif address.version == 'P2PKH-TESTNET':
+#         return 'test'
+#     else:
+#         raise ValueError('{} does not correspond to a mainnet nor '
+#                          'testnet P2PKH address.'.format(address.version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):

@@ -437,6 +437,8 @@ def update_all_txs(block_object, block_template, native_txs=None):
     """
     coinbase_tx_object = update_coinbase_tx(block_template)
     block_object.coinbase_tx_obj = coinbase_tx_object
+    if native_txs==None:
+        return
     for tx in native_txs:
         block_object.add_native_transaction(tx)
 

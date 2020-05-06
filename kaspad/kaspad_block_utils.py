@@ -36,9 +36,9 @@ def submit_valid_block(*, conn=None, native_txs=None):
     # block_bytes, block_hash = block_generator.generate_valid_block_and_hash(block_file_path, conn)
     block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs)
 
-    block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, conn=conn)
-    return response, response_json, block_hash_hex
+    # block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
+    response, response_json = json_rpc_client.submit_block_request(block_hex=block_bytes.hex(), conn=conn)
+    return response, response_json, block_hash.hex()
 
 
 def submit_pre_generated_block(block_bytes, block_hash, options=None, conn=None):
