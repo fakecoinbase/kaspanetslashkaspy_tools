@@ -100,7 +100,7 @@ class Block:
 
         new_block._coinbase_tx_obj = coinbase_tx_obj
         new_block._coinbase_tx_bytes = coinbase_tx_bytes
-        if native_tx_list_of_objs is None:
+        if native_tx_list_of_objs==None:
             new_block._native_tx_list_of_objs = []
         else:
             new_block._native_tx_list_of_objs = native_tx_list_of_objs
