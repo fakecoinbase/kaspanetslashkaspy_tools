@@ -1,11 +1,12 @@
 """
 This module holds the methods that handle all the JSON-RPC requests for the automation project.
 """
-
+from kaspy_tools.logs import config_logger
 import requests
 import json
 from kaspy_tools.kaspad.json_rpc import json_rpc_constants
 
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 def submit_block_request(hex_block, options=None, conn=None):
     """
@@ -40,6 +41,7 @@ def submit_block_request(hex_block, options=None, conn=None):
     response = requests.post(conn.updated_url, data=payload_json, headers=headers,
                              verify=conn.cert_file_path)
     response_json = response.json()
+    KT_logger.debug('Submit block: %s', str(response_json['result']))
     return response, response_json
 
 
@@ -181,6 +183,10 @@ def get_block_template_request(conn=None):
     response = requests.get(conn.updated_url, data=payload_json, headers=headers,
                              verify=conn.cert_file_path)
     response_json = response.json()
+    if response_json['result'] is None:
+        KT_logger.error('template request failed: ', response_json['error'])
+    else:
+        KT_logger.debug('template good.')
     return response_json
 
 
@@ -220,7 +226,7 @@ def get_blocks(requested_blocks_count, conn=None):
             all_verbose_blocks = all_verbose_blocks[:requested_blocks_count]
             all_raw_blocks = all_raw_blocks[:requested_blocks_count]
             break
-        if len(response_json) < 1000:
+        if len(response_json['result']['verboseBlocks']) < 3:
             break
     return all_raw_blocks, all_verbose_blocks
 

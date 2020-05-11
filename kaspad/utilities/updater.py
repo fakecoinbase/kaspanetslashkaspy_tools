@@ -509,6 +509,7 @@ def calculate_nonce(block_object):
     """
     target = block_object.target_int
     hash = block_object.block_header_hash
+    block_object.nonce_int = random.randint(0,kaspad_constants.MAX_UINT64)
 
     while hash >= target:
         block_object.nonce_int = (block_object.nonce_int + 1 ) % kaspad_constants.MAX_UINT64
