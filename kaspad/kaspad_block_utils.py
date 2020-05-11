@@ -33,7 +33,6 @@ def submit_valid_block(*, conn=None, native_txs=None):
 
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    # block_bytes, block_hash = block_generator.generate_valid_block_and_hash(block_file_path, conn)
     block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs)
 
     # block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)

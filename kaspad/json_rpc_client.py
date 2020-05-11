@@ -48,10 +48,7 @@ def get_blocks(block_count, conn=None):
 
 def get_block_template(conn=None):
     res = json_rpc_requests.get_block_template_request(conn)
-    if res['result'] is None:
-        KT_logger.error('json-rpc template request failed: ', res['error'])
-    else:
-        KT_logger.info('json-rpc template: %s...', str(res['result'])[:20])
+
 
     return res
 

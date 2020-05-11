@@ -31,3 +31,6 @@ FINALITY_DEVNET = 1000
 
 # Phantom K
 PHANTOM_K = 10
+
+# Block has string (hex) slice, to be used in logs, drawing etc.
+PARTIAL_HASH_SIZE= -10
