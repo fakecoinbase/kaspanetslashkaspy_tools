@@ -26,17 +26,7 @@ def make_batch_into_queue(*, min_width, max_width, queue=None, conn=None):
 def submit_some_blocks(*, queue=None, min_width, max_width, conn=None):
     q_size = queue.qsize()
     KT_logger.debug('Queue size: %d.', q_size)
-    rand_count = random.randint(min_width, max_width)
-    submit_count = min(rand_count,q_size )
-    for i in range(submit_count):
+    rand_count = random.randint(q_size//2, q_size)
+    for i in range(rand_count):
         block = queue.get()
         response, response_json = json_rpc_requests.submit_block_request(block.hex(),options=None,conn=conn)
-
-
-
-
-def try_make_dag():
-    make_dag()
-
-if __name__ == '__main__':
-    try_make_dag()
