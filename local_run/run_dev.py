@@ -123,6 +123,7 @@ def run_kaspad_services(debug=False):
                              username=username, password=password, cert_file_path=cert_file)
         cons[srv_name] =  new_conn
 
+
     os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files')
     if debug:
         second = 'second-debug'
@@ -190,29 +191,26 @@ def tag_image_latest(service_name):
     completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
 
 
-def build_and_run():
-    """
-    An example function, to show how to build image and run a pair of kaspad containers.
-    :return:
-    """
-    os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH)      # go to directory where docker_files are located
-    try:
-        remove_all_images_and_containers()
-        docker_image_build('kaspad', kaspad_constants.KASPAD_LOCAL_PATH)
-        tag_image_latest('kaspad')
-        run_kaspad_services()
-    except subprocess.CalledProcessError as pe:
-        print(pe.stderr)
+# def build_and_run():
+#     """
+#     An example function, to show how to build image and run a pair of kaspad containers.
+#     :return:
+#     """
+#     os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH)      # go to directory where docker_files are located
+#     try:
+#         remove_all_images_and_containers()
+#         docker_image_build('kaspad', kaspad_constants.KASPAD_LOCAL_PATH)
+#         tag_image_latest('kaspad')
+#         run_kaspad_services()
+#     except subprocess.CalledProcessError as pe:
+#         print(pe.stderr)
 
 
-    def clear_volume_files():
-        import os
-        top = os.path.expanduser('~/volumes/kaspad')
-        for root, dirs, files in os.walk(top, topdown=False):
-            for name in files:
-                os.remove(os.path.join(root, name))
-            for name in dirs:
-                os.rmdir(os.path.join(root, name))
+def clear_volume_files():
+    import subprocess
+    volume_dir = os.path.expanduser('~/volumes/kaspad')
+    cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+
 
 
 if __name__ == '__main__':

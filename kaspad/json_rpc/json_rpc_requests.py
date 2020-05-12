@@ -189,6 +189,22 @@ def get_block_template_request(conn=None):
         KT_logger.debug('template good.')
     return response_json
 
+def get_chain_from_block(start_hash=None, conn=None):
+    headers = {'content-type': 'application/json'}
+
+    payload = {
+        "method": "getChainFromBlock",
+        "params": [True, start_hash],
+        "jsonrpc": "2.0",
+        "id": 0,
+    }
+    payload_json = json.dumps(payload)
+
+    response = requests.post(conn.updated_url, data=payload_json, headers=headers,
+                             verify=conn.cert_file_path)
+    response_json = response.json()
+    return response_json
+
 
 def get_blocks(requested_blocks_count, conn=None):
     """
