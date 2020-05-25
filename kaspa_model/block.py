@@ -502,6 +502,7 @@ class Block:
         :return: None
         """
         self._num_of_txs_in_block_int = num_of_txs_in_block_int
+        self._num_of_txs_in_block_bytes = general_utils.write_varint(self._num_of_txs_in_block_int)
 
     @num_of_txs_in_block_bytes.setter
     def num_of_txs_in_block_bytes(self, num_of_txs_in_block_bytes):

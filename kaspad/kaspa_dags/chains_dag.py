@@ -9,7 +9,9 @@ from kaspy_tools.logs import config_logger
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
-def make_and_submit_single_chain(floors=None, conn=None):
+def make_and_submit_single_chain(*, floors=None, conn):
+    if not floors:
+        floors=[]
     for f in floors:
         floor_blocks = []
         for b in range(f):
@@ -18,11 +20,11 @@ def make_and_submit_single_chain(floors=None, conn=None):
         for block in floor_blocks:
             response, response_json = json_rpc_requests.submit_block_request(block.hex(), options=None, conn=conn)
 
-def get_current_blocks(conn=None):
+def get_current_blocks(conn):
     raw_blocks, verbose_blocks = json_rpc_requests.get_blocks(requested_blocks_count=200, conn=conn)
     return raw_blocks
 
-def submit_saved_blocks(saved_blocks=None, conn=None):
+def submit_saved_blocks(saved_blocks, conn):
     for block in saved_blocks:
         response, response_json = json_rpc_requests.submit_block_request(block, options=None, conn=conn)
 
@@ -30,25 +32,33 @@ def clean_blocks():
     run_dev.remove_all_containers()
     run_dev.clear_volume_files()
 
-def get_blocks_from_chain(chain_definition=None, clear=True, conn=None):
+def get_blocks_from_chain(*, chain_definition=None, clear=True, conn):
     if clear:
         clean_blocks()
         run_dev.run_kaspad_services()
-    make_and_submit_single_chain(chain_definition, conn=conn)
+    make_and_submit_single_chain(floors=chain_definition, conn=conn)
     chain_blocks = get_current_blocks(conn=conn)
     return chain_blocks
 
 
-def make_chains_dag(conn=None):
-    chain_one = get_blocks_from_chain([1,1,1,1,1], conn=conn)
+def make_chains_dag(conn):
+    chain_one = get_blocks_from_chain(chain_definition=[1,1,1,1,1], conn=conn)
     # when we get the blocks for chain_two, we clean blocks of chain_one
-    chain_two = get_blocks_from_chain([2,1], conn=conn)
+    chain_two = get_blocks_from_chain(chain_definition=[2,1], conn=conn)
     # Now chain_two is submitted, we submit chain_one
     submit_saved_blocks(saved_blocks=chain_one, conn=conn)
     # Now chain_one AND chain_two are submitted
     # getting chain_three without clearing:
-    chain_three = get_blocks_from_chain([1 for i in range(110)], clear=False, conn=conn)
+    chain_three = get_blocks_from_chain(chain_definition=[1 for i in range(110)], clear=False, conn=conn)
     # now submit
 
-
-
+def make_complex_dag(conn):
+    chain_one = get_blocks_from_chain(chain_definition=[1 for i in range(110)], conn=conn)
+    # when we get the blocks for chain_two, we clean blocks of chain_one
+    chain_two = get_blocks_from_chain(chain_definition=[3,1], conn=conn, clear=False)
+    # Now chain_two is submitted, we submit chain_one
+    submit_saved_blocks(saved_blocks=chain_one, conn=conn)
+    # Now chain_one AND chain_two are submitted
+    # getting chain_three without clearing:
+    chain_three = get_blocks_from_chain(chain_definition=[1 for i in range(110)], clear=False, conn=conn)
+    # now submit
