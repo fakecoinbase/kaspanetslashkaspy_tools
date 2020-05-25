@@ -2,23 +2,25 @@
 This module can be used to compute the utxo set.
 It does so by downloading blocks from a kaspad using json-rpc.
 It then uses the downloaded blocks, and computes the utxo set that matches those blocks.
-Call download_blocks_and_utxc_set to get the utxo set and the blocks.
+Call download_blocks_and_utxo_set to get the utxo set and the blocks.
 """
 import json
 from _datetime import datetime
 
 from kaspy_tools.kaspad import kaspad_block_utils
 from kaspy_tools.kaspad import json_rpc_client
+from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.kaspa_model import tx_out
 from kaspy_tools.kaspa_model import tx_script
 import kaspy_tools.kaspa_model.tx
 
 
-def download_blocks_and_utxc_set(block_count, save_location=None, conn=None):
+def download_blocks_and_utxo_set(block_count, save_location=None, conn=None):
 
     raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(block_count, conn=conn)
 
-    utxo_list = compute_utxo_list(verbose_blocks)
+    # utxo_list = compute_utxo_list(verbose_blocks)
+    utxo_list = collect_utxo(all_blocks=verbose_blocks, conn=conn)
     if save_location is not None:
         save_raw_blocks(raw_blocks, save_location)
         save_utxo_set(utxo_list, save_location)
@@ -101,6 +103,12 @@ def compute_utxo_list(all_verbose_blocks):
                 collect_tx_utxo(tx, utxo_list)
 
     return utxo_list
+
+def collect_utxo(*, all_blocks=None, conn=None):
+    for block in all_blocks:
+        if block['isChainBlock'] == True and len(block['parentHashes']) > 1:
+            result = json_rpc_requests.get_chain_from_block(conn=conn)
+            pass
 
 
 def collect_tx_utxo(tx, utxo_list):

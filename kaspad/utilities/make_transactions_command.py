@@ -17,7 +17,7 @@ from kaspy_tools.kaspa_crypto.schnorr_sing_key import ECKey
 
 
 
-def make_new_transactions(count, utxo_list, addresses):
+def make_new_transactions(*, count, utxo_list, addresses, in_count=1, out_count=1 ):
     """
     Main function that creates transactions.
     Parameters
@@ -33,7 +33,7 @@ def make_new_transactions(count, utxo_list, addresses):
     tx_list = []
     fees=1000000
     for tx_num in range(count):
-        tx = make_a_single_transaction(in_count=1, out_count=1, utxo_list=utxo_list, addresses=addresses, fees=fees)
+        tx = make_a_single_transaction(in_count=in_count, out_count=out_count, utxo_list=utxo_list, addresses=addresses, fees=fees)
         tx_list.append(tx)
 
     return tx_list
