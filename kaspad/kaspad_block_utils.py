@@ -51,7 +51,7 @@ def submit_pre_generated_block(block_bytes, block_hash, options=None, conn=None)
     :return: The original response of the submit request, response_json & block_hash_hex
     """
     block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex, options, conn)
+    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -86,11 +86,10 @@ def submit_block_with_specific_parents(block_file_path, parent_block_hash, optio
     :param options: Enter specific options that are required, for example: like a sub-network, else leave as None
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    block_bytes, block_hash = block_generator.generate_block_to_specific_parent(block_file_path,
-                                                                                parent_block_hash, conn)
-    block_hex = general_utils.convert_bytes_to_hex(block_bytes)
-    block_hash_hex = general_utils.convert_bytes_to_hex(block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex, options, conn)
+    block_bytes, block_hash_hex = block_generator.generate_block_to_specific_parent(block_file_path,
+                                                                                parent_block_hash, conn=conn)
+    block_hex = block_bytes.hex()
+    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -115,10 +114,10 @@ def submit_modified_block(block_file_path, invalid_parameter_string, invalid_arg
     """
     block_bytes, block_hash = block_generator.generate_modified_block_and_hash(block_file_path,
                                                                                invalid_parameter_string,
-                                                                               invalid_arg_type)
-    block_hex = general_utils.convert_bytes_to_hex(block_bytes)
-    block_hash_hex = general_utils.convert_bytes_to_hex(block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex, options, conn)
+                                                                               invalid_arg_type, conn=conn)
+    block_hex = block_bytes.hex()
+    block_hash_hex = block_hash.hex()
+    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -130,8 +129,8 @@ def convert_block_data_for_rpc_request(block_bytes, block_hash):
     :param block_hash: The block hash as bytes
     :return: block_hex and block_hash_hex
     """
-    block_hex = general_utils.convert_bytes_to_hex(block_bytes)
-    block_hash_hex = general_utils.convert_bytes_to_hex(block_hash)
+    block_hex = block_bytes.hex()
+    block_hash_hex = block_hash.hex()
     return block_hex, block_hash_hex
 
 
@@ -144,14 +143,14 @@ def get_current_tip_hashes(conn=None):
     return json_rpc_client.get_current_tip_hashes(conn)
 
 
-def get_block_data(block_hash, conn=None):
-    """
-    Returns the requested block data status using the function in json_rpc_client.py.
-
-    :param block_hash: Hash of the requested block
-    :return: block data status as a string
-    """
-    return json_rpc_client.get_block_data(block_hash, conn=None)
+# def get_block_data(block_hash, conn=None):
+#     """
+#     Returns the requested block data status using the function in json_rpc_client.py.
+#
+#     :param block_hash: Hash of the requested block
+#     :return: block data status as a string
+#     """
+#     return json_rpc_client.get_block_data(block_hash, conn=conn)
 
 
 def get_blocks(block_count, conn=None):

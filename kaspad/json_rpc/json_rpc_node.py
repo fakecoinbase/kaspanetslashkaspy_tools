@@ -60,16 +60,16 @@ def get_node_tip_hashes_list(conn=None):
 #     return tx_data
 
 
-def get_block_data_status(block_hash, url=None):
-    """
-    Retrieves the status of a specific block data from get_block_request()
-
-    :param block_hash: Hash of the requested block
-    :return: action_status as a string
-    """
-    response = json_rpc_requests.get_block_request(block_hash, url)
-    action_status = kaspy_tools.kaspad.kaspad_block_utils.error_handler(response["error"])
-    return action_status
+# def get_block_data_status(block_hash, url=None):
+#     """
+#     Retrieves the status of a specific block data from get_block_request()
+#
+#     :param block_hash: Hash of the requested block
+#     :return: action_status as a string
+#     """
+#     response = json_rpc_requests.get_block_request(block_hash, url)
+#     action_status = kaspy_tools.kaspad.kaspad_block_utils.error_handler(response["error"])
+#     return action_status
 
 
 def get_block_data_parent_hash(block_hash, url=None):

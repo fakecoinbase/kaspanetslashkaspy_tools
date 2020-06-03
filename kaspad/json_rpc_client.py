@@ -23,14 +23,14 @@ def get_current_tip_hashes(conn=None):
     return json_rpc_node.get_node_tip_hashes_list(conn)
 
 
-def get_block_data(block_hash, conn=None):
-    """
-    Returns the requested block data status using the function in json_rpc_node.py.
-
-    :param block_hash: Hash of the requested block
-    :return: block data status as a string
-    """
-    return json_rpc_node.get_block_data_status(block_hash, conn)
+# def get_block_data(block_hash, conn=None):
+#     """
+#     Returns the requested block data status using the function in json_rpc_node.py.
+#
+#     :param block_hash: Hash of the requested block
+#     :return: block data status as a string
+#     """
+#     return json_rpc_node.get_block_data_status(block_hash, conn)
 
 
 def get_blocks(block_count, conn=None):
@@ -47,7 +47,7 @@ def get_blocks(block_count, conn=None):
 
 
 def get_block_template(conn=None):
-    res = json_rpc_requests.get_block_template_request(conn)
+    res = json_rpc_requests.get_block_template_request(conn=conn)
 
 
     return res
