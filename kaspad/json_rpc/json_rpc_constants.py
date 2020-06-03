@@ -14,11 +14,11 @@ RPC_USER = 'user'
 RPC_PASSWORD = 'pass'
 
 # The DEVNET_CLASSIC_KASPAROV_URL to be used
-RPC_DEVNET_URL = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@kaspad-0.daglabs.com" + ":" + str(RPC_PORT)
+# RPC_DEVNET_URL = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@kaspad-0.daglabs.com" + ":" + str(RPC_PORT)
 
 # Local nodes
-LOCAL_NODE_1 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
-LOCAL_NODE_2 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
+# LOCAL_NODE_1 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
+# LOCAL_NODE_2 = "https://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
 # LOCAL_NODE_1 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16615"
 # LOCAL_NODE_2 = "http://" + RPC_USER + ":" + RPC_PASSWORD + "@127.0.0.1:16616"
 

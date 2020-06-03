@@ -310,6 +310,11 @@ class Block:
         Get the 'nonce' value
         :return: 'nonce as int
         """
+        try:
+            self._nonce_int
+        except:
+            self._nonce_int = int.from_bytes(self._nonce_bytes, byteorder='little')
+
         return self._nonce_int
 
     @property
@@ -325,6 +330,12 @@ class Block:
         dbl_hash = general_utils.hash_256(self.block_header_bytes)
         block_hash = int.from_bytes(dbl_hash, "little")
         return block_hash
+
+    @property
+    def block_header_hash_bytes(self):
+        dbl_hash = general_utils.hash_256(self.block_header_bytes)
+        return dbl_hash[::-1]
+
 
     @property
     def num_of_txs_in_block_int(self):
@@ -599,3 +610,8 @@ class Block:
             native_tx_bytes = tx.get_tx_bytes_for_hash_merkle_root()
             txs_list.append(native_tx_bytes)
         return txs_list
+
+    def __bytes__(self):
+        block_header = self.block_header_bytes
+        block_body = self.get_block_body_bytes_array()
+        return block_header + block_body

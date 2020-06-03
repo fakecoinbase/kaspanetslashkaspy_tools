@@ -189,12 +189,12 @@ def get_block_template_request(conn=None):
         KT_logger.debug('template good.')
     return response_json
 
-def get_chain_from_block(start_hash=None, conn=None):
+def get_chain_from_block(start_hash=None, conn=None, include_blocks=False):
     headers = {'content-type': 'application/json'}
 
     payload = {
         "method": "getChainFromBlock",
-        "params": [True, start_hash],
+        "params": [include_blocks, start_hash],
         "jsonrpc": "2.0",
         "id": 0,
     }

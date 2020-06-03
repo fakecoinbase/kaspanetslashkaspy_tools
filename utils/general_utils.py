@@ -37,15 +37,15 @@ def load_binary_file(file_path):
     return data
 
 
-def convert_bytes_to_hex(element_bytes):
-    """
-    Converts a bytes array to an hexadecimal string.
-
-    :param element_bytes: The element bytes array
-    :return: The element as hexadecimal string
-    """
-    hex_data = element_bytes.hex()
-    return hex_data
+# def convert_bytes_to_hex(element_bytes):
+#     """
+#     Converts a bytes array to an hexadecimal string.
+#
+#     :param element_bytes: The element bytes array
+#     :return: The element as hexadecimal string
+#     """
+#     hex_data = element_bytes.hex()
+#     return hex_data
 
 
 def convert_hex_to_bytes(element_hex):

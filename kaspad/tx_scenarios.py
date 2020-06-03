@@ -9,8 +9,7 @@ from kaspy_tools.local_run import run_dev
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
-def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=3, conn=None):
-
+def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=None, conn=None):
     """
     Parameters
     ----------

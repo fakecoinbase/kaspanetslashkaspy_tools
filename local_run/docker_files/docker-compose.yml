@@ -7,7 +7,7 @@ services:
     - --devnet
     - --acceptanceindex
     - --nodnsseed
-    - --miningaddr=kaspadev:qzt3nmrur7uelhqcln48xk7gt824wr76yczwfdqn6z
+    - --miningaddr=kaspadev:qqcdy3a23sdhxdqnkc03d0vhtc9qnv5xpsqv7ncd8a
     - --rpcuser=user
     - --rpcpass=pass
     - --rpclisten=127.0.0.1:16615
