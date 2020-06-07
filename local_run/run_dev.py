@@ -205,13 +205,27 @@ def tag_image_latest(service_name):
 #     except subprocess.CalledProcessError as pe:
 #         print(pe.stderr)
 
+def volume_dir_exist(volume_dir_name):
+    volume_dir = os.path.expanduser('~/volumes/')
+    files = os.listdir(volume_dir)
+    return volume_dir_name in files
 
 def clear_volume_files():
     import subprocess
     volume_dir = os.path.expanduser('~/volumes/kaspad')
     cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
+def save_volume_files(*, dir_name):
+    import subprocess
+    volume_dir = os.path.expanduser('~/volumes')
+    cmd1 = subprocess.run(['sudo -S rm -rf' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+    cmd2 = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
+def restore_volume_files(*, dir_name):
+    import subprocess
+    volume_dir = os.path.expanduser('~/volumes')
+    cmd1 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir + '/kaspad')
+    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
 if __name__ == '__main__':
     create_docker_compose_file(KaspaAddress())

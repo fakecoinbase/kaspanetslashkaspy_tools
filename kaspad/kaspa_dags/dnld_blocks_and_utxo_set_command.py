@@ -20,7 +20,7 @@ def download_blocks_and_utxo_set(block_count, save_location=None, conn=None):
     raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(block_count, conn=conn)
 
     # utxo_list = compute_utxo_list(verbose_blocks)
-    utxo_list = collect_utxo(all_blocks=verbose_blocks, conn=conn)
+    utxo_list = collect_utxo(verbose_blocks=verbose_blocks, conn=conn)
     if save_location is not None:
         save_raw_blocks(raw_blocks, save_location)
         save_utxo_set(utxo_list, save_location)
@@ -104,12 +104,29 @@ def compute_utxo_list(all_verbose_blocks):
 
     return utxo_list
 
-def collect_utxo(*, all_blocks=None, conn=None):
-    for block in all_blocks:
-        if block['isChainBlock'] == True and len(block['parentHashes']) > 1:
-            result = json_rpc_requests.get_chain_from_block(conn=conn)
-            pass
+def collect_utxo(*, conn=None, verbose_blocks=None):
+    tx_ordered_list = []
+    result = json_rpc_requests.get_chain_from_block(start_hash=None, conn=conn, include_blocks=False)
+    blocks_dict = {block['hash']: block for block in verbose_blocks}
+    added_blocks = result['result']['addedChainBlocks']
+    for block in added_blocks:
+        for accepted_block in block['acceptedBlocks']:
+            for tx in blocks_dict[accepted_block['hash']]['rawRx']:
+                if tx['txId'] in accepted_block['acceptedTxIds']:
+                    tx_ordered_list.append(tx)
 
+    utxo_list = utxo_from_ordered_tx_list(tx_ordered_list)
+    return utxo_list
+
+def utxo_from_ordered_tx_list(tx_ordered_list):
+    utxo_list = []
+    for tx in tx_ordered_list:
+        if tx['subnetwork'] == kaspy_tools.kaspa_model.tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
+            collect_coinbase_utxo(tx, utxo_list)
+        else:
+            collect_tx_utxo(tx, utxo_list)
+
+    return utxo_list
 
 def collect_tx_utxo(tx, utxo_list):
     """
