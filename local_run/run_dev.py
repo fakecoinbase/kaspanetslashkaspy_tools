@@ -7,22 +7,19 @@ import os
 import time
 import subprocess
 import yaml
-from kaspy_tools.kaspy_tools_constants import LOCAL_RUN_PATH
+from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
 
-from kaspy_tools import kaspy_tools_constants
-from kaspy_tools.kaspad import kaspad_constants
-
 
 def read_docker_compose_template():
-    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose-template.yml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose-template.yml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
 def write_docker_compose(yaml_data):
-    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
     with open(docker_file, 'w') as f:
         yaml.dump(yaml_data, f)
 
@@ -33,7 +30,7 @@ def create_docker_compose_file(mining_address):
     :param address:
     :return:
     """
-    save_wif_file = LOCAL_RUN_PATH + '/docker_files/save_mining'
+    save_wif_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/save_mining'
     data = read_docker_compose_template()
 
     old_address = data['services']['first']['command'][4]
@@ -52,7 +49,7 @@ def get_mining_address():
     in wif format.
     :return: The kaspa address object
     """
-    save_mining = LOCAL_RUN_PATH + '/docker_files/save_mining'
+    save_mining = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/save_mining'
     with open(save_mining) as f:
         wif_data = f.readline()
 
@@ -205,24 +202,24 @@ def tag_image_latest(service_name):
 #         print(pe.stderr)
 
 def volume_dir_exist(volume_dir_name):
-    volume_dir = os.path.expanduser('~/volumes/')
+    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
     files = os.listdir(volume_dir)
     return volume_dir_name in files
 
 def clear_volume_files():
     import subprocess
-    volume_dir = os.path.expanduser('~/volumes/kaspad')
+    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH + '/kaspad')
     cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
 def save_volume_files(*, dir_name):
     import subprocess
-    volume_dir = os.path.expanduser('~/volumes')
+    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
     cmd1 = subprocess.run(['sudo -S rm -rf' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
     cmd2 = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
 def restore_volume_files(*, dir_name):
     import subprocess
-    volume_dir = os.path.expanduser('~/volumes')
+    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
     cmd1 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir + '/kaspad')
     cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
 
