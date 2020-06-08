@@ -7,7 +7,6 @@ import os
 import time
 import subprocess
 import yaml
-from kaspy_tools.kaspad.json_rpc import json_rpc_constants
 from kaspy_tools.kaspy_tools_constants import LOCAL_RUN_PATH
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
@@ -16,8 +15,8 @@ from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspad import kaspad_constants
 
 
-def read_docker_compose():
-    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
+def read_docker_compose_template():
+    docker_file = LOCAL_RUN_PATH + '/docker_files/docker-compose-template.yml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
@@ -35,7 +34,7 @@ def create_docker_compose_file(mining_address):
     :return:
     """
     save_wif_file = LOCAL_RUN_PATH + '/docker_files/save_mining'
-    data = read_docker_compose()
+    data = read_docker_compose_template()
 
     old_address = data['services']['first']['command'][4]
     parts = old_address.split('=')
@@ -110,7 +109,7 @@ def run_kaspad_services(debug=False):
     :return: A list with the connections
     """
     cons = {}
-    data = read_docker_compose()
+    data = read_docker_compose_template()
     for srv_name,service in data['services'].items():
         addr_index = [i for i in range(len(service['command'])) if 'rpclisten' in service['command'][i]][0]
         ip_addr, port_num = (service['command'][addr_index].split('=')[1]).split(':')
