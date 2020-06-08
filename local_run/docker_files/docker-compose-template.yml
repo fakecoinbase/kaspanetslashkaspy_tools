@@ -13,7 +13,6 @@ services:
     - --rpclisten=127.0.0.1:16615
     - --rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert
     - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
-    - --notls
     image: kaspad:latest
     network_mode: host
     ports:
@@ -23,6 +22,7 @@ services:
     - apparmor=unconfined
     volumes:
     - ~/volumes/kaspad/:/root/.kaspad
+    - ~/keys/:/go/src/github.com/kaspanet/devops/devnet/common
   second:
     cap_add:
     - SYS_PTRACE
@@ -37,13 +37,14 @@ services:
     - --rpclisten=127.0.0.1:16616
     - --rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert
     - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
-    - --notls
     image: kaspad:latest
     network_mode: host
     ports:
     - 16616:16616
     security_opt:
     - apparmor=unconfined
+    volumes:
+    - ~/keys/:/go/src/github.com/kaspanet/devops/devnet/common
   second-debug:
     cap_add:
     - SYS_PTRACE
@@ -65,7 +66,6 @@ services:
     - --rpclisten=127.0.0.1:16616
     - --rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert
     - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
-    - --notls
     image: kaspad:latest
     network_mode: host
     ports:

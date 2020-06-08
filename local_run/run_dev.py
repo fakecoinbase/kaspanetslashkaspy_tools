@@ -6,6 +6,7 @@ A docker-compose.yaml file is used to run containers.
 import os
 import time
 import subprocess
+from pathlib import Path
 import yaml
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
@@ -14,6 +15,12 @@ from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
 
 def read_docker_compose_template():
     docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose-template.yml'
+    with open(docker_file) as f:
+        data = yaml.load(f, Loader=yaml.FullLoader)
+        return data
+
+def read_docker_compose_file():
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
@@ -105,20 +112,12 @@ def run_kaspad_services(debug=False):
     :param debug: weather or not to run a debug version of the 2nd service
     :return: A list with the connections
     """
-    cons = {}
-    data = read_docker_compose_template()
-    for srv_name,service in data['services'].items():
-        addr_index = [i for i in range(len(service['command'])) if 'rpclisten' in service['command'][i]][0]
-        ip_addr, port_num = (service['command'][addr_index].split('=')[1]).split(':')
-        user_index = [i for i in range(len(service['command'])) if 'rpcuser' in service['command'][i]][0]
-        pass_index = [i for i in range(len(service['command'])) if 'rpcpass' in service['command'][i]][0]
-        username = (service['command'][user_index].split('=')[1])
-        password = (service['command'][pass_index].split('=')[1])
-        cert_file = kaspy_tools_constants.CERT_FILE_PATH
-        new_conn = KaspaNode(conn_name=srv_name, ip_addr= ip_addr, port_number=port_num, tls=True,
-                             username=username, password=password, cert_file_path=cert_file)
-        cons[srv_name] =  new_conn
+    if not docker_compose_file_exist():
+        mining_address = get_mining_address()
+        create_docker_compose_file(mining_address)
 
+    docker_compose_data = read_docker_compose_file()
+    cons = get_cons_from_docker_compose(docker_compose_data)
 
     os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files')
     if debug:
@@ -127,6 +126,30 @@ def run_kaspad_services(debug=False):
         second = 'second'
     run_docker_compose_services('first', second)
     return cons
+
+def get_cons_from_docker_compose(docker_compose_data):
+    cons = {}
+    for srv_name, service in docker_compose_data['services'].items():
+        addr_index = [i for i in range(len(service['command'])) if 'rpclisten' in service['command'][i]][0]
+        ip_addr, port_num = (service['command'][addr_index].split('=')[1]).split(':')
+        user_index = [i for i in range(len(service['command'])) if 'rpcuser' in service['command'][i]][0]
+        pass_index = [i for i in range(len(service['command'])) if 'rpcpass' in service['command'][i]][0]
+        username = (service['command'][user_index].split('=')[1])
+        password = (service['command'][pass_index].split('=')[1])
+        cert_file = kaspy_tools_constants.CERT_FILE_PATH
+        new_conn = KaspaNode(conn_name=srv_name, ip_addr=ip_addr, port_number=port_num, tls=True,
+                             username=username, password=password, cert_file_path=cert_file)
+        cons[srv_name] = new_conn
+
+    return cons
+
+
+def docker_compose_file_exist():
+    docker_compose_file = Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/' + 'docker-compose.yml')
+    if docker_compose_file.is_file():
+        return True
+    else:
+        return False
 
 def run_docker_compose_services(*services, detached=True):
     """
