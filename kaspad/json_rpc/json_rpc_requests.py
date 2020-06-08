@@ -4,7 +4,6 @@ This module holds the methods that handle all the JSON-RPC requests for the auto
 from kaspy_tools.logs import config_logger
 import requests
 import json
-from kaspy_tools.kaspad.json_rpc import json_rpc_constants
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 

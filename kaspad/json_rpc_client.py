@@ -54,7 +54,7 @@ def get_block_template(conn=None):
 
 def get_genesis_blockhash_from_constants():
     """
-    Returns the blockhash value of the genesis block from json_rpc_constants.py as a list.
+    Returns the blockhash value of the genesis block.
     """
     return [kaspad_constants.GENESIS_HASH]
 
@@ -89,7 +89,7 @@ def get_genesis_blockhash_from_constants():
 
 def get_max_uint64_from_constants():
     """
-    Returns the max_uint64 value from json_rpc_constants.py.
+    Returns the max_uint64 value.
     """
     return kaspad_constants.MAX_UINT64
 
