@@ -17,3 +17,6 @@ CERT_FILE_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/automa
 
 # Path for the local certification file
 VOLUMES_DIR_PATH = os.path.expanduser("~/volumes")
+
+# Path for the local certification file
+LOGS_DIR_PATH = os.path.expanduser("/var/logs/")
