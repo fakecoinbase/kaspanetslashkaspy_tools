@@ -1,19 +1,17 @@
 """
 This file holds all the constant elements that are being used by the kaspa-d automation.
 """
-import os
-from kaspy_tools.kaspy_tools_constants import KASPAD_TOP_PATH
+from kaspy_tools.kaspy_tools_constants import KASPY_TOOLS_PATH
 
-# Path for the local KASPAD folder
 
 # Path for the binary file of a valid empty block
-VALID_BLOCK_EMPTY_PATH = KASPAD_TOP_PATH + "/blocks_cartridge/valid_block_empty.dat"
+VALID_BLOCK_EMPTY_PATH = KASPY_TOOLS_PATH + "/kaspad/blocks_cartridge/valid_block_empty.dat"
 
 # Path for the binary file of valid 1848 block
-VALID_1848_BLOCKS_PATH = KASPAD_TOP_PATH + "/blocks_cartridge/1848_blocks.dat"
+VALID_1848_BLOCKS_PATH = KASPY_TOOLS_PATH + "/kaspad/blocks_cartridge/1848_blocks.dat"
 
 # Path for the binary file of valid 2138 block
-VALID_2138_BLOCKS_PATH = KASPAD_TOP_PATH + "/blocks_cartridge/2138_blocks.dat"
+VALID_2138_BLOCKS_PATH = KASPY_TOOLS_PATH + "/kaspad/blocks_cartridge/2138_blocks.dat"
 
 # The max value possible of uint64
 MAX_UINT64 = 0xffffffffffffffff
