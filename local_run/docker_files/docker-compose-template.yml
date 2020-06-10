@@ -22,7 +22,7 @@ services:
     - apparmor=unconfined
     volumes:
     - ~/volumes/kaspad/:/root/.kaspad
-    - ~/keys/:/go/src/github.com/kaspanet/devops/devnet/common
+    - KEYS:/go/src/github.com/kaspanet/devops/devnet/common
   second:
     cap_add:
     - SYS_PTRACE
@@ -44,7 +44,7 @@ services:
     security_opt:
     - apparmor=unconfined
     volumes:
-    - ~/keys/:/go/src/github.com/kaspanet/devops/devnet/common
+    - KEYS:/go/src/github.com/kaspanet/devops/devnet/common
   second-debug:
     cap_add:
     - SYS_PTRACE
@@ -73,4 +73,6 @@ services:
     - 40000:40000
     security_opt:
     - apparmor=unconfined
+    volumes:
+    - KEYS:/go/src/github.com/kaspanet/devops/devnet/common
 version: '3'
