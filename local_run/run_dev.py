@@ -44,6 +44,10 @@ def create_docker_compose_file(mining_address):
     parts = old_address.split('=')
     parts[1] = mining_address.get_address("kaspadev")
     data['services']['first']['command'][4] = '='.join(parts)
+    # Replace the keys path in volumes.
+    for service in ['first', 'second', 'second-debug']:
+        volumes = data['services'][service]['volumes']
+        data['services'][service]['volumes'] = [v.replace('KEYS', kaspy_tools_constants.KEYS_PATH) for v in volumes]
     # Write output
     write_docker_compose(yaml_data=data)
     with open(save_wif_file, 'w') as mining_f:
@@ -147,7 +151,7 @@ def get_cons_from_docker_compose(docker_compose_data):
         pass_index = [i for i in range(len(service['command'])) if 'rpcpass' in service['command'][i]][0]
         username = (service['command'][user_index].split('=')[1])
         password = (service['command'][pass_index].split('=')[1])
-        cert_file = kaspy_tools_constants.CERT_FILE_PATH
+        cert_file = kaspy_tools_constants.KEYS_PATH + '/rpc.cert'
         new_conn = KaspaNode(conn_name=srv_name, ip_addr=ip_addr, port_number=port_num, tls=True,
                              username=username, password=password, cert_file_path=cert_file)
         cons[srv_name] = new_conn

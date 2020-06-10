@@ -100,7 +100,7 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
     return new_block_bytes, new_block_hash
 
 
-def generate_block_to_specific_parent(block_file_path, parent_block_hash, conn=None):
+def generate_block_to_specific_parent(parent_block_hash, conn=None):
     """
     Generates a block while directing it to a specific set of tips or directly to the "Genesis" block.
 
