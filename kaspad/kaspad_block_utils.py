@@ -55,45 +55,43 @@ def submit_pre_generated_block(block_bytes, block_hash, options=None, conn=None)
     return response, response_json, block_hash_hex
 
 
-def submit_blocks_from_binary_file(block_file_path, conn=None):
-    """
-    Submit blocks from a provided file path.
-    Blocks must be in Hex format.
+# def submit_blocks_from_binary_file(conn=None):
+#     """
+#     Submit blocks from a provided file path.
+#     Blocks must be in Hex format.
+#
+#     :param block_file_path: The path for the requested file
+#     """
+#     file = open(block_file_path, "r")
+#     counter = 1
+#     while True:
+#         block_hex = file.readline()[:-1]
+#         if block_hex == "":
+#             break
+#         response, response_json = json_rpc_client.submit_block_request(block_hex, conn)
+#         action_status = error_handler(response_json["error"])
+#         # local_logger.debug(print("block " + str(counter) + " " + action_status))
+#         counter += 1
+#     file.close()
+#     print("All blocks in file were submitted successfully")
 
-    :param block_file_path: The path for the requested file
-    """
-    file = open(block_file_path, "r")
-    counter = 1
-    while True:
-        block_hex = file.readline()[:-1]
-        if block_hex == "":
-            break
-        response, response_json = json_rpc_client.submit_block_request(block_hex, conn)
-        action_status = error_handler(response_json["error"])
-        # local_logger.debug(print("block " + str(counter) + " " + action_status))
-        counter += 1
-    file.close()
-    print("All blocks in file were submitted successfully")
 
-
-def submit_block_with_specific_parents(block_file_path, parent_block_hash, options=None, conn=None):
+def submit_block_with_specific_parents(*, parent_block_hash, options=None, conn=None):
     """
     Builds and submit a block that points to a specific parent block, either using the provided hash/es or using
     the "Genesis" block.
 
-    :param block_file_path: The path of the block binary file
     :param parent_block_hash: Accepts a block hash as bytes or the string "genesis"
     :param options: Enter specific options that are required, for example: like a sub-network, else leave as None
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    block_bytes, block_hash_hex = block_generator.generate_block_to_specific_parent(block_file_path,
-                                                                                parent_block_hash, conn=conn)
+    block_bytes, block_hash_hex = block_generator.generate_block_to_specific_parent(parent_block_hash, conn=conn)
     block_hex = block_bytes.hex()
     response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
-def submit_modified_block(block_file_path, invalid_parameter_string, invalid_arg_type=None,
+def submit_modified_block(*, invalid_parameter_string, invalid_arg_type=None,
                           options=None, conn=None):
     """
     Builds and submit an invalid block based on the file path and subnetwork options that were provided to the DAG-block network.
@@ -104,7 +102,6 @@ def submit_modified_block(block_file_path, invalid_parameter_string, invalid_arg
                                      This arg accepts the following strings only:
                                      "parent_block_data", "txs", "_hash_merkle_root", "_id_merkle_root", "_utxo_commitment",
                                      "_timestamp", "_bits", "_nonce"
-    :param block_file_path: The path of the block binary file
     :param options: Enter specific options that are required, for example: like a sub-network, else leave as None
     :param invalid_arg_type: The required invalid arg type for the test.
                             Use one of the following options or leave as None:
@@ -112,9 +109,8 @@ def submit_modified_block(block_file_path, invalid_parameter_string, invalid_arg
                             str = any string
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    block_bytes, block_hash = block_generator.generate_modified_block_and_hash(block_file_path,
-                                                                               invalid_parameter_string,
-                                                                               invalid_arg_type, conn=conn)
+    block_bytes, block_hash = block_generator.generate_modified_block_and_hash(variable_str=invalid_parameter_string,
+                                                                               invalid_arg_type=invalid_arg_type, conn=conn)
     block_hex = block_bytes.hex()
     block_hash_hex = block_hash.hex()
     response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
@@ -173,7 +169,7 @@ def get_block_dag_num_of_blocks(conn=None):
     return json_rpc_client.get_block_dag_num_of_blocks(conn)
 
 
-def generate_valid_block_and_hash(block_path, conn=None):
+def generate_valid_block_and_hash(conn=None):
     """
     Returns a valid block that was not submitted using the function in block_generator.py.
     """

@@ -8,6 +8,7 @@ import time
 from kaspy_tools.kaspa_crypto.merkle_root import MerkleTree
 from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad import json_rpc_client
+from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
 
@@ -38,7 +39,8 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
     :param version_int: The required version as an int
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_client.get_block_template(conn=conn)['result']
+    # block_template = json_rpc_client.get_block_template(conn=conn)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -47,6 +49,8 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
     update_utxo_commitment(block_object, block_template)
     update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
+    update_version(block_object, 5)   # temporary int
+
     update_nonce(block_object)
     if version_int is None:
         update_version_invalid(block_object)
@@ -155,6 +159,7 @@ def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_val
     update_utxo_commitment(block_object, block_template)
     update_timestamp_invalid(block_object, timestamp_value)
     update_bits(block_object, block_template)
+    block_object.version_int = 0x10000000
     update_nonce(block_object)
 
 

@@ -53,7 +53,7 @@ class Block:
         self._native_tx_list_of_objs = native_tx_list_of_objs
 
     @classmethod
-    def block_factory(cls, *, version_int=None, version_bytes=None, num_of_parent_blocks=None, parent_hashes=None,
+    def block_factory(cls, *, version_int=268435456, version_bytes=None, num_of_parent_blocks=None, parent_hashes=None,
                       hash_merkle_root_bytes=None, id_merkle_root_bytes=None, utxo_commitment_bytes=None,
                       timestamp_int=None, timestamp_bytes=None, bits_bytes=None, bits_int=None,
                       nonce_bytes=None, num_of_txs_in_block_int=None, num_of_txs_in_block_bytes=None,
@@ -327,7 +327,8 @@ class Block:
 
     @property
     def block_header_hash(self):
-        dbl_hash = general_utils.hash_256(self.block_header_bytes)
+        local_block_header_bytes = self.block_header_bytes
+        dbl_hash = general_utils.hash_256(local_block_header_bytes)
         block_hash = int.from_bytes(dbl_hash, "little")
         return block_hash
 
@@ -570,7 +571,7 @@ class Block:
         """
         :return: Block header bytes object
         """
-        block_header_bytes = self._version_bytes + self._number_of_parent_blocks_bytes + \
+        block_header_bytes = self.version_bytes + self._number_of_parent_blocks_bytes + \
                              b''.join(self.parent_hashes) + self.hash_merkle_root_bytes + \
                              self.id_merkle_root_bytes + self.utxo_commitment_bytes + \
                              self.timestamp_bytes + self.bits_bytes + self.nonce_bytes

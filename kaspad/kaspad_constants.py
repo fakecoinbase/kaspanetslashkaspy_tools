@@ -5,7 +5,8 @@ from kaspy_tools.kaspy_tools_constants import KASPY_TOOLS_PATH
 
 
 # Path for the binary file of a valid empty block
-VALID_BLOCK_EMPTY_PATH = KASPY_TOOLS_PATH + "/kaspad/blocks_cartridge/valid_block_empty.dat"
+# VALID_BLOCK_EMPTY_PATH = KASPAD_TOP_PATH + "/blocks_cartridge/valid_block_empty.dat"
+
 
 # Path for the binary file of valid 1848 block
 VALID_1848_BLOCKS_PATH = KASPY_TOOLS_PATH + "/kaspad/blocks_cartridge/1848_blocks.dat"
