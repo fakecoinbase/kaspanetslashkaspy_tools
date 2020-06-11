@@ -82,7 +82,7 @@ class Block:
         new_block = cls()
         new_block._version_int = version_int
         new_block._version_bytes = version_bytes
-        new_block._number_of_parent_blocks = num_of_parent_blocks
+        new_block.number_of_parent_blocks = num_of_parent_blocks
         new_block._parent_hashes = parent_hashes
         new_block._hash_merkle_root_bytes = hash_merkle_root_bytes
         new_block._id_merkle_root_bytes = id_merkle_root_bytes
@@ -220,7 +220,7 @@ class Block:
         :return: Number of parents as a single byte
         """
         if not self._number_of_parent_blocks_bytes:
-            self._number_of_parent_blocks_bytes = self._number_of_parent_blocks.to_bytes(1, byteorder='little')
+            self._number_of_parent_blocks_bytes = self.number_of_parent_blocks.to_bytes(1, byteorder='little')
 
         return self._number_of_parent_blocks_bytes
 
@@ -571,7 +571,7 @@ class Block:
         """
         :return: Block header bytes object
         """
-        block_header_bytes = self.version_bytes + self._number_of_parent_blocks_bytes + \
+        block_header_bytes = self.version_bytes + self.number_of_parent_blocks_bytes + \
                              b''.join(self.parent_hashes) + self.hash_merkle_root_bytes + \
                              self.id_merkle_root_bytes + self.utxo_commitment_bytes + \
                              self.timestamp_bytes + self.bits_bytes + self.nonce_bytes

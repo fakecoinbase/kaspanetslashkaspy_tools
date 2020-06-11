@@ -72,6 +72,8 @@ def update_block_variables_without_parent_block_data(block_object, conn=None):
     update_utxo_commitment(block_object, block_template)
     update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
+    block_object.number_of_parent_blocks = 1
+    block_object.parent_hashes = [b'12345678901234567890123456789012']
     update_nonce(block_object)
 
 
