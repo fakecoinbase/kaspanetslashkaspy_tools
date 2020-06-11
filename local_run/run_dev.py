@@ -6,6 +6,7 @@ A docker-compose.yaml file is used to run containers.
 import os
 import time
 import subprocess
+import shutil
 from pathlib import Path
 import yaml
 from kaspy_tools import kaspy_tools_constants
@@ -54,6 +55,10 @@ def create_docker_compose_file(mining_address):
     for service in ['first', 'second', 'second-debug']:
         volumes = data['services'][service]['volumes']
         data['services'][service]['volumes'] = [v.replace('KEYS', kaspy_tools_constants.KEYS_PATH) for v in volumes]
+
+    # Write UID and GUID
+    data['services']['first']['user'] = '{}:{}'.format(os.getuid(), os.getgid())
+
     # Write output
     write_docker_compose(yaml_data=data)
     with open(save_wif_file, 'w') as mining_f:
@@ -167,11 +172,7 @@ def get_cons_from_docker_compose(docker_compose_data):
 
 
 def docker_compose_file_exist():
-    docker_compose_file = Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/' + 'docker-compose.yml')
-    if docker_compose_file.is_file():
-        return True
-    else:
-        return False
+    return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose.yml').is_file()
 
 
 def run_docker_compose_services(*services, detached=True):
@@ -271,30 +272,27 @@ def volume_dir_exist(volume_dir_name):
 
 def clear_volume_files():
     volume_kaspad = VOLUMES_DIR_PATH + '/kaspad'
-    try:
-        cmd = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True,
-                             cwd=volume_kaspad)
-        KT_logger.debug(cmd)
-    except FileNotFoundError:
-        os.makedirs(kaspy_tools_constants.VOLUMES_DIR_PATH, 0o755, exist_ok=True)
+    if Path(volume_kaspad).exists():
+        shutil.rmtree(volume_kaspad)
+        os.mkdir(volume_kaspad)
+    else:
+        os.makedirs(volume_kaspad)
+        KT_logger.debug("Created: " + volume_kaspad)
 
 
 def save_volume_files(*, dir_name):
-    cmd = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name], capture_output=True, input=b'yuval\x0d',
-                         shell=True, cwd=VOLUMES_DIR_PATH)
-    KT_logger.debug(cmd)
-    cmd.check_returncode()
+    src = VOLUMES_DIR_PATH + '/kaspad'
+    dst = VOLUMES_DIR_PATH + '/' + dir_name
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+    KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
 
 
 def restore_volume_files(*, dir_name):
-    cmd1 = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True,
-                          cwd=VOLUMES_DIR_PATH + '/kaspad')
-    KT_logger.debug(cmd1)
-    cmd1.check_returncode()
-    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'], capture_output=True, input=b'yuval\x0d',
-                          shell=True, cwd=VOLUMES_DIR_PATH)
-    KT_logger.debug(cmd2)
-    cmd2.check_returncode()
+    clear_volume_files()
+    src = VOLUMES_DIR_PATH + '/' + dir_name
+    dst = VOLUMES_DIR_PATH + '/kaspad'
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+    KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
 
 
 if __name__ == '__main__':

@@ -20,8 +20,9 @@ services:
     - 16611:16611
     security_opt:
     - apparmor=unconfined
+    user: 1000:1000
     volumes:
-    - ~/volumes/kaspad/:/root/.kaspad
+    - ~/volumes/kaspad/:/.kaspad
     - KEYS:/go/src/github.com/kaspanet/devops/devnet/common
   second:
     cap_add:
