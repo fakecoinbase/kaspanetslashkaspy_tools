@@ -261,7 +261,10 @@ def volume_dir_exist(volume_dir_name):
 def clear_volume_files():
     import subprocess
     volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH + '/kaspad')
-    cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+    try:
+        cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+    except FileNotFoundError:
+        os.mkdir(kaspy_tools_constants.VOLUMES_DIR_PATH, 0o755)
 
 def save_volume_files(*, dir_name):
     import subprocess
