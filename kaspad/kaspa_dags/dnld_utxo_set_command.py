@@ -1,5 +1,5 @@
 """
-This module can be used to compute the utxo set.
+This module computes the utxo set.
 It does so by downloading blocks from a kaspad using json-rpc.
 It then uses the downloaded blocks, and computes the utxo set that matches those blocks.
 Call download_utxo_set to get the utxo set and the blocks.
@@ -16,14 +16,8 @@ import kaspy_tools.kaspa_model.tx
 
 
 def download_utxo_set(block_count, save_location=None, conn=None):
-
     raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(block_count, conn=conn)
-
-    # utxo_list = compute_utxo_list(verbose_blocks)
     utxo_list = collect_utxo(verbose_blocks=verbose_blocks, conn=conn)
-    if save_location is not None:
-        save_raw_blocks(raw_blocks, save_location)
-        save_utxo_set(utxo_list, save_location)
     return utxo_list, verbose_blocks, raw_blocks
 
 
@@ -115,20 +109,22 @@ def collect_utxo(*, conn=None, verbose_blocks=None):
                 if tx['txId'] in accepted_block['acceptedTxIds']:
                     tx_ordered_list.append(tx)
 
-    utxo_list = utxo_from_ordered_tx_list(tx_ordered_list)
-    return utxo_list
+    utxo_dict = utxo_from_ordered_tx_list(tx_ordered_list)
+    return utxo_dict
+
 
 def utxo_from_ordered_tx_list(tx_ordered_list):
-    utxo_list = []
+    utxo_dict = {}
     for tx in tx_ordered_list:
         if tx['subnetwork'] == kaspy_tools.kaspa_model.tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
-            collect_coinbase_utxo(tx, utxo_list)
+            collect_coinbase_tx_utxo(tx, utxo_dict)
         else:
-            collect_tx_utxo(tx, utxo_list)
+            collect_native_tx_utxo(tx, utxo_dict)
 
-    return utxo_list
+    return utxo_dict
 
-def collect_tx_utxo(tx, utxo_list):
+
+def collect_native_tx_utxo(tx, utxo_dict):
     """
     Go over the inputs and outputs of a non coinbase transaction.
     Use inputs to delete matching utxo
@@ -140,18 +136,23 @@ def collect_tx_utxo(tx, utxo_list):
     # first, go over input, and remove matching utxo outputs
     for index, vin in enumerate(tx['vin']):
         referred_out = (vin['txId'], vin['vout'])
-        if referred_out in utxo_list:
-            del (utxo_list[referred_out])
-            utxo_list.remove()
+        if referred_out in utxo_dict:
+            del (utxo_dict[referred_out])
 
     # ..then add outputs from transaction into utxo_set
     for index, vout in enumerate(tx['vout']):
-        utxo_list[(tx['txId'], index)] = tx_out.TxOut(vout['value'], 0, vout['scriptPubKey'])
+        scriptPubKey = tx_script.TxScript.parse_tx_script(raw_script=vout['scriptPubKey']['hex'])
+        new_utxo = {
+            'output': tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey,
+                                                  tx_id=tx['txId'], out_index=index),
+            'used': False
+        }
+        utxo_dict[(tx['txId'], index)] = new_utxo
 
-    return utxo_list
+    return utxo_dict
 
 
-def collect_coinbase_utxo(tx, utxo_list):
+def collect_coinbase_tx_utxo(tx, utxo_list):
     """
     This function gets a json encoded coinbase transaction from a block.
     It convert these vin inputs into a utxo dictionary (encoded the same as in get_utxo_set)
@@ -160,12 +161,11 @@ def collect_coinbase_utxo(tx, utxo_list):
     :return: utxo_set created from coinbase vin inputs
     """
     for index, vout in enumerate(tx['vout']):
-        # scriptPubKey = tx_script.TxScript.script_sig_factory(sig='', public_key=vout['scriptPubKey']['hex'][6:46])
         scriptPubKey = tx_script.TxScript.parse_tx_script(raw_script=vout['scriptPubKey']['hex'])
         new_utxo = {
-            'output':tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey,
-                                                 tx_id=tx['txId'], out_index=index),
-            'used':False
+            'output': tx_out.TxOut.tx_out_factory(value=vout['value'], script_pub_key=scriptPubKey,
+                                                  tx_id=tx['txId'], out_index=index),
+            'used': False
         }
         utxo_list.append(new_utxo)
 
