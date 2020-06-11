@@ -9,8 +9,12 @@ import subprocess
 from pathlib import Path
 import yaml
 from kaspy_tools import kaspy_tools_constants
+from kaspy_tools.kaspy_tools_constants import VOLUMES_DIR_PATH
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
+from kaspy_tools.logs import config_logger
+
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 
 def read_docker_compose_template():
@@ -258,25 +262,30 @@ def volume_dir_exist(volume_dir_name):
     files = os.listdir(volume_dir)
     return volume_dir_name in files
 
+
 def clear_volume_files():
-    import subprocess
-    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH + '/kaspad')
+    volume_kaspad = VOLUMES_DIR_PATH + '/kaspad'
     try:
-        cmd2 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+        cmd = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_kaspad)
+        KT_logger.debug(cmd)
     except FileNotFoundError:
-        os.mkdir(kaspy_tools_constants.VOLUMES_DIR_PATH, 0o755)
+        os.makedirs(kaspy_tools_constants.VOLUMES_DIR_PATH, 0o755, exist_ok=True)
+
 
 def save_volume_files(*, dir_name):
-    import subprocess
-    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
-    cmd1 = subprocess.run(['sudo -S rm -rf' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
-    cmd2 = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+    cmd = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name], capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH)
+    KT_logger.debug(cmd)
+    cmd.check_returncode()
+
 
 def restore_volume_files(*, dir_name):
-    import subprocess
-    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
-    cmd1 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir + '/kaspad')
-    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_dir)
+    cmd1 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH + '/kaspad')
+    KT_logger.debug(cmd1)
+    cmd1.check_returncode()
+    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH)
+    KT_logger.debug(cmd2)
+    cmd2.check_returncode()
+
 
 if __name__ == '__main__':
     create_docker_compose_file(KaspaAddress())
