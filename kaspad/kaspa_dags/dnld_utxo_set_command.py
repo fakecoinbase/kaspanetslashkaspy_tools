@@ -2,7 +2,7 @@
 This module can be used to compute the utxo set.
 It does so by downloading blocks from a kaspad using json-rpc.
 It then uses the downloaded blocks, and computes the utxo set that matches those blocks.
-Call download_blocks_and_utxo_set to get the utxo set and the blocks.
+Call download_utxo_set to get the utxo set and the blocks.
 """
 import json
 from _datetime import datetime
@@ -15,7 +15,7 @@ from kaspy_tools.kaspa_model import tx_script
 import kaspy_tools.kaspa_model.tx
 
 
-def download_blocks_and_utxo_set(block_count, save_location=None, conn=None):
+def download_utxo_set(block_count, save_location=None, conn=None):
 
     raw_blocks, verbose_blocks = kaspad_block_utils.get_blocks(block_count, conn=conn)
 

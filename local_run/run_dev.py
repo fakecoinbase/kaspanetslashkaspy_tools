@@ -23,11 +23,13 @@ def read_docker_compose_template():
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
+
 def read_docker_compose_file():
     docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
+
 
 def write_docker_compose(yaml_data):
     docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/docker_files/docker-compose.yml'
@@ -72,7 +74,6 @@ def get_mining_address():
     return mining_address
 
 
-
 def remove_all_images_and_containers():
     """
     Remove all containers and all images from your computer!!!
@@ -83,7 +84,7 @@ def remove_all_images_and_containers():
     cmd_args = []
     cmd_args.extend(['docker', 'system', 'prune', '-f', '-a'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
 def get_all_containers():
@@ -94,7 +95,7 @@ def get_all_containers():
     cmd_args = []
     cmd_args.extend(['docker', 'ps', '-a', '-q'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     containers = completed_process.stdout.split()
     return containers
 
@@ -111,7 +112,7 @@ def remove_all_containers():
     cmd_args.extend(['docker', 'rm', '-f'])
     cmd_args.extend(containers)
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
 def run_kaspad_services(debug=False):
@@ -135,6 +136,7 @@ def run_kaspad_services(debug=False):
     run_docker_compose_services('first', second)
     return cons
 
+
 def stop_kaspad_services(debug=False):
     docker_compose_data = read_docker_compose_file()
     cons = get_cons_from_docker_compose(docker_compose_data)
@@ -145,6 +147,7 @@ def stop_kaspad_services(debug=False):
     else:
         second = 'second'
     stop_docker_compose_services('first', second)
+
 
 def get_cons_from_docker_compose(docker_compose_data):
     cons = {}
@@ -170,6 +173,7 @@ def docker_compose_file_exist():
     else:
         return False
 
+
 def run_docker_compose_services(*services, detached=True):
     """
     General tool to run services from the docker-compose.yaml
@@ -183,8 +187,9 @@ def run_docker_compose_services(*services, detached=True):
         cmd_args.append('-d')
     cmd_args.extend(services)
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     time.sleep(2)
+
 
 def stop_docker_compose_services(*services, detached=True):
     """
@@ -197,8 +202,9 @@ def stop_docker_compose_services(*services, detached=True):
     cmd_args.extend(['docker-compose', 'down'])
     # cmd_args.extend(services)
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     time.sleep(2)
+
 
 def get_git_commit():
     """
@@ -206,8 +212,8 @@ def get_git_commit():
     :return: a string with the commit id
     """
     completed_process = subprocess.run(args=['git', 'rev-parse', '--short=12', 'HEAD'], capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
-    git_commit=completed_process.stdout
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+    git_commit = completed_process.stdout
     return git_commit.decode('utf-8')[:-1]  # remove \n from the end
 
 
@@ -218,7 +224,7 @@ def docker_image_build(service_name, context):
     :param context: context path for Dockerfile command
     :return: None
     """
-    os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH)      # go to directory where docker_files are located
+    os.chdir(kaspy_tools_constants.LOCAL_RUN_PATH)  # go to directory where docker_files are located
     cmd_args = []
     git_commit = get_git_commit()
     cmd_args.extend(['docker', 'build', '-t'])
@@ -240,7 +246,7 @@ def tag_image_latest(service_name):
     cmd_args.extend([service_name + ':' + git_commit])
     cmd_args.extend([service_name + ':' + 'latest'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()    # raise CalledProcessError if return code is not 0
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
 # def build_and_run():
@@ -266,23 +272,27 @@ def volume_dir_exist(volume_dir_name):
 def clear_volume_files():
     volume_kaspad = VOLUMES_DIR_PATH + '/kaspad'
     try:
-        cmd = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True, cwd=volume_kaspad)
+        cmd = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True,
+                             cwd=volume_kaspad)
         KT_logger.debug(cmd)
     except FileNotFoundError:
         os.makedirs(kaspy_tools_constants.VOLUMES_DIR_PATH, 0o755, exist_ok=True)
 
 
 def save_volume_files(*, dir_name):
-    cmd = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name], capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH)
+    cmd = subprocess.run(['sudo -S cp -r ' + 'kaspad' + ' ' + dir_name], capture_output=True, input=b'yuval\x0d',
+                         shell=True, cwd=VOLUMES_DIR_PATH)
     KT_logger.debug(cmd)
     cmd.check_returncode()
 
 
 def restore_volume_files(*, dir_name):
-    cmd1 = subprocess.run(['sudo -S rm -rf *'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH + '/kaspad')
+    cmd1 = subprocess.run(['sudo -S rm -rf *'], capture_output=True, input=b'yuval\x0d', shell=True,
+                          cwd=VOLUMES_DIR_PATH + '/kaspad')
     KT_logger.debug(cmd1)
     cmd1.check_returncode()
-    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'],capture_output=True, input=b'yuval\x0d', shell=True, cwd=VOLUMES_DIR_PATH)
+    cmd2 = subprocess.run(['sudo -S cp -rf ' + dir_name + '/* ' + 'kaspad/'], capture_output=True, input=b'yuval\x0d',
+                          shell=True, cwd=VOLUMES_DIR_PATH)
     KT_logger.debug(cmd2)
     cmd2.check_returncode()
 
