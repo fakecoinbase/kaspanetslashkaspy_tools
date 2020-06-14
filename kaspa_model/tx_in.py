@@ -188,6 +188,19 @@ class TxIn:
     #     tx_in_bytes = general_utils.flatten_nested_iterable(tx_in_list)
     #     return tx_in_bytes
 
+    def encode_zero_script_sig(self):
+        """
+        Convert this instance of tx_in to bytes, while replacing the scriptSig with zeros
+        :return: The bytes representation of this tx_in object with zeroed scriptSig
+        """
+        ret_bytes = b''
+        tx_id_bytes = self.previous_tx_id_bytes
+        ret_bytes += tx_id_bytes
+        ret_bytes += self.previous_tx_out_index_bytes
+        ret_bytes += general_utils.write_varint(0)  # coinbase or script len (varint)
+        ret_bytes += self.sequence_bytes
+        return ret_bytes
+
     def __bytes__(self):
         """
         Convert this instance of tx_in to bytes, and returns the bytes object.

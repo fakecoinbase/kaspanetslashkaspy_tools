@@ -38,6 +38,7 @@ class Tx:
         self._payload_length_bytes = payload_length_bytes
         self._payload_length_int = None
         self._payload_bytes = payload_bytes
+        self._txid = None
 
     @classmethod
     def tx_factory(cls, *, version_bytes=None, tx_in_list=None, tx_out_list=None, locktime_int=None,
@@ -325,25 +326,42 @@ class Tx:
 
         return ret_bytes
 
-    # def compute_txid(self, store=False, in_hex=True):
-    #     """
-    #     compute_txid computes the transaction id by hashing it twice (sha256).
-    #     It tries to use the binary representation of the transaction if it was already computed.
-    #     If there is no binary tx representation, compute_txid raises a ValueError.
-    #     :param store: Set to True if you want the txid to also be stored (in bytes form)
-    #     :param in_hex: Est to True if you want to receive the result in hexadecimal.
-    #     :return: The txid of the transaction.
-    #     """
-    #     if self._tx_bytes is not None:
-    #         m1 = hashlib.sha256()
-    #         m2 = hashlib.sha256()
-    #         sha256_once = m1.update(self._tx_bytes).digest()
-    #         sha256_twice = m2.update(sha256_once).digest()
-    #         if store == True:
-    #             self._tdid = sha256_twice
-    #         if in_hex == True:
-    #             return sha256_twice.hex()
-    #         else:
-    #             return sha256_twice
-    #     else:
-    #         raise ValueError
+    def compute_txid(self, store=False, in_hex=True, coinbase=False):
+        """
+        compute_txid computes the transaction id by hashing it twice (sha256).
+        It tries to use the binary representation of the transaction if it was already computed.
+        If there is no binary tx representation, compute_txid raises a ValueError.
+        :param store: Set to True if you want the txid to also be stored (in bytes form)
+        :param in_hex: Est to True if you want to receive the result in hexadecimal.
+        :return: The txid of the transaction.
+        """
+        hash = hashlib.sha256()
+        hash.update(self._version_bytes)
+        hash.update(self.number_of_tx_inputs_bytes)
+        for tx_in in self.tx_input_list:
+            if coinbase:
+                hash.update(bytes(tx_in))  # Coinbase uses the full TxIn, not zeroed scriptSigs.
+            else:
+                hash.update(tx_in.encode_zero_script_sig()) # TxID for non-coinbase encodes inputs with zeroed out scriptSigs.
+
+        hash.update(self.number_of_tx_outputs_bytes)
+        for tx_out in self.tx_output_list:
+            hash.update(bytes(tx_out))
+
+        hash.update(self.locktime_bytes)
+        hash.update(self.subnetwork_id_bytes)
+        if self.subnetwork_id_bytes != NATIVE_SUBNETWORK:
+            hash.update(self.gas_bytes)
+            hash.update(self.payload_hash_bytes)
+            # TODO: In coinbase txs we should also add the payload to the txid.
+            if coinbase:  # Coinbase hashes the full payload.
+                hash.update(self.payload_length_bytes)
+                hash.update(self.payload_bytes)
+            else:  # Non-coinbase doesn't hash the full payload.
+                hash.update(general_utils.write_varint(0))
+        double = hashlib.sha256(hash.digest()).digest()[::-1]  # Double-SHA256 are reversed.
+        if store:
+            self._txid = double
+        if in_hex:
+            double = double.hex()
+        return double
