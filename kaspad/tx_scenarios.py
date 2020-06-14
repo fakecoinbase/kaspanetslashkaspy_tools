@@ -11,22 +11,21 @@ KT_logger = config_logger.get_kaspy_tools_logger()
 
 def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=None, conn=None):
     """
-    Parameters
-    ----------
-    key_count   The number of key pairs to create
-    tx_count    the number of requested transactions
-
-    Returns     a list with kaspa_model transaction objects
-    -------
+    Generate transaction based on a DAG already submitted.
+    :param addr_count: How many new parivate addresses to create
+    :param tx_count: How many transactions to create
+    :param block_count: How many blocks to use as a basis for the creation
+    :param conn: A connection to the kaspad
+    :return: A tupple: (list of TXs, all vblocks used, list of addresses used)
     """
-    mining_address = run_dev.get_mining_address()
-    addresses = make_addresses(addr_count)
-    addresses[mining_address.get_address(prefix='kaspadev')] = mining_address
+    mining_address = run_dev.get_mining_address()   # Get the mining address from docker_compose
+    addresses = make_addresses(addr_count)          # make new addresses (dictionary)
+    addresses[mining_address.get_address(prefix='kaspadev')] = mining_address   # add the mining address
     # download all blocks
     utxo_list, v_blocks, r_blocks = download_utxo_set(block_count, conn=conn)
 
     tx_list = make_new_transactions(count=tx_count, utxo_list=utxo_list, addresses=addresses)
-    return tx_list, v_blocks
+    return tx_list, v_blocks, addresses
 
 def generate_double_spend_tx_pair(*, conn=None):
     mining_address = run_dev.get_mining_address()

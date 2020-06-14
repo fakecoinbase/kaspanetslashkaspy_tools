@@ -6,6 +6,7 @@ import random
 from kaspy_tools import kaspa_model
 # import kaspy_tools.utils.general_utils
 # import kaspy_tools.utils.base58
+from kaspy_tools import kaspy_tools_constants
 import kaspy_tools.kaspa_model.tx
 from kaspy_tools.kaspa_model import tx_in
 import kaspy_tools.kaspa_model.tx_out
@@ -19,19 +20,16 @@ from kaspy_tools.kaspa_crypto.schnorr_sing_key import ECKey
 
 def make_new_transactions(*, count, utxo_list, addresses, in_count=1, out_count=1 ):
     """
-    Main function that creates transactions.
-    Parameters
-    ----------
-    count       The number of transactions to create
-    utxo_list   A list of utxo to use
-    keys        A dictionary with private and public keys to use
-
-    Returns
-    -------
-
+    Create a list of TXs by calling
+    :param count:
+    :param utxo_list:
+    :param addresses:
+    :param in_count:
+    :param out_count:
+    :return:
     """
     tx_list = []
-    fees=1000000
+    fees= kaspy_tools_constants.DEFAULT_FEE
     for tx_num in range(count):
         tx = make_a_single_transaction(in_count=in_count, out_count=out_count, utxo_list=utxo_list, addresses=addresses, fees=fees)
         tx_list.append(tx)
@@ -49,6 +47,8 @@ def make_a_single_transaction(*, in_count, out_count, utxo_list, addresses, fees
     :return: a new transaction
     """
     utoxs_with_known_private_keys, total_value = find_utoxs_with_known_private_keys(in_count, utxo_list, addresses)
+    if len(utoxs_with_known_private_keys) < in_count:
+        raise RuntimeError('Could not find enough UTXOs to make the required transaction.')
     out_list = make_p2pkh_output_list(out_count, total_value - fees, addresses)
     in_list = make_p2pkh_input_list(in_count, utoxs_with_known_private_keys,  addresses)
 
