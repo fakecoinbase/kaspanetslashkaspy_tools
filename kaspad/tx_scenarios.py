@@ -32,7 +32,7 @@ def generate_double_spend_tx_pair(*, conn=None):
     addresses = make_addresses(5)
     addresses[mining_address.get_address(prefix='kaspadev')] = mining_address
     # download all blocks
-    utxo_list, v_blocks, r_blocks = download_utxo_set(block_count=10, conn=conn)
+    utxo_list, v_blocks, r_blocks = download_utxo_set(block_count=300, conn=conn)
     utxo_list_a = utxo_list[1:3]                    # [0,1]
     utxo_list_b = [utxo_list[1], utxo_list[3]]    # [0,2]
 
