@@ -21,3 +21,6 @@ LOGS_DIR_PATH = os.path.expanduser("/var/logs/")
 
 # Path for local certificates (rpc.key and rpc.cert)
 KEYS_PATH = os.path.expanduser("~/keys")
+
+# Default fees to use when creating transactions
+DEFAULT_FEE = 1000000
