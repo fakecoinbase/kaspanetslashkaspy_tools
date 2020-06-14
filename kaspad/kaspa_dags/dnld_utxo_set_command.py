@@ -109,19 +109,18 @@ def collect_utxo(*, conn=None, verbose_blocks=None):
                 if tx['txId'] in accepted_block['acceptedTxIds']:
                     tx_ordered_list.append(tx)
 
-    utxo_dict = utxo_from_ordered_tx_list(tx_ordered_list)
-    return utxo_dict
+    return utxo_from_ordered_tx_list(tx_ordered_list)
 
 
 def utxo_from_ordered_tx_list(tx_ordered_list):
-    utxo_dict = {}
+    utxo_list = []
     for tx in tx_ordered_list:
         if tx['subnetwork'] == kaspy_tools.kaspa_model.tx.COINBASE_SUBNETWORK:  # so this is a coinbase transaction
-            collect_coinbase_tx_utxo(tx, utxo_dict)
+            collect_coinbase_tx_utxo(tx, utxo_list)
         else:
-            collect_native_tx_utxo(tx, utxo_dict)
+            collect_native_tx_utxo(tx, utxo_list)
 
-    return utxo_dict
+    return utxo_list
 
 
 def collect_native_tx_utxo(tx, utxo_dict):
