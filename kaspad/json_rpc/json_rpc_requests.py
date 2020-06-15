@@ -44,7 +44,7 @@ def submit_block_request(hex_block, options=None, conn=None):
     return response, response_json
 
 
-def get_block_request(block_hash, sub_network=None, conn=None):
+def get_block_request(block_hash, sub_network=None, conn=None, verbose_tx=False):
     """
     retrieving specific block data based on it's hash.
 
@@ -62,7 +62,7 @@ def get_block_request(block_hash, sub_network=None, conn=None):
     if sub_network is None:
         payload = {
             "method": "getBlock",
-            "params": [block_hash, True, False],
+            "params": [block_hash, True, verbose_tx],
             "jsonrpc": "2.0",
             "id": 0
         }
