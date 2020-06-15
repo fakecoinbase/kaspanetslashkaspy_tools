@@ -3,6 +3,7 @@ from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
 from kaspy_tools.kaspa_model.tx_in import TxIn
 from kaspy_tools.kaspa_model.tx_out import TxOut
+from kaspy_tools.kaspa_model.tx_payload import TxPayload
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
@@ -38,7 +39,9 @@ class Tx:
         self._payload_length_bytes = payload_length_bytes
         self._payload_length_int = None
         self._payload_bytes = payload_bytes
+        self._payload_obj = None
         self._txid = None
+
 
     @classmethod
     def tx_factory(cls, *, version_bytes=None, tx_in_list=None, tx_out_list=None, locktime_int=None,
@@ -188,6 +191,11 @@ class Tx:
     def payload_bytes(self):
         return self._payload_bytes
 
+    @property
+    def payload_obj(self):
+        self._payload_obj = TxPayload.parse_tx_payload(payload_bytes=self.payload_bytes, use_blue_score=False)
+        return self._payload_obj
+
     # ========== Set Tx properties ========== #
 
     @version_bytes.setter
@@ -229,8 +237,11 @@ class Tx:
         """ Sets variable "_gas_bytes" to the received value"""
         self._gas_bytes = gas_bytes
 
+    @payload_obj.setter
+    def payload_obj(self, payload_obj):
+        self._payload_obj = payload_obj
 
-# ******** Serialization functions **********
+    # ******** Serialization functions **********
 
     def get_tx_bytes(self):
         """

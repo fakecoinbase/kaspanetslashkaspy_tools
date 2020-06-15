@@ -1,11 +1,15 @@
 """
 Some 'higher level' transaction scenarios.
 """
+from io import BytesIO
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspad.kaspa_dags.dnld_utxo_set_command import download_utxo_set
 from kaspy_tools.kaspad.utilities.make_transactions_command import make_new_transactions
 from kaspy_tools.kaspa_model.kaspa_address import make_addresses
 from kaspy_tools.local_run import run_dev
+from kaspy_tools.kaspa_model.tx import Tx
+from kaspy_tools.kaspad.utilities import coinbase_info
+from kaspy_tools.kaspad.kaspa_dags import find_in_dag
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
@@ -41,3 +45,11 @@ def generate_double_spend_tx_pair(*, conn=None):
         utxo['used'] = False
     tx_list2 = make_new_transactions(count=1, utxo_list=utxo_list_b, addresses = addresses, in_count=2)
     return tx_list1+tx_list2, v_blocks
+
+
+def validate_coinbase_of_three(conn=None):
+    block = find_in_dag.find_block_with_at_least_parents(min_parents=3, conn=conn)
+    tx_bytes = bytes.fromhex(block['rawRx'][0]['hex'])
+    coinbase_tx = Tx.parse_tx(BytesIO(tx_bytes))
+    print(coinbase_tx.payload_obj.extra_data)
+    pass

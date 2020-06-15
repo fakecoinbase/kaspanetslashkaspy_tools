@@ -24,3 +24,7 @@ KEYS_PATH = os.path.expanduser("~/keys")
 
 # Default fees to use when creating transactions
 DEFAULT_FEE = 1000000
+
+# Maximum number to use for blocks retrieval in tests
+MAX_BLOCKS_IN_TESTS = 1000
+
