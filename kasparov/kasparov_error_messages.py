@@ -5,12 +5,12 @@ server_error_message = "a server error occurred"
 
 # /Blocks Error
 blocks_limits_error_code = 400
-blocks_limits_error_message = "limit higher than 100 or lower than 0 was requested"
+blocks_limits_error_message = "limit higher than 100 or lower than 1 was requested"
 
 blocks_empty_parameters_error_code = 422
 blocks_empty_order_error_message = "'' is not a valid order"
-blocks_empty_skip_error_message = "'' is not a valid skip"
-blocks_empty_limit_error_message = "'' is not a valid limit"
+blocks_empty_skip_error_message = "Couldn't parse the 'skip' query parameter"
+blocks_empty_limit_error_message = "Couldn't parse the 'limit' query parameter"
 
 blocks_skip_minus_one_error_code = 400
 blocks_skip_minus_one_error_message = "skip lower than 0 was requested"
@@ -28,16 +28,17 @@ utxos_address_not_well_formatted_error_message = "The given address is not a wel
 
 # /transactions/address/{address} Errors
 transactions_limits_error_code = 400
-transactions_limits_error_message = "Limit higher than 1000 or lower than 0 was requested"
+transactions_limits_error_message = "limit higher than 1000 or lower than 1 was requested"
 
 transactions_address_not_well_formatted_error_code = 422
-transactions_address_not_well_formatted_error_message = "The given address is not a well-formatted P2PKH or P2SH address"
+transactions_address_not_well_formatted_error_message = "The given address is not a well-formatted " \
+                                                        "P2PKH or P2SH address"
 
 transactions_empty_parameters_error_code = 422
-transactions_empty_skip_error_message = "'' is not a valid skip"
-transactions_empty_limit_error_message = "'' is not a valid limit"
+transactions_empty_skip_error_message = "Couldn't parse the 'skip' query parameter"
+transactions_empty_limit_error_message = "Couldn't parse the 'limit' query parameter"
 
-transactions_skip_minus_one_error_code = 422
+transactions_skip_minus_one_error_code = 400
 transactions_skip_minus_one_error_message = "skip lower than 0 was requested"
 
 
