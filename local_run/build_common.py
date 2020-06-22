@@ -1,5 +1,7 @@
 import os
 import subprocess
+from kaspy_tools.local_run import run_dev
+
 
 
 def build_image(*, service_name, build_dir, extra_parameter=None, commit_number, context_dir):
@@ -46,7 +48,7 @@ def remove_all_images_and_containers():
     Use carefully.
     :return: None
     """
-    remove_all_containers()
+    run_dev.remove_all_containers()
     remove_all_images()
 
 

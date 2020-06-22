@@ -1,0 +1,142 @@
+version: '3'
+services:
+  kaspad-first:
+    cap_add:
+      - SYS_PTRACE
+    image: kaspad:latest
+    volumes:
+    - ~/volumes/kaspad/:/.kaspad
+    - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
+    command:
+      - "./kaspad"
+      - "--devnet"
+      - "--addrindex"
+      - "--acceptanceindex"
+      - "--miningaddr=kaspadev:qqfrfccgpw75zdw28veslhzzdx0jn97dcqrat4tmuh"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpclisten=0.0.0.0:16615"
+      - "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert"
+      - "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key"
+      - "--debuglevel=debug"
+      - "--profile=6061"
+    ports:
+      - "16615:16615"
+      - "16611:16611"
+      - "6061:6061"
+    user: 1000:1000
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+  kaspad-second:
+    cap_add:
+      - SYS_PTRACE
+    image: kaspad:latest
+    volumes:
+    - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
+    command:
+      - ./kaspad
+      - "--devnet"
+      - "--addrindex"
+      - "--acceptanceindex"
+      - "--connect=127.0.0.1:16611"
+      - "--miningaddr=kaspadev:qqfrfccgpw75zdw28veslhzzdx0jn97dcqrat4tmuh"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpclisten=0.0.0.0:16616"
+      - "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert"
+      - "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key"
+      - "--debuglevel=debug"
+      - "--profile=6062"
+    ports:
+      - "16616:16616"
+      - "6062:6062"
+    user: root
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+  kasparov_migrate:
+    image: "kasparov-sync:latest"
+    command:
+      - "/app/kasparov-syncd"
+      - "--rpcserver=127.0.0.1:16616"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--migrate"
+      - "--notls"
+      - "--dbaddress=172.17.0.1:5432"
+      - "--dbname=kasparov"
+      - "--dbuser=dbuser"
+      - "--dbpass=password"
+      - "--devnet"
+    user: root
+    network_mode: host
+
+  kasparovd:
+    image: "kasparovd:latest"
+    volumes:
+      - "/home/ec2-user/.kasparov/:/root/.kasparov"
+    command:
+      - "/app/kasparovd"
+      - "--rpcserver=127.0.0.1:16616"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpccert=/root/.kasparov/rpc.cert"
+      - "--dbaddress=127.0.0.1:5432"
+      - "--dbname=kasparov"
+      - "--dbuser=dbuser"
+      - "--dbpass=password"
+      - "--devnet"
+      - "-d=debug"
+    ports:
+      - "8080:8080"
+    user: root
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        
+  kasparovsyncd:
+    image: "kasparov-sync:latest"
+    volumes:
+      - "/home/ec2-user/.kasparov/:/root/.kasparov"
+    command:
+      - "/app/kasparov-syncd"
+      - "--rpcserver=127.0.0.1:16616"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpccert=/root/.kasparov/rpc.cert"
+      - "--dbaddress=127.0.0.1:5432"
+      - "--dbname=kasparov"
+      - "--dbuser=dbuser"
+      - "--dbpass=password"
+      - "--devnet"
+      - "-d=debug"
+    user: root
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: kasparov
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"

@@ -46,4 +46,5 @@ COPY --from=build /go/src/github.com/kaspanet/kasparov/kasparovsyncd/ /app/
 COPY --from=build /go/src/github.com/kaspanet/kasparov/database/migrations/ /database/migrations/
 
 ENTRYPOINT ["/sbin/tini", "--"]
+
 CMD ["/app/kasparov-syncd"]

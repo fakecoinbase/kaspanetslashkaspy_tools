@@ -196,31 +196,6 @@ def restore_volume_files(*, dir_name):
     shutil.copytree(src, dst, dirs_exist_ok=True)
     KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
 
-def get_all_containers():
-    """
-    Finds all container (both stopped and running)
-    :return: All container ids as a list
-    """
-    cmd_args = []
-    cmd_args.extend(['docker', 'ps', '-a', '-q'])
-    completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
-    containers = completed_process.stdout.split()
-    return containers
-
-def remove_all_containers():
-    """
-    Removes all containers.
-    :return: None
-    """
-    containers = get_all_containers()
-    if not containers:
-        return
-    cmd_args = []
-    cmd_args.extend(['docker', 'rm', '-f'])
-    cmd_args.extend(containers)
-    completed_process = subprocess.run(args=cmd_args, capture_output=True)
-    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 if __name__ == '__main__':
     create_docker_compose_file(KaspaAddress())

@@ -1,6 +1,7 @@
 **/__pycache__
 **/*.pyc
 **/docker-compose.yml
+**/docker-compose.yaml
 **/save_mining
 **/*.dot
 **/*.png
