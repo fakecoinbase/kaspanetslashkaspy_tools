@@ -85,3 +85,4 @@ def get_all_containers():
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     containers = completed_process.stdout.split()
     return containers
+
