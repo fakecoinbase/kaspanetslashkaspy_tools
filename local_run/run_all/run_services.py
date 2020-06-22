@@ -19,21 +19,21 @@ KT_logger = config_logger.get_kaspy_tools_logger()
 
 
 def read_docker_compose_template():
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose-template.yml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose-template.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
 
 def read_docker_compose_file():
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
 
 def write_docker_compose(yaml_data):
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yaml'
     with open(docker_file, 'w') as f:
         yaml.dump(yaml_data, f)
 
@@ -131,7 +131,7 @@ def get_cons_from_docker_compose(docker_compose_data):
 
 
 def docker_compose_file_exist():
-    return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yml').is_file()
+    return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker/docker-compose.yaml').is_file()
 
 
 def run_docker_compose_services(*services, detached=True):

@@ -1,3 +1,6 @@
+"""
+A set of utilities to handle docker-compose.
+"""
 from kaspy_tools import kaspy_tools_constants
 import yaml
 from pathlib import Path
@@ -6,6 +9,10 @@ from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
 
 
 def read_docker_compose_template():
+    """
+    Read the docker-compose-template.yaml file, and parse it using yaml library.
+    :return: yaml parsed data
+    """
     docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose-template.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
@@ -13,6 +20,10 @@ def read_docker_compose_template():
 
 
 def read_docker_compose_file():
+    """
+    Read the docker-compose.yaml file, and parse it.
+    :return: yaml parsed data.
+    """
     docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
@@ -20,7 +31,12 @@ def read_docker_compose_file():
 
 
 def write_docker_compose(yaml_data):
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yml'
+    """
+    Create and write the docker-compose.yaml file
+    :param yaml_data: Data to write
+    :return:
+    """
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml'
     with open(docker_file, 'w') as f:
         yaml.dump(yaml_data, f)
 
@@ -68,6 +84,11 @@ def get_mining_address():
 
 
 def get_cons_from_docker_compose(docker_compose_data):
+    """
+    Read connection data to services defined in docker-compose.yaml file.
+    :param docker_compose_data: Data parsed from docker-compose.yaml file.
+    :return: A dictionary with services as keys, kaspa_model/kaspa_node as values.
+    """
     cons = {}
     for srv_name, service in docker_compose_data['services'].items():
         if srv_name not in ('kaspad-first', 'kaspad-second'):
@@ -89,4 +110,8 @@ def get_cons_from_docker_compose(docker_compose_data):
 
 
 def docker_compose_file_exist():
+    """
+    Check weather docker-compose.yaml file exists
+    :return: bool
+    """
     return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml').is_file()

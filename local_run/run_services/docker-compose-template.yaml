@@ -31,6 +31,7 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
+    container_name: localrun_first
   kaspad-second:
     cap_add:
       - SYS_PTRACE
@@ -61,6 +62,7 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
+    container_name: localrun_second
   kasparov_migrate:
     image: "kasparov-sync:latest"
     command:
@@ -77,6 +79,7 @@ services:
       - "--devnet"
     user: root
     network_mode: host
+    container_name: localrun_kasparov_migrate
 
   kasparovd:
     image: "kasparovd:latest"
@@ -102,7 +105,8 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
-        
+    container_name: localrun_kasparovd
+
   kasparovsyncd:
     image: "kasparov-sync:latest"
     command:
@@ -125,6 +129,8 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
+    container_name: localrun_kasparov_syncd
+
   db:
     image: postgres
     restart: always
@@ -134,3 +140,4 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    container_name: localrun_postgres

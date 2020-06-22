@@ -17,8 +17,11 @@ KT_logger = config_logger.get_kaspy_tools_logger()
 
 def run_services(run_kasparov=False):
     """
-    Run services from docker-compose.yaml
-    :param run_kasparov: weather or not to run kasparov services
+    Run services from docker-compose.yaml (which is built automatically from docker-compose-template.yaml)
+    Runs:
+     - a pair of connected kaspad services
+     - kasparov services: kasparov_migrate, kasparovd, kasparov-sync, postgres db,
+    :param run_kasparov: weather or not to run also the kasparov services.
     :return: A dictionary with service connections
     """
     if not docker_compose_utils.docker_compose_file_exist():
@@ -51,14 +54,12 @@ def run_docker_compose(*services, detached=True):
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
-    time.sleep(2)
 
 
 def stop_docker_compose_services(*services):
     """
-    General tool to run services from the docker-compose.yaml
-    :param services: an iterable of service names (strings)
-    :param detached: Weather or not to block until containers stop
+    General tool to stop services from the docker-compose.yaml
+    :param services: an iterable of service names (strings) to stop
     :return: None
     """
     cmd_args = []
@@ -68,16 +69,25 @@ def stop_docker_compose_services(*services):
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
-    time.sleep(2)
 
 
 def volume_dir_exist(volume_dir_name):
+    """
+    Check weather a volumes dir (directory under the 'volumes' dir) exists.
+    :param volume_dir_name: The name of the volume directory.
+    :return: bool
+    """
     volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
     files = os.listdir(volume_dir)
     return volume_dir_name in files
 
 
-def clear_volume_files():
+def clear_kaspad_volume_files():
+    """
+    Delete the files inside volumes/kaspad directory.
+    If the directory does not exist - the function will create it.
+    :return: None
+    """
     volume_kaspad = VOLUMES_DIR_PATH + '/kaspad'
     if Path(volume_kaspad).exists():
         shutil.rmtree(volume_kaspad)
@@ -88,6 +98,12 @@ def clear_volume_files():
 
 
 def save_volume_files(*, dir_name):
+    """
+    Copy the content of volumes/kaspad directory into another directory.
+    The main use is to enavle saving of DAGS after creating them.
+    :param dir_name: The directory to copy to
+    :return:
+    """
     src = VOLUMES_DIR_PATH + '/kaspad'
     dst = VOLUMES_DIR_PATH + '/' + dir_name
     shutil.copytree(src, dst, dirs_exist_ok=True)
@@ -95,31 +111,38 @@ def save_volume_files(*, dir_name):
 
 
 def restore_volume_files(*, dir_name):
-    clear_volume_files()
+    """
+    Restore files from a backup directory into volumes/kaspad
+    Main use:
+    To restore an already created DAG into kaspad.
+    :param dir_name: The directory to restore from.
+    :return: None
+    """
+    clear_kaspad_volume_files()
     src = VOLUMES_DIR_PATH + '/' + dir_name
     dst = VOLUMES_DIR_PATH + '/kaspad'
     shutil.copytree(src, dst, dirs_exist_ok=True)
     KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
 
-def get_all_containers():
+def get_all_localrun_containers():
     """
-    Finds all container (both stopped and running)
+    Finds all containers (both stopped and running) that were created by local_run code.
     :return: All container ids as a list
     """
     cmd_args = []
-    cmd_args.extend(['docker', 'ps', '-a', '-q'])
+    cmd_args.extend(['docker', 'ps', '-a', '-q', '-f', '"name=localrun"'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     containers = completed_process.stdout.split()
     return containers
 
-def remove_all_containers():
+def remove_all_localrun_containers():
     """
-    Removes all containers.
+    Removes all containers created by local_run code.
     :return: None
     """
-    containers = get_all_containers()
+    containers = get_all_localrun_containers()
     if not containers:
         return
     cmd_args = []
@@ -132,4 +155,4 @@ def remove_all_containers():
 
 if __name__ == "__main__":
     run_services(run_kasparov=True)
-    # remove_all_containers()
+    # remove_all_localrun_containers()

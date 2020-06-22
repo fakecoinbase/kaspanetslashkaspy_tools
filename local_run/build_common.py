@@ -1,10 +1,21 @@
-import os
+"""
+Utilities common to building of local_run docker images.
+"""
 import subprocess
 from kaspy_tools.local_run import run_dev
 
 
 
 def build_image(*, service_name, build_dir, extra_parameter=None, commit_number, context_dir):
+    """
+    Basic image building function.
+    :param service_name: The name of the requested service.
+    :param build_dir: Where the Dockerfile is present
+    :param extra_parameter: To be used with --build-arg
+    :param commit_number: a commit number to be used for tagging.
+    :param context_dir: A context dir for the building
+    :return: None
+    """
     cmd_args = []
     cmd_args.extend(['docker', 'build', '-f', 'Dockerfile'])
     if extra_parameter is not None:
@@ -33,6 +44,12 @@ def get_git_commit(repo_dir, branch):
 
 
 def tag_service(service_name, commit_number):
+    """
+    Use 'docker tag' to tag a docker image with a commit number as 'latest'.
+    :param service_name: The name of the service
+    :param commit_number: The commit number
+    :return: None
+    """
     cmd_args = []
     cmd_args.extend(['docker', 'tag'])
     cmd_args.extend([service_name + ':' + commit_number])
