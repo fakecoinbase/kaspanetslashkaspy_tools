@@ -1,20 +1,25 @@
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspa_model import kaspa_address
-from kaspy_tools.local_run import run_dev
+from kaspy_tools.local_run import build_common
 
-def make_kaspad_docker_image():
+kaspad_branch = 'v0.4.1-dev'
+
+
+def build_and_tag_kaspad_image():
     """
     Generates a build to be used by the setUpClass() method of the test-kits.
     :param mining_address: kaspanet address to be used when editing docekr-compose file.
     """
 
     mining_address = kaspa_address.KaspaAddress()
-    run_dev.remove_all_images_and_containers()
-    run_dev.create_docker_compose_file(mining_address)
+    # build_common.remove_all_images_and_containers()
+    commit_number = build_common.get_git_commit(kaspy_tools_constants.KASPAD_TOP_PATH, branch=kaspad_branch)
+    build_dir = kaspy_tools_constants.LOCAL_RUN_PATH + '/kaspad_docker'
+    build_common.build_image(service_name='kaspad', build_dir=build_dir, commit_number=commit_number,
+                             context_dir=kaspy_tools_constants.KASPAD_TOP_PATH)
 
-    # The following function call is synchronuous one, so once the function returns, the image was built.
-    run_dev.docker_image_build('kaspad', kaspy_tools_constants.KASPAD_TOP_PATH)
-    run_dev.tag_image_latest('kaspad')
+    build_common.tag_service('kaspad', commit_number)
+
 
 if __name__ == "__main__":
-    make_kaspad_docker_image()
+    build_and_tag_kaspad_image()
