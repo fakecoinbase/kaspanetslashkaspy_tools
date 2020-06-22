@@ -1,5 +1,5 @@
 """
-run_services module can be used to run kaspanet containers of all kinds.
+run_local_services module can be used to run kaspanet containers of all kinds.
 Building the docker images is done elsewhere.
 """
 import os
@@ -8,14 +8,14 @@ import subprocess
 import shutil
 from pathlib import Path
 from kaspy_tools import kaspy_tools_constants
-from kaspy_tools.local_run.run_services import docker_compose_utils
+from kaspy_tools.local_run.run_local_services import docker_compose_utils
 from kaspy_tools.kaspy_tools_constants import VOLUMES_DIR_PATH
 from kaspy_tools.logs import config_logger
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
 
-def run_services(run_kasparov=False):
+def run_kaspanet_services(run_kasparov=False):
     """
     Run services from docker-compose.yaml (which is built automatically from docker-compose-template.yaml)
     Runs:
@@ -36,6 +36,7 @@ def run_services(run_kasparov=False):
         run_docker_compose('kasparov_migrate', detached=False)
         run_docker_compose('kasparovsyncd')
         run_docker_compose('kasparovd')
+    time.sleep(10)   # let services start
     return cons
 
 
@@ -52,7 +53,7 @@ def run_docker_compose(*services, detached=True):
         cmd_args.append('-d')
     cmd_args.extend(services)
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
@@ -64,10 +65,10 @@ def stop_docker_compose_services(*services):
     """
     cmd_args = []
     cmd_args.extend(['docker-compose', 'down'])
-    if services is not None:
-        cmd_args.extend(services)
+    # if services is not None:
+    #     cmd_args.extend(services)
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
@@ -130,9 +131,10 @@ def get_all_localrun_containers():
     :return: All container ids as a list
     """
     cmd_args = []
-    cmd_args.extend(['docker', 'ps', '-a', '-q', '-f', '"name=localrun"'])
+    cmd_args.extend(['docker', 'ps', '-a', '-q', '-f', 'name=localrun'])
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     containers = completed_process.stdout.split()
     return containers
@@ -149,10 +151,10 @@ def remove_all_localrun_containers():
     cmd_args.extend(['docker', 'rm', '-f'])
     cmd_args.extend(containers)
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services')
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
 if __name__ == "__main__":
-    run_services(run_kasparov=True)
+    run_kaspanet_services(run_kasparov=True)
     # remove_all_localrun_containers()

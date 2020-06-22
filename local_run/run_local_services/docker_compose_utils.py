@@ -13,7 +13,7 @@ def read_docker_compose_template():
     Read the docker-compose-template.yaml file, and parse it using yaml library.
     :return: yaml parsed data
     """
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose-template.yaml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose-template.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
@@ -24,7 +24,7 @@ def read_docker_compose_file():
     Read the docker-compose.yaml file, and parse it.
     :return: yaml parsed data.
     """
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml'
     with open(docker_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         return data
@@ -36,7 +36,7 @@ def write_docker_compose(yaml_data):
     :param yaml_data: Data to write
     :return:
     """
-    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml'
+    docker_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml'
     with open(docker_file, 'w') as f:
         yaml.dump(yaml_data, f)
 
@@ -48,13 +48,16 @@ def create_docker_compose_file(mining_address):
     :param mining_address: A KaspaAddress instance based on the private wif saved in file.
     :return:
     """
-    save_wif_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/save_mining'
+    save_wif_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
     data = read_docker_compose_template()
 
-    old_address = data['services']['kaspad-first']['command'][4]
+    command = data['services']['kaspad-first']['command']
+    addr_index = [i for i in range(len(command)) if 'miningaddr' in command[i]][0]
+
+    old_address = data['services']['kaspad-first']['command'][addr_index]
     parts = old_address.split('=')
     parts[1] = mining_address.get_address("kaspadev")  # replace the old Bech32 with the mining address
-    data['services']['kaspad-first']['command'][4] = '='.join(parts)
+    data['services']['kaspad-first']['command'][addr_index] = '='.join(parts)
     # Replace the keys path in volumes.
     for service in ['kaspad-first', 'kaspad-second']:
         volumes = data['services'][service]['volumes']
@@ -75,7 +78,7 @@ def get_mining_address():
     in wif format.
     :return: The kaspa address object
     """
-    save_mining = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/save_mining'
+    save_mining = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
     with open(save_mining) as f:
         wif_data = f.readline()
 
@@ -114,4 +117,4 @@ def docker_compose_file_exist():
     Check weather docker-compose.yaml file exists
     :return: bool
     """
-    return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_services/docker-compose.yaml').is_file()
+    return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml').is_file()
