@@ -76,13 +76,19 @@ def get_mining_address():
     """
     Restore the mining address from the save_mining file, where the private key is stored
     in wif format.
+    If file does not exist - create and save a new address.
     :return: The kaspa address object
     """
-    save_mining = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
-    with open(save_mining, 'w') as f:
-        wif_data = f.readline()
+    save_mining_location = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
+    if Path(save_mining_location).is_file():
+        with open(save_mining_location) as f:
+            wif_data = f.readline()
+        mining_address = KaspaAddress(wif_data)
+    else:
+        mining_address = KaspaAddress()
+        with open(save_mining_location, 'w') as f:
+            wif_data = f.write(mining_address.get_wif())
 
-    mining_address = KaspaAddress(wif_data)
     return mining_address
 
 
