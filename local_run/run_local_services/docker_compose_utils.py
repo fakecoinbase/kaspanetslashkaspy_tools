@@ -79,7 +79,7 @@ def get_mining_address():
     :return: The kaspa address object
     """
     save_mining = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
-    with open(save_mining) as f:
+    with open(save_mining, 'w') as f:
         wif_data = f.readline()
 
     mining_address = KaspaAddress(wif_data)
