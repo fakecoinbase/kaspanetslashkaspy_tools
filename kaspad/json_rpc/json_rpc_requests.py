@@ -2,6 +2,7 @@
 This module holds the methods that handle all the JSON-RPC requests for the automation project.
 """
 from kaspy_tools.logs import config_logger
+from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 import requests
 import json
 
@@ -155,7 +156,7 @@ def generate_request(num_blocks, conn=None):
     return response_json
 
 
-def get_block_template_request(conn=None):
+def get_block_template_request(conn, pay_address=None):
     """
     Retrieves up to date block template.
 
@@ -169,11 +170,13 @@ def get_block_template_request(conn=None):
         * error- {code: int, message: "string"}
         * id
     """
+    if payAddress==None:        # that means we just need a template not for submitting
+        payAddress = KaspaAddress().get_address()
     headers = {'content-type': 'application/json'}
 
     payload = {
         "method": "getBlockTemplate",
-        "params": [{"capabilities": ["coinbasetxn", "workid", "coinbase/append"]}],
+        "params": [{"capabilities": ["coinbasetxn", "workid", "coinbase/append"],"payAddress":payAddress}],
         "jsonrpc": "2.0",
         "id": 0,
     }

@@ -48,8 +48,8 @@ def get_blocks(block_count, conn=None):
     return raw_blocks, verbose_blocks
 
 
-def get_block_template(conn=None):
-    res = json_rpc_requests.get_block_template_request(conn=conn)
+# def get_block_template(conn=None, pay_address=None):
+#     res = json_rpc_requests.get_block_template_request(conn=conn, payAddress=pay_address)
 
 
     return res

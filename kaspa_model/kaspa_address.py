@@ -26,7 +26,7 @@ class KaspaAddress:
         else:
             self._key = KaspaKeys(wif=wif)
 
-    def get_address(self, prefix='kaspa'):
+    def get_address(self, prefix='kaspadev'):
         """
         Lazily creates and returns the address.
         This is a Bech32 encoded address built based on a public key hash.
