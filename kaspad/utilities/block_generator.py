@@ -10,7 +10,7 @@ from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 
 # ========== Block generator methods ========== #
 
-def generate_valid_block_from_template(*, pay_address, conn, native_txs=None):
+def generate_valid_block_from_template(*, pay_address=None, conn, native_txs=None):
     new_block=Block.block_factory()
     block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
     updater.update_all_valid_block_variables(new_block, block_template, conn=conn,  native_txs=native_txs)

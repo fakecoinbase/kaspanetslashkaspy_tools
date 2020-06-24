@@ -170,13 +170,13 @@ def get_block_template_request(conn, pay_address=None):
         * error- {code: int, message: "string"}
         * id
     """
-    if payAddress==None:        # that means we just need a template not for submitting
-        payAddress = KaspaAddress().get_address()
+    if pay_address==None:        # that means we just need a template not for submitting
+        pay_address = KaspaAddress().get_address()
     headers = {'content-type': 'application/json'}
 
     payload = {
         "method": "getBlockTemplate",
-        "params": [{"capabilities": ["coinbasetxn", "workid", "coinbase/append"],"payAddress":payAddress}],
+        "params": [{"capabilities": ["coinbasetxn", "workid", "coinbase/append"],"payAddress":pay_address}],
         "jsonrpc": "2.0",
         "id": 0,
     }
