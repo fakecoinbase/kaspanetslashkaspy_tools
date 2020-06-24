@@ -1,9 +1,11 @@
 ## Local Running of kaspanet services
 
+Make sure **docker** and **docker-compose** are installed.
 #### Building
 
 Current version of local_run assumes having a 
-kaspad and kasparov local repositories at the same level of kaspy_tools.
+kaspad and kasparov local repositories at the same level of kaspy_tools 
+(for example under kaspanet).
 
 ##### Build kaspad
 
