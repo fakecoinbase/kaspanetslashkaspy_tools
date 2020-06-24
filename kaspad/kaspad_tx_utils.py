@@ -1,12 +1,10 @@
 """
 This module holds the methods that handle all the kaspa-d tx utils for the automation project.
 """
-from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 
 KT_logger = config_logger.get_kaspy_tools_logger()
-
 
 RPC_INTERNAL_ERROR = -32603
 
@@ -35,7 +33,7 @@ def submit_valid_raw_tx(tx_hex, options=None, conn=None):
     :param options: Enter specific options that are required else leave as None
     :return: The original response of the submit request, response_json
     """
-    response, response_json = json_rpc_client.submit_raw_transaction_request(tx_hex, options, conn=conn)
+    response, response_json = json_rpc_requests.submit_raw_tx(tx_hex, options, conn=conn)
     return response, response_json
 
 

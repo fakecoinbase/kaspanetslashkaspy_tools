@@ -2,10 +2,9 @@
 This module holds the methods that handle all the kaspa-d block utils for the automation project.
 """
 from kaspy_tools.kaspad.utilities import block_generator
-from kaspy_tools.kaspad import json_rpc_client
+from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.logs import config_logger
 from kaspy_tools.utils import general_utils
-
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
@@ -35,8 +34,7 @@ def submit_valid_block(*, conn=None, native_txs=None):
     """
     block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs)
 
-    # block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex=block_bytes.hex(), conn=conn)
+    response, response_json = json_rpc_requests.submit_block_request(hex_block=block_bytes.hex(), conn=conn)
     return response, response_json, block_hash.hex()
 
 
@@ -51,29 +49,8 @@ def submit_pre_generated_block(block_bytes, block_hash, options=None, conn=None)
     :return: The original response of the submit request, response_json & block_hash_hex
     """
     block_hex, block_hash_hex = convert_block_data_for_rpc_request(block_bytes, block_hash)
-    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
+    response, response_json = json_rpc_requests.submit_block_request(hex_block=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
-
-
-# def submit_blocks_from_binary_file(conn=None):
-#     """
-#     Submit blocks from a provided file path.
-#     Blocks must be in Hex format.
-#
-#     :param block_file_path: The path for the requested file
-#     """
-#     file = open(block_file_path, "r")
-#     counter = 1
-#     while True:
-#         block_hex = file.readline()[:-1]
-#         if block_hex == "":
-#             break
-#         response, response_json = json_rpc_client.submit_block_request(block_hex, conn)
-#         action_status = error_handler(response_json["error"])
-#         # local_logger.debug(print("block " + str(counter) + " " + action_status))
-#         counter += 1
-#     file.close()
-#     print("All blocks in file were submitted successfully")
 
 
 def submit_block_with_specific_parents(*, parent_block_hash, options=None, conn=None):
@@ -87,7 +64,7 @@ def submit_block_with_specific_parents(*, parent_block_hash, options=None, conn=
     """
     block_bytes, block_hash_hex = block_generator.generate_block_to_specific_parent(parent_block_hash, conn=conn)
     block_hex = block_bytes.hex()
-    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
+    response, response_json = json_rpc_requests.submit_block_request(hex_block=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -110,10 +87,11 @@ def submit_modified_block(*, invalid_parameter_string, invalid_arg_type=None,
     :return: The original response of the submit request, response_json & block_hash_hex
     """
     block_bytes, block_hash = block_generator.generate_modified_block_and_hash(variable_str=invalid_parameter_string,
-                                                                               invalid_arg_type=invalid_arg_type, conn=conn)
+                                                                               invalid_arg_type=invalid_arg_type,
+                                                                               conn=conn)
     block_hex = block_bytes.hex()
     block_hash_hex = block_hash.hex()
-    response, response_json = json_rpc_client.submit_block_request(block_hex=block_hex, options=options, conn=conn)
+    response, response_json = json_rpc_requests.submit_block_request(hex_block=block_hex, options=options, conn=conn)
     return response, response_json, block_hash_hex
 
 
@@ -132,41 +110,33 @@ def convert_block_data_for_rpc_request(block_bytes, block_hash):
 
 def get_current_tip_hashes(conn=None):
     """
-    Returns the current tips hashes using the function in json_rpc_client.py.
+    Returns the current tips hashes using the function in json_rpc_requests.py.
 
     :return: The tips hashes as a list
     """
-    return json_rpc_client.get_current_tip_hashes(conn)
-
-
-# def get_block_data(block_hash, conn=None):
-#     """
-#     Returns the requested block data status using the function in json_rpc_client.py.
-#
-#     :param block_hash: Hash of the requested block
-#     :return: block data status as a string
-#     """
-#     return json_rpc_client.get_block_data(block_hash, conn=conn)
+    response = json_rpc_requests.get_block_dag_info_request(conn)
+    return response["result"]["tipHashes"]
 
 
 def get_blocks(block_count, conn=None):
     """
     Returns the the requested amount of blocks from the Node URL that was provided.
-    using the function in json_rpc_client.py.
+    using the function in json_rpc_requests.py.
 
     :param url: The URL of the Node
     :param block_count: The amount of blocks to retrieve
     :return: block data as raw_blocks, verbose_blocks
     """
-    raw_blocks, verbose_blocks = json_rpc_client.get_blocks(block_count, conn=conn)
+    raw_blocks, verbose_blocks = json_rpc_requests.get_blocks(block_count, conn=conn)
     return raw_blocks, verbose_blocks
 
 
 def get_block_dag_num_of_blocks(conn=None):
     """
-    Return current amount of blocks from the node using the function in json_rpc_client.py.
+    Return current amount of blocks from the node using the function in json_rpc_requests.py.
     """
-    return json_rpc_client.get_block_dag_num_of_blocks(conn)
+    response = json_rpc_requests.get_block_dag_info_request(conn=conn)
+    return response["result"]["blocks"]
 
 
 def generate_valid_block_and_hash(conn=None):

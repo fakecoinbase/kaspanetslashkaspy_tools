@@ -54,11 +54,11 @@ def get_blocks(block_count, conn=None):
 
     return res
 
-def get_genesis_blockhash_from_constants():
-    """
-    Returns the blockhash value of the genesis block.
-    """
-    return [kaspad_constants.GENESIS_HASH]
+# def get_genesis_blockhash_from_constants():
+#     """
+#     Returns the blockhash value of the genesis block.
+#     """
+#     return [kaspad_constants.GENESIS_HASH]
 
 
 # def get_node_id_merkle_root(conn=None):

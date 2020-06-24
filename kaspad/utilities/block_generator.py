@@ -5,7 +5,6 @@ This module holds the methods that handle the process of generating valid and in
 from kaspy_tools.kaspa_model.block import Block
 from kaspy_tools.utils import general_utils
 from kaspy_tools.kaspad.utilities import updater
-from kaspy_tools.kaspad import json_rpc_client
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 
 
