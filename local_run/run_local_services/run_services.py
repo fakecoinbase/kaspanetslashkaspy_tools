@@ -25,8 +25,7 @@ def run_kaspanet_services(run_kasparov=False):
     :return: A dictionary with service connections
     """
     if not docker_compose_utils.docker_compose_file_exist():
-        mining_address = docker_compose_utils.get_mining_address()
-        docker_compose_utils.create_docker_compose_file(mining_address)
+        docker_compose_utils.create_docker_compose_file()
 
     docker_compose_data = docker_compose_utils.read_docker_compose_file()
     cons = docker_compose_utils.get_cons_from_docker_compose(docker_compose_data)

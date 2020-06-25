@@ -41,56 +41,24 @@ def write_docker_compose(yaml_data):
         yaml.dump(yaml_data, f)
 
 
-def create_docker_compose_file(mining_address):
+def create_docker_compose_file():
     """
     Create a new docker-compose.yaml file based on the template, updating stuff in it.
-    Update mining address just for kaspad-first.
-    :param mining_address: A KaspaAddress instance based on the private wif saved in file.
     :return:
     """
-    save_wif_file = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
     data = read_docker_compose_template()
 
     command = data['services']['kaspad-first']['command']
-    addr_index = [i for i in range(len(command)) if 'miningaddr' in command[i]][0]
-
-    old_address = data['services']['kaspad-first']['command'][addr_index]
-    parts = old_address.split('=')
-    parts[1] = mining_address.get_address("kaspadev")  # replace the old Bech32 with the mining address
-    data['services']['kaspad-first']['command'][addr_index] = '='.join(parts)
     # Replace the keys path in volumes.
     for service in ['kaspad-first', 'kaspad-second']:
         volumes = data['services'][service]['volumes']
         data['services'][service]['volumes'] = [v.replace('KEYS', kaspy_tools_constants.KEYS_PATH) for v in volumes]
 
     # Write Linux UID and GID
-    data['services']['kaspad-first']['user'] = '1000:1000'
+    data['services']['kaspad-first']['user'] = 'root'
 
     # Write output
     write_docker_compose(yaml_data=data)
-    with open(save_wif_file, 'w') as mining_f:
-        mining_f.write(mining_address.get_wif())
-
-
-def get_mining_address():
-    """
-    Restore the mining address from the save_mining file, where the private key is stored
-    in wif format.
-    If file does not exist - create and save a new address.
-    :return: The kaspa address object
-    """
-    save_mining_location = kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/save_mining'
-    if Path(save_mining_location).is_file():
-        with open(save_mining_location) as f:
-            wif_data = f.readline()
-        mining_address = KaspaAddress(wif_data)
-    else:
-        mining_address = KaspaAddress()
-        with open(save_mining_location, 'w') as f:
-            wif_data = f.write(mining_address.get_wif())
-
-    return mining_address
-
 
 def get_cons_from_docker_compose(docker_compose_data):
     """

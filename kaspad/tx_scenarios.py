@@ -20,9 +20,7 @@ def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=
     :param conn: A connection to the kaspad
     :return: A tupple: (list of TXs, all vblocks used, list of addresses used)
     """
-    mining_address = run_dev.get_mining_address()   # Get the mining address from docker_compose
     addresses = make_addresses(addr_count)          # make new addresses (dictionary)
-    addresses[mining_address.get_address(prefix='kaspadev')] = mining_address   # add the mining address
     # download all blocks
     utxo_list, v_blocks, r_blocks = download_utxo_set(block_count, conn=conn)
 
@@ -30,9 +28,7 @@ def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=
     return tx_list, v_blocks, addresses
 
 def generate_double_spend_tx_pair(*, conn=None):
-    mining_address = run_dev.get_mining_address()
     addresses = make_addresses(5)
-    addresses[mining_address.get_address(prefix='kaspadev')] = mining_address
     # download all blocks
     utxo_list, v_blocks, r_blocks = download_utxo_set(block_count=300, conn=conn)
     utxo_list_a = utxo_list[1:3]                    # [0,1]

@@ -4,7 +4,7 @@ Build images for kasparov.
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.local_run import build_common
 
-kasparov_branch = 'v0.4.1-dev'
+kasparov_branch = 'v0.5.0-dev'
 
 
 def build_and_tag_kasparov_services():

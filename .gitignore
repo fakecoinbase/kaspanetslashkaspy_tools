@@ -2,7 +2,6 @@
 **/*.pyc
 **/docker-compose.yml
 **/docker-compose.yaml
-**/save_mining
 **/*.dot
 **/*.png
 kaspy_tools_constants.py
