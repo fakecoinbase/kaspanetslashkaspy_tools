@@ -71,6 +71,34 @@ def stop_docker_compose_services(*services):
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
+def docker_compose_stop(*services):
+    """
+     General tool to stop container(s)
+     :param services: an iterable of service names (strings) to stop
+     :return: None
+     """
+    cmd_args = []
+    cmd_args.extend(['docker-compose', 'stop'])
+    if services is not None:
+        cmd_args.extend(services)
+    completed_process = subprocess.run(args=cmd_args, capture_output=True,
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+
+def docker_compose_rm(*services):
+    """
+     General tool to remove stopped container
+     :param services: an iterable of service names (strings) to remove
+     :return: None
+     """
+    cmd_args = []
+    cmd_args.extend(['docker-compose', 'rm', '-f'])
+    if services is not None:
+        cmd_args.extend(services)
+    completed_process = subprocess.run(args=cmd_args, capture_output=True,
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+
 
 def volume_dir_exist(volume_dir_name):
     """

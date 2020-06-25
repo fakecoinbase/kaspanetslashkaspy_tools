@@ -61,6 +61,67 @@ services:
         max-size: "50m"
         max-file: "10"
     container_name: localrun_second
+  kaspad-builder-1:
+    cap_add:
+      - SYS_PTRACE
+    image: kaspad:latest
+    volumes:
+      - ~/volumes/build/:/.kaspad
+      - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
+    command:
+      - "./kaspad"
+      - "--devnet"
+      - "--acceptanceindex"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpclisten=0.0.0.0:16650"
+      - "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert"
+      - "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key"
+      - "--debuglevel=debug"
+      - "--profile=6061"
+    ports:
+      - "16650:16650"
+      - "16611:16661"
+      - "6061:6061"
+    user: 1000:1000
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    container_name: localrun_builder-1
+  kaspad-builder-2:
+    cap_add:
+      - SYS_PTRACE
+    image: kaspad:latest
+    volumes:
+      - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
+    command:
+      - "./kaspad"
+      - "--devnet"
+      - "--connect=127.0.0.1:16661"
+      - "--acceptanceindex"
+      - "--rpcuser=user"
+      - "--rpcpass=pass"
+      - "--rpclisten=0.0.0.0:16650"
+      - "--rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert"
+      - "--rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key"
+      - "--debuglevel=debug"
+      - "--profile=6061"
+    ports:
+      - "16650:16650"
+      - "6061:6061"
+    user: 1000:1000
+    network_mode: host
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    container_name: localrun_builder-2
   kasparov_migrate:
     image: "kasparov-sync:latest"
     command:

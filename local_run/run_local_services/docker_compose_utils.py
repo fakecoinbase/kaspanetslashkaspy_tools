@@ -100,7 +100,7 @@ def get_cons_from_docker_compose(docker_compose_data):
     """
     cons = {}
     for srv_name, service in docker_compose_data['services'].items():
-        if srv_name not in ('kaspad-first', 'kaspad-second'):
+        if 'kaspad' not in srv_name:
             continue
         addr_index = [i for i in range(len(service['command'])) if 'rpclisten' in service['command'][i]][0]
         ip_addr, port_num = (service['command'][addr_index].split('=')[1]).split(':')
