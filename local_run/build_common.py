@@ -2,8 +2,6 @@
 Utilities common to building of local_run docker images.
 """
 import subprocess
-from kaspy_tools.local_run import run_dev
-
 
 
 def build_image(*, service_name, build_dir, extra_parameter=None, commit_number, context_dir):
@@ -59,16 +57,6 @@ def tag_service(service_name, commit_number):
     completed_process.check_returncode()
 
 
-def remove_all_images_and_containers():
-    """
-    Remove all containers and all images from your computer!!!
-    Use carefully.
-    :return: None
-    """
-    run_dev.remove_all_containers()
-    remove_all_images()
-
-
 def remove_all_images():
     cmd_args = []
     cmd_args.extend(['docker', 'system', 'prune', '-f', '-a'])
@@ -102,4 +90,3 @@ def get_all_containers():
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     containers = completed_process.stdout.split()
     return containers
-
