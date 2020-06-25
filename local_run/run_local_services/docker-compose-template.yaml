@@ -38,7 +38,7 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/volumes/kaspad/:~/.kaspad
+      - ~/volumes/kaspad/:/.kaspad
       - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-second:
     cap_add:
