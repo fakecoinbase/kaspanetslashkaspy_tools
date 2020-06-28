@@ -156,7 +156,7 @@ def generate_request(num_blocks, conn=None):
     return response_json
 
 
-def get_block_template_request(conn, pay_address=None):
+def get_block_template_request(conn, pay_address=None, netprefix='kaspadev'):
     """
     Retrieves up to date block template.
 
@@ -171,7 +171,7 @@ def get_block_template_request(conn, pay_address=None):
         * id
     """
     if pay_address==None:        # that means we just need a template not for submitting
-        pay_address = KaspaAddress().get_address()
+        pay_address = KaspaAddress().get_address(prefix=netprefix)
     headers = {'content-type': 'application/json'}
 
     payload = {

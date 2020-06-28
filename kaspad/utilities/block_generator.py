@@ -10,9 +10,10 @@ from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 
 # ========== Block generator methods ========== #
 
-def generate_valid_block_from_template(*, pay_address=None, conn, native_txs=None):
+def generate_valid_block_from_template(*, pay_address=None, conn, native_txs=None, netprefix='kaspadev'):
     new_block=Block.block_factory()
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address,
+                                                                  netprefix=netprefix)['result']
     updater.update_all_valid_block_variables(new_block, block_template, conn=conn,  native_txs=native_txs)
     block_header = new_block.block_header_bytes
     block_hash = general_utils.hash_256(block_header)

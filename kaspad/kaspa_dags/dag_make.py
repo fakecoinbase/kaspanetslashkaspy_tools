@@ -18,7 +18,8 @@ def make_floor(*, min_width, max_width, conn):
     num_elements = random.randint(min_width,max_width)
     KT_logger.debug('Number of blocks in floor: %d.', num_elements)
     for b in range(num_elements):
-        new_block, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=[])
+        new_block, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=[],
+                                                                                   netprefix='kaspasim')
         KT_logger.debug('Created block hash: %s', block_hash.hex()[kaspad_constants.PARTIAL_HASH_SIZE:])
         floor_list.append(new_block)
     return floor_list
