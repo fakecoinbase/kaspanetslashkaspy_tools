@@ -39,7 +39,7 @@ services:
     user: root
     volumes:
       - ~/volumes/kaspad/:/.kaspad
-      - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-second:
     cap_add:
       - SYS_PTRACE
@@ -76,7 +76,7 @@ services:
     image: kaspad:latest
     volumes:
       - ~/volumes/build/:/.kaspad
-      - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
     command:
       - ./kaspad
       - "--simnet"
@@ -100,13 +100,13 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
-    container_name: localrun_builder-1
+    container_name: localbuild_builder-1
   kaspad-builder-2:
     cap_add:
       - SYS_PTRACE
     image: kaspad:latest
     volumes:
-      - /home/yuval/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
     command:
       - ./kaspad
       - "--simnet"
@@ -130,7 +130,7 @@ services:
       options:
         max-size: "50m"
         max-file: "10"
-    container_name: localrun_builder-2
+    container_name: localbuild_builder-2
   kasparov_migrate:
       command:
         - /app/kasparov-syncd
