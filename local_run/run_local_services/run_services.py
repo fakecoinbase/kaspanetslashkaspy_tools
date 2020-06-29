@@ -56,19 +56,19 @@ def run_docker_compose(*services, detached=True):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-def stop_docker_compose_services(*services):
-    """
-    General tool to stop services from the docker-compose.yaml
-    :param services: an iterable of service names (strings) to stop
-    :return: None
-    """
-    cmd_args = []
-    cmd_args.extend(['docker-compose', 'down'])
-    # if services is not None:
-    #     cmd_args.extend(services)
-    completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
-    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+# def stop_docker_compose_services(*services):
+#     """
+#     General tool to stop services from the docker-compose.yaml
+#     :param services: an iterable of service names (strings) to stop
+#     :return: None
+#     """
+#     cmd_args = []
+#     cmd_args.extend(['docker-compose', 'down'])
+#     # if services is not None:
+#     #     cmd_args.extend(services)
+#     completed_process = subprocess.run(args=cmd_args, capture_output=True,
+#                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+#     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 def docker_compose_stop(*services):
     """

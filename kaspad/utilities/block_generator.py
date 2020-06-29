@@ -11,16 +11,17 @@ from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 # ========== Block generator methods ========== #
 
 def generate_valid_block_from_template(*, pay_address=None, conn, native_txs=None, netprefix='kaspadev'):
-    new_block=Block.block_factory()
+    new_block = Block.block_factory()
     block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address,
                                                                   netprefix=netprefix)['result']
-    updater.update_all_valid_block_variables(new_block, block_template, conn=conn,  native_txs=native_txs)
+    updater.update_all_valid_block_variables(new_block, block_template, conn=conn, native_txs=native_txs)
     block_header = new_block.block_header_bytes
     block_hash = general_utils.hash_256(block_header)
     reversed_block_hash = general_utils.reverse_bytes(block_hash)
     block_body = new_block.get_block_body_bytes_array()
     valid_block = Block.rebuild_block(block_header, block_body)
     return valid_block, reversed_block_hash
+
 
 def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_type=None, conn=None):
     """
@@ -38,8 +39,9 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
     """
     # block_bytes = general_utils.load_binary_file(block_file_path)
     # new_block = Block.parse_block(block_bytes)
-    new_block=Block.block_factory()
-    variables_list = ["version", "parent_block_data", "txs", "hash_merkle_root", "id_merkle_root", "utxo_commitment", "timestamp",
+    new_block = Block.block_factory()
+    variables_list = ["version", "parent_block_data", "txs", "hash_merkle_root", "id_merkle_root", "utxo_commitment",
+                      "timestamp",
                       "bits", "nonce"]
     if variable_str.lower() not in variables_list:
         print("Incorrect variable string provided: " + variable_str)
@@ -82,14 +84,13 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
 def generate_block_to_specific_parent(parent_block_hash, conn=None):
     """
     Generates a block while directing it to a specific set of tips or directly to the "Genesis" block.
-
-    :param block_file_path: The path of the block binary file
     :param parent_block_hash: Accepts a block hash as bytes or the str "genesis"
+    :param conn: connection details
     :return: New block object & block hash
     """
     # block_bytes = general_utils.load_binary_file(block_file_path)
     # new_block = Block.parse_block(block_bytes)
-    new_block=Block.block_factory()
+    new_block = Block.block_factory()
     updater.update_block_variables_parent_block_data_to_provided_block(new_block, parent_block_hash, conn=conn)
     modified_block = bytes(new_block)
     block_hash = new_block.block_header_hash_bytes.hex()

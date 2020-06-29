@@ -14,24 +14,27 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object, block_template, conn=None,  native_txs=None):
+def update_all_valid_block_variables(block_object, block_template, conn=None, native_txs=None):
     """
     Initiates the VALID updating process for the entire block
 
     :param block_object: The block object that holds the variables to update
+    :param block_template: Template from getBlockTemplate request
+    :param conn: connection details
+    :param native_txs: A list of native transactions to include
     """
-    update_block_version(block_object,block_template)
-    update_parent_blocks_data(block_object,block_template)
-    update_all_txs(block_object,block_template, native_txs)
-    update_hash_merkle_root(block_object,block_template)
-    update_id_merkle_root(block_object,block_template)
-    update_utxo_commitment(block_object,block_template)
-    update_timestamp(block_object,block_template)
-    update_bits(block_object,block_template)
+    update_block_version(block_object, block_template)
+    update_parent_blocks_data(block_object, block_template)
+    update_all_txs(block_object, block_template, native_txs)
+    update_hash_merkle_root(block_object, block_template)
+    update_id_merkle_root(block_object, block_template)
+    update_utxo_commitment(block_object, block_template)
+    update_timestamp(block_object, block_template)
+    update_bits(block_object, block_template)
     update_nonce(block_object)
 
 
-def update_block_variables_using_invalid_version_data(block_object, version_int, conn, pay_address):
+def update_block_variables_using_invalid_version_data(block_object, version_int, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "version" value.
 
@@ -46,7 +49,7 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
     update_utxo_commitment(block_object, block_template)
     update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
-    update_version(block_object, 5)   # temporary int
+    update_version(block_object, 5)  # temporary int
 
     update_nonce(block_object)
     if version_int is None:
@@ -55,7 +58,7 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
         update_version(block_object, version_int)
 
 
-def update_block_variables_without_parent_block_data(block_object, conn, pay_address):
+def update_block_variables_without_parent_block_data(block_object, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "parent block data" variables
 
@@ -73,7 +76,7 @@ def update_block_variables_without_parent_block_data(block_object, conn, pay_add
     update_nonce(block_object)
 
 
-def update_block_variables_without_txs(block_object, conn, pay_address):
+def update_block_variables_without_txs(block_object, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "Txs" objects
 
@@ -90,7 +93,7 @@ def update_block_variables_without_txs(block_object, conn, pay_address):
     update_nonce(block_object)
 
 
-def update_block_variables_without_hash_merkle_root(block_object, conn, pay_address):
+def update_block_variables_without_hash_merkle_root(block_object, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "hash merkle root" variable
 
@@ -107,11 +110,13 @@ def update_block_variables_without_hash_merkle_root(block_object, conn, pay_addr
     update_nonce(block_object)
 
 
-def update_block_variables_without_id_merkle_root(block_object, conn, pay_address):
+def update_block_variables_without_id_merkle_root(block_object, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "ID merkle root" variable
 
     :param block_object: The block object that holds the variables to update
+    :param conn: connection details
+    :param pay_address: paying address for block
     """
     block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
 
@@ -124,7 +129,7 @@ def update_block_variables_without_id_merkle_root(block_object, conn, pay_addres
     update_nonce(block_object)
 
 
-def update_block_variables_without_utxo_commitment(block_object, conn, pay_address):
+def update_block_variables_without_utxo_commitment(block_object, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "utxo commitment" variable
 
@@ -141,7 +146,7 @@ def update_block_variables_without_utxo_commitment(block_object, conn, pay_addre
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value, conn, pay_address):
+def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "timestamp" value.
 
@@ -161,7 +166,7 @@ def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_val
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, pay_address):
+def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "bits" value.
 
@@ -180,7 +185,7 @@ def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, 
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn, pay_address):
+def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn, pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "nonce" value.
 
@@ -199,7 +204,8 @@ def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn
     update_nonce_invalid(block_object, nonce_value)
 
 
-def update_block_variables_parent_block_data_to_provided_block(block_object, parent_block_hash, conn, pay_address):
+def update_block_variables_parent_block_data_to_provided_block(block_object, parent_block_hash, conn,
+                                                               pay_address=None):
     """
     Initiates the VALID updating process for the block, setting "parent block data" variables to point to a provided
     block hash or to Genesis block.
@@ -241,9 +247,10 @@ def update_version_invalid(block_object):
     """
     block_object.version_bytes = b""
 
-def update_block_version(block_object,block_template):
+
+def update_block_version(block_object, block_template):
     version_int = block_template['version']
-    block_object.version_bytes = version_int.to_bytes(4,byteorder='little')
+    block_object.version_bytes = version_int.to_bytes(4, byteorder='little')
 
 
 def update_parent_blocks_data(block_object, block_template):
@@ -254,9 +261,9 @@ def update_parent_blocks_data(block_object, block_template):
     """
     tip_hashes_list = block_template['parentHashes']
 
-    #convert tips to bytes and flip
-    reversed_tips_hashes_bytes = [ (bytes.fromhex(tip))[::-1]  for tip in tip_hashes_list ]
-    block_object.number_of_parent_blocks_bytes = (len(tip_hashes_list)).to_bytes(1,byteorder='little')
+    # convert tips to bytes and flip
+    reversed_tips_hashes_bytes = [(bytes.fromhex(tip))[::-1] for tip in tip_hashes_list]
+    block_object.number_of_parent_blocks_bytes = (len(tip_hashes_list)).to_bytes(1, byteorder='little')
     block_object.parent_hashes = reversed_tips_hashes_bytes
 
 
@@ -437,7 +444,7 @@ def update_all_txs(block_object, block_template, native_txs=None):
     """
     coinbase_tx_object = update_coinbase_tx(block_template)
     block_object.coinbase_tx_obj = coinbase_tx_object
-    if native_txs==None:
+    if native_txs == None:
         return
     for tx in native_txs:
         block_object.add_native_transaction(tx)
@@ -466,17 +473,16 @@ def calculate_nonce(block_object):
     """
     Looks for a hash that will be smaller than the target.
 
-    :param block_header_list: The block header bytes parsed as a list
+    :param block_object: The block header bytes parsed as a list
     :return: New nonce as bytes
     """
     target = block_object.target_int
     hash = block_object.block_header_hash
-    block_object.nonce_int = random.randint(0,kaspad_constants.MAX_UINT64)
+    block_object.nonce_int = random.randint(0, kaspad_constants.MAX_UINT64)
 
     while hash >= target:
-        block_object.nonce_int = (block_object.nonce_int + 1 ) % kaspad_constants.MAX_UINT64
+        block_object.nonce_int = (block_object.nonce_int + 1) % kaspad_constants.MAX_UINT64
         hash = block_object.block_header_hash
-
 
     return block_object.nonce_bytes
 
@@ -508,5 +514,3 @@ def hash_txs(txs_list):
         tx_hash = general_utils.hash_256(tx)
         txs_hashes_list.append(tx_hash)
     return txs_hashes_list
-
-
