@@ -2,7 +2,9 @@
 A set of utilities to handle docker-compose.
 """
 from kaspy_tools import kaspy_tools_constants
+import json
 import yaml
+from kaspy_tools.kaspy_tools_constants import VOLUMES_DIR_PATH
 from pathlib import Path
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
@@ -55,7 +57,7 @@ def create_docker_compose_file():
         data['services'][service]['volumes'] = [v.replace('KEYS', kaspy_tools_constants.KEYS_PATH) for v in volumes]
 
     # Write Linux UID and GID
-    data['services']['kaspad-first']['user'] = 'root'
+    # data['services']['kaspad-first']['user'] = "1000:1000"
 
     # Write output
     write_docker_compose(yaml_data=data)
@@ -92,3 +94,28 @@ def docker_compose_file_exist():
     :return: bool
     """
     return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml').is_file()
+
+
+def save_miner_address(*, miner_address, dir_name):
+    """
+    Save a miner address of a DAG.
+    :param miner_address: A private (wif encoded) address
+    :param dir_name: A directory that contains the DAG matching this address (under VOLUMES directory)
+    :return: None
+    """
+    try:
+        with open(VOLUMES_DIR_PATH+'/miner_addresses.json', 'r') as addrs_file:
+            mining_addresses = json.load(addrs_file)
+    except FileNotFoundError:
+        mining_addresses = {}
+
+    mining_addresses[dir_name] = miner_address.get_wif()
+    with open(VOLUMES_DIR_PATH + '/miner_addresses.json', 'w') as addrs_file:
+        json.dump(mining_addresses, addrs_file)
+
+def load_miner_address(*, dir_name):
+    with open(VOLUMES_DIR_PATH + '/miner_addresses.json', 'r') as addrs_file:
+        mining_addresses = json.load(addrs_file)
+
+    addr = KaspaAddress(wif=mining_addresses[dir_name])
+    return addr

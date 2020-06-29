@@ -56,19 +56,20 @@ def run_docker_compose(*services, detached=True):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-# def stop_docker_compose_services(*services):
-#     """
-#     General tool to stop services from the docker-compose.yaml
-#     :param services: an iterable of service names (strings) to stop
-#     :return: None
-#     """
-#     cmd_args = []
-#     cmd_args.extend(['docker-compose', 'down'])
-#     # if services is not None:
-#     #     cmd_args.extend(services)
-#     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-#                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
-#     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+def stop_docker_compose_services(*services):
+    """
+    General tool to stop services from the docker-compose.yaml
+    :param services: an iterable of service names (strings) to stop
+    :return: None
+    """
+    containers = get_all_localrun_containers()
+    cmd_args = []
+    cmd_args.extend(['docker-compose', 'stop'])
+    # if services is not None:
+    #     cmd_args.extend(services)
+    completed_process = subprocess.run(args=cmd_args, capture_output=True,
+                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 def docker_compose_stop(*services):
     """
@@ -124,8 +125,12 @@ def clear_kaspad_volume_files():
         os.makedirs(volume_kaspad)
         KT_logger.debug("Created: " + volume_kaspad)
 
+    volume_build = VOLUMES_DIR_PATH + '/build'
+    if not Path(volume_build).exists():
+        os.makedirs(volume_build)
 
-def save_volume_files(*, dir_name):
+
+def save_volume_files(*, dir_name, miner_address):
     """
     Copy the content of volumes/kaspad directory into another directory.
     The main use is to enavle saving of DAGS after creating them.
@@ -136,6 +141,8 @@ def save_volume_files(*, dir_name):
     dst = VOLUMES_DIR_PATH + '/' + dir_name
     shutil.copytree(src, dst, dirs_exist_ok=True)
     KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
+    docker_compose_utils.save_miner_address(miner_address=miner_address, dir_name=dir_name)
+
 
 
 def restore_volume_files(*, dir_name):

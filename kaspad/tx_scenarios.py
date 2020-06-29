@@ -10,7 +10,7 @@ from kaspy_tools.kaspad.kaspa_dags import find_in_dag
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 
-def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=None, conn=None):
+def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=None, miner_address, conn=None):
     """
     Generate transaction based on a DAG already submitted.
     :param addr_count: How many new parivate addresses to create
@@ -20,6 +20,8 @@ def generate_transactions_from_dag(*, addr_count=100, tx_count=100, block_count=
     :return: A tupple: (list of TXs, all vblocks used, list of addresses used)
     """
     addresses = make_addresses(addr_count)          # make new addresses (dictionary)
+    addresses[miner_address.get_address()] = miner_address
+
     # download all blocks
     utxo_list, v_blocks, r_blocks = download_utxo_set(block_count, conn=conn)
 

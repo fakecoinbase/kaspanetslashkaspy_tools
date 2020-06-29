@@ -36,9 +36,9 @@ services:
       - 16611:16611
       - 6061:6061
     restart: always
-    user: root
+    user: "1000:1000"
     volumes:
-      - ~/volumes/kaspad/:/.kaspad
+      - ~/volumes/kaspad/:/.kaspad/
       - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-second:
     cap_add:
@@ -92,7 +92,7 @@ services:
     ports:
       - "16650:16650"
       - "6063:6063"
-    user: root
+    user: "1000:1000"
     network_mode: host
     restart: always
     logging:
@@ -147,7 +147,7 @@ services:
       container_name: localrun_kasparov_migrate
       image: kasparov-sync:latest
       network_mode: host
-      user: root
+      user: "1000:1000"
   kasparovd:
       command:
         - /app/kasparovd
@@ -172,7 +172,7 @@ services:
       ports:
         - 8080:8080
       restart: always
-      user: root
+      user: "1000:1000"
   kasparovsyncd:
       command:
         - /app/kasparov-syncd
@@ -195,5 +195,5 @@ services:
           max-size: 50m
       network_mode: host
       restart: always
-      user: root
+      user: "1000:1000"
 version: '3'
