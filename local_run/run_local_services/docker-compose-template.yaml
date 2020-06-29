@@ -62,7 +62,7 @@ services:
       options:
         max-file: '10'
         max-size: 50m
-    network_mode: bridge
+    network_mode: host
     ports:
       - 16616:16616
       - 6062:6062

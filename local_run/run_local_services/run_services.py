@@ -35,7 +35,7 @@ def run_kaspanet_services(run_kasparov=False):
         run_docker_compose('kasparov_migrate', detached=False)
         run_docker_compose('kasparovsyncd')
         run_docker_compose('kasparovd')
-    time.sleep(10)   # let services start
+    time.sleep(5)   # let services start
     return cons
 
 
