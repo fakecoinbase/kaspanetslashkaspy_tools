@@ -31,7 +31,8 @@ def make_new_transactions(*, count, utxo_list, addresses, in_count=1, out_count=
     tx_list = []
     fees= kaspy_tools_constants.DEFAULT_FEE
     for tx_num in range(count):
-        tx = make_a_single_transaction(in_count=in_count, out_count=out_count, utxo_list=utxo_list, addresses=addresses, fees=fees)
+        tx = make_a_single_transaction(in_count=in_count, out_count=out_count, utxo_list=utxo_list,
+                                       addresses=addresses, fees=fees)
         tx_list.append(tx)
 
     return tx_list
