@@ -6,7 +6,7 @@ from kaspy_tools.kaspad.kaspa_dags.dnld_utxo_set_command import download_utxo_se
 from kaspy_tools.kaspad.utilities.make_transactions_command import make_new_transactions
 from kaspy_tools.kaspa_model.kaspa_address import make_addresses
 from kaspy_tools.kaspad.utilities.coinbase_info import CoinbaseInfo
-from kaspy_tools.kaspad.kaspa_dags import find_in_dag
+from kaspy_tools.kaspad.kaspa_dags.dag_creation_tools import find_in_dag
 
 KT_logger = config_logger.get_kaspy_tools_logger()
 

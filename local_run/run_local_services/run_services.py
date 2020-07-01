@@ -100,64 +100,10 @@ def docker_compose_rm(*services):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-def volume_dir_exist(volume_dir_name):
-    """
-    Check weather a volumes dir (directory under the 'volumes' dir) exists.
-    :param volume_dir_name: The name of the volume directory.
-    :return: bool
-    """
-    volume_dir = os.path.expanduser(kaspy_tools_constants.VOLUMES_DIR_PATH)
-    files = os.listdir(volume_dir)
-    return volume_dir_name in files
-
-
-def clear_kaspad_volume_files():
-    """
-    Delete the files inside volumes/kaspad directory.
-    If the directory does not exist - the function will create it.
-    :return: None
-    """
-    volume_kaspad = VOLUMES_DIR_PATH + '/kaspad'
-    if Path(volume_kaspad).exists():
-        shutil.rmtree(volume_kaspad)
-        os.mkdir(volume_kaspad)
-    else:
-        os.makedirs(volume_kaspad)
-        KT_logger.debug("Created: " + volume_kaspad)
-
-    volume_build = VOLUMES_DIR_PATH + '/build'
-    if not Path(volume_build).exists():
-        os.makedirs(volume_build)
-
-
-def save_volume_files(*, dir_name, miner_address):
-    """
-    Copy the content of volumes/kaspad directory into another directory.
-    The main use is to enavle saving of DAGS after creating them.
-    :param dir_name: The directory to copy to
-    :return:
-    """
-    src = VOLUMES_DIR_PATH + '/kaspad'
-    dst = VOLUMES_DIR_PATH + '/' + dir_name
-    shutil.copytree(src, dst, dirs_exist_ok=True)
-    KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
-    docker_compose_utils.save_miner_address(miner_address=miner_address, dir_name=dir_name)
 
 
 
-def restore_volume_files(*, dir_name):
-    """
-    Restore files from a backup directory into volumes/kaspad
-    Main use:
-    To restore an already created DAG into kaspad.
-    :param dir_name: The directory to restore from.
-    :return: None
-    """
-    clear_kaspad_volume_files()
-    src = VOLUMES_DIR_PATH + '/' + dir_name
-    dst = VOLUMES_DIR_PATH + '/kaspad'
-    shutil.copytree(src, dst, dirs_exist_ok=True)
-    KT_logger.debug('Copied: "{}", to: "{}"'.format(src, dst))
+
 
 def get_all_localrun_containers():
     """

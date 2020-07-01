@@ -6,7 +6,6 @@ import json
 import yaml
 from kaspy_tools.kaspy_tools_constants import VOLUMES_DIR_PATH
 from pathlib import Path
-from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspa_model.kaspa_node import KaspaNode
 
 
@@ -96,26 +95,3 @@ def docker_compose_file_exist():
     return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml').is_file()
 
 
-def save_miner_address(*, miner_address, dir_name):
-    """
-    Save a miner address of a DAG.
-    :param miner_address: A private (wif encoded) address
-    :param dir_name: A directory that contains the DAG matching this address (under VOLUMES directory)
-    :return: None
-    """
-    try:
-        with open(VOLUMES_DIR_PATH+'/miner_addresses.json', 'r') as addrs_file:
-            mining_addresses = json.load(addrs_file)
-    except FileNotFoundError:
-        mining_addresses = {}
-
-    mining_addresses[dir_name] = miner_address.get_wif()
-    with open(VOLUMES_DIR_PATH + '/miner_addresses.json', 'w') as addrs_file:
-        json.dump(mining_addresses, addrs_file)
-
-def load_miner_address(*, dir_name):
-    with open(VOLUMES_DIR_PATH + '/miner_addresses.json', 'r') as addrs_file:
-        mining_addresses = json.load(addrs_file)
-
-    addr = KaspaAddress(wif=mining_addresses[dir_name])
-    return addr

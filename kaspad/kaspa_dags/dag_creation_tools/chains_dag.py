@@ -1,7 +1,6 @@
 import os
 import subprocess
 from kaspy_tools.local_run.run_local_services import run_services
-from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.kaspad.utilities import block_generator
@@ -55,18 +54,4 @@ def make_chains_dag(conn, pay_address):
                                         pay_address=pay_address)
     # now submit
 
-def make_complex_dag(conn):
-    miner_addr = KaspaAddress()
-    chain_one = get_blocks_from_chain(chain_definition=[1 for i in range(110)], pay_address=miner_addr,
-                                      conn=conn)
-    # when we get the blocks for chain_two, we clean blocks of chain_one
-    chain_two = get_blocks_from_chain(chain_definition=[3,1], conn=conn, pay_address=miner_addr,
-                                      clear=False)
-    # Now chain_two is submitted, we submit chain_one
-    submit_saved_blocks(saved_blocks=chain_one, conn=conn)
-    # Now chain_one AND chain_two are submitted
-    # getting chain_three without clearing:
-    chain_three = get_blocks_from_chain(chain_definition=[1 for i in range(110)], clear=False,
-                                        pay_address=miner_addr, conn=conn)
-    # now submit
-    return miner_addr
+
