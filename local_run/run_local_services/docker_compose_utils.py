@@ -55,11 +55,16 @@ def create_docker_compose_file():
         volumes = data['services'][service]['volumes']
         data['services'][service]['volumes'] = [v.replace('KEYS', kaspy_tools_constants.KEYS_PATH) for v in volumes]
 
-    # Write Linux UID and GID
-    # data['services']['kaspad-first']['user'] = "1000:1000"
-
     # Write output
     write_docker_compose(yaml_data=data)
+
+def set_compose_network(*service_names, kaspanet):
+    data = read_docker_compose_file()
+    for srv_name in service_names:
+        service = data['services'][srv_name]
+        net_index = [i for i in range(len(service['command'])) if 'net' in service['command'][i]][0]
+        service['command'][net_index] = kaspanet
+    pass
 
 def get_cons_from_docker_compose():
     """

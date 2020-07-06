@@ -171,7 +171,7 @@ services:
     container_name: localrun_kasparov_migrate
     image: kasparov-sync:latest
     network_mode: host
-    user: 1000:1000
+    user: root
   kasparovd:
     command:
       - /app/kasparovd
@@ -196,7 +196,7 @@ services:
     ports:
       - 8080:8080
     restart: always
-    user: 1000:1000
+    user: root
   kasparovsyncd:
     command:
       - /app/kasparov-syncd
@@ -219,7 +219,7 @@ services:
         max-size: 50m
     network_mode: host
     restart: always
-    user: 1000:1000
+    user: root
   db:
     container_name: localrun_postgres
     environment:
@@ -256,7 +256,7 @@ services:
     ports:
       - 6063:6063
     restart: always
-    user: 1000:1000
+    user: root
     volumes:
       - ~/volumes/build/:/root/.kaspad
       - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common

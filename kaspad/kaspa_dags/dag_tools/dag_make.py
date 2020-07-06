@@ -29,6 +29,8 @@ def submit_floor(*, floor_list=None, conn=None):
         floor_list=[]
     for block in floor_list:
         response, response_json = json_rpc_requests.submit_block_request(block.hex(),options=None,conn=conn)
+        if response_json['result'] is not None:
+            raise ValueError
 
 
 

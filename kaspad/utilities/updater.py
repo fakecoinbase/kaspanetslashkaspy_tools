@@ -5,12 +5,14 @@ This module holds all the UPDATE methods for the automation project.
 import random
 from io import BytesIO
 import time
+from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_crypto.merkle_root import MerkleTree
 from kaspy_tools.kaspad import kaspad_constants
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.kaspa_model.tx import Tx
 from kaspy_tools.utils import general_utils
 
+KT_logger = config_logger.get_kaspy_tools_logger()
 
 # ========== Update Block Methods ========== #
 
@@ -477,14 +479,17 @@ def calculate_nonce(block_object):
     :return: New nonce as bytes
     """
     block_target = block_object.target_int
-    target = min(block_target, kaspad_constants.MAX_BLOCK_TARGET)
     hash = block_object.block_header_hash
     block_object.nonce_int = random.randint(0, kaspad_constants.MAX_UINT64)
 
-    while hash >= target:
+    small_target = block_target-1
+    loop_counter = 0
+    while hash > small_target:
         block_object.nonce_int = (block_object.nonce_int + 1) % kaspad_constants.MAX_UINT64
         hash = block_object.block_header_hash
+        loop_counter += 1
 
+    KT_logger.debug(f'mining loop:{loop_counter}')
     return block_object.nonce_bytes
 
 

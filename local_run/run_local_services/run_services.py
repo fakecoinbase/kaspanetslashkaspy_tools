@@ -39,13 +39,14 @@ def run_kaspanet_services(run_kasparov=False):
     return cons
 
 
-def run_docker_compose(*services, detached=True):
+def run_docker_compose(*services, detached=True, kaspanet='devnet'):
     """
     General tool to run services from the docker-compose.yaml
     :param services: an iterable of service names (strings)
     :param detached: Weather or not to block until containers stop
     :return: None
     """
+    docker_compose_utils.set_compose_network(*services, kaspanet=kaspanet)
     cmd_args = []
     cmd_args.extend(['docker-compose', 'up'])
     if detached:
@@ -80,20 +81,20 @@ def stop_docker_compose_services(*services):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-def docker_compose_stop(*services):
-    """
-     General tool to stop container(s)
-     :param services: an iterable of service names (strings) to stop
-     :return: None
-     """
-    cmd_args = []
-    cmd_args.extend(['docker-compose', 'stop'])
-    if services is not None:
-        cmd_args.extend(services)
-    completed_process = subprocess.run(args=cmd_args, capture_output=True,
-                                       cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
-    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
-
+# def docker_compose_stop(*services):
+#     """
+#      General tool to stop container(s)
+#      :param services: an iterable of service names (strings) to stop
+#      :return: None
+#      """
+#     cmd_args = []
+#     cmd_args.extend(['docker-compose', 'stop'])
+#     if services is not None:
+#         cmd_args.extend(services)
+#     completed_process = subprocess.run(args=cmd_args, capture_output=True,
+#                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
+#     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+#
 
 def docker_compose_rm(*services):
     """
