@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 
+# Needed to run things as a superuser
+SUDO_PASSWORD = 'abcde\n'
+
 # Path for the top go directory
 KASPAD_TOP_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/kaspad")
 
@@ -30,4 +33,3 @@ DEFAULT_FEE = 1000000
 
 # Maximum number to use for blocks retrieval in tests
 MAX_BLOCKS_IN_TESTS = 1000
-
