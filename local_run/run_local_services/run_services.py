@@ -1,13 +1,13 @@
 """
-run_local_services module can be used to run kaspanet containers of all kinds.
-Building the docker images is done elsewhere.
+run_local_services module can be used to run kaspanet containers.
+We can run 2 kinds of nodes:
+  runners - nodes that are run for tests (kaspad-first, kaspad-second, kaspad-third, kaspad-forth, kaspad-fifth)
+  builders - nodes that mine blocks for nig DAGs (kaspad-builder-1, kaspad-builder-2)
 """
-import os
 import time
 import subprocess
-import shutil
-from pathlib import Path
 from kaspy_tools import kaspy_tools_constants
+from kaspy_tools.kaspad.kaspa_dags.dag_tools import save_restore_dags
 from kaspy_tools.local_run.run_local_services import docker_compose_utils
 from kaspy_tools.kaspy_tools_constants import VOLUMES_DIR_PATH
 from kaspy_tools.logs import config_logger
@@ -28,14 +28,14 @@ def run_kaspanet_services(run_kasparov=False):
         docker_compose_utils.create_docker_compose_file()
 
     docker_compose_data = docker_compose_utils.read_docker_compose_file()
-    cons = docker_compose_utils.get_cons_from_docker_compose(docker_compose_data)
+    cons = docker_compose_utils.get_cons_from_docker_compose()
     run_docker_compose('kaspad-first', 'kaspad-second')
     if run_kasparov == True:
         run_docker_compose('db')
         run_docker_compose('kasparov_migrate', detached=False)
         run_docker_compose('kasparovsyncd')
         run_docker_compose('kasparovd')
-    time.sleep(5)   # let services start
+    time.sleep(5)  # let services start
     return cons
 
 
@@ -56,13 +56,21 @@ def run_docker_compose(*services, detached=True):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
+def hard_restart_docker_compose(*services, clear_dir='kaspad'):
+    stop_docker_compose_services(services)
+    docker_compose_rm(*services)
+    if clear_dir:
+        save_restore_dags.clear_dag_files(work_dir=clear_dir)
+    run_docker_compose(*services)
+
+
 def stop_docker_compose_services(*services):
     """
     General tool to stop services from the docker-compose.yaml
     :param services: an iterable of service names (strings) to stop
     :return: None
     """
-    containers = get_all_localrun_containers()
+    containers = get_all_runner_containers_ids()
     cmd_args = []
     cmd_args.extend(['docker-compose', 'stop'])
     # if services is not None:
@@ -70,6 +78,7 @@ def stop_docker_compose_services(*services):
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+
 
 def docker_compose_stop(*services):
     """
@@ -84,6 +93,7 @@ def docker_compose_stop(*services):
     completed_process = subprocess.run(args=cmd_args, capture_output=True,
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
+
 
 def docker_compose_rm(*services):
     """
@@ -100,12 +110,7 @@ def docker_compose_rm(*services):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-
-
-
-
-
-def get_all_localrun_containers():
+def get_all_runner_containers_ids():
     """
     Finds all containers (both stopped and running) that were created by local_run code.
     :return: All container ids as a list
@@ -119,12 +124,13 @@ def get_all_localrun_containers():
     containers = completed_process.stdout.split()
     return containers
 
-def remove_all_localrun_containers():
+
+def stop_and_remove_all_runners():
     """
-    Removes all containers created by local_run code.
+    Stop and removes all 'runner' containers created by local_run code.
     :return: None
     """
-    containers = get_all_localrun_containers()
+    containers = get_all_runner_containers_ids()
     if not containers:
         return
     cmd_args = []
@@ -137,4 +143,4 @@ def remove_all_localrun_containers():
 
 if __name__ == "__main__":
     run_kaspanet_services(run_kasparov=True)
-    # remove_all_localrun_containers()
+    # stop_and_remove_all_runners()

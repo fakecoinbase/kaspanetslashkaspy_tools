@@ -3,7 +3,7 @@ This file holds all the constant elements that are being used by the kaspa-d aut
 """
 from kaspy_tools.kaspy_tools_constants import KASPY_TOOLS_PATH
 
-
+MAX_BLOCK_TARGET = 0x00007fffff000000000000000000000000000000000000000000000000000000
 # Path for the binary file of a valid empty block
 # VALID_BLOCK_EMPTY_PATH = KASPAD_TOP_PATH + "/blocks_cartridge/valid_block_empty.dat"
 

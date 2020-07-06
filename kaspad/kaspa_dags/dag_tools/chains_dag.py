@@ -30,7 +30,7 @@ def submit_saved_blocks(saved_blocks, conn):
         response, response_json = json_rpc_requests.submit_block_request(block, options=None, conn=conn)
 
 def clean_blocks():
-    run_services.remove_all_localrun_containers()
+    run_services.stop_and_remove_all_runners()
     run_services.clear_kaspad_volume_files()
 
 def get_blocks_from_chain(*, chain_definition=None, clear=True, pay_address, conn):

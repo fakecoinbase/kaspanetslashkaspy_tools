@@ -27,9 +27,9 @@ services:
       - 16611:16611
       - 6061:6061
     restart: always
-    user: 1000:1000
+    user: root
     volumes:
-      - ~/volumes/kaspad/:/.kaspad/
+      - ~/volumes/kaspad/:/root/.kaspad/
       - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-second:
     cap_add:
@@ -194,7 +194,7 @@ services:
     restart: always
     user: 1000:1000
     volumes:
-      - ~/volumes/build/:/.kaspad
+      - ~/volumes/build/:/root/.kaspad
       - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-builder-2:
     cap_add:

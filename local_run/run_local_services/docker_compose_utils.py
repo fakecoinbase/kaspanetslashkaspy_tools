@@ -61,13 +61,14 @@ def create_docker_compose_file():
     # Write output
     write_docker_compose(yaml_data=data)
 
-def get_cons_from_docker_compose(docker_compose_data):
+def get_cons_from_docker_compose():
     """
     Read connection data to services defined in docker-compose.yaml file.
     :param docker_compose_data: Data parsed from docker-compose.yaml file.
     :return: A dictionary with services as keys, kaspa_model/kaspa_node as values.
     """
     cons = {}
+    docker_compose_data = read_docker_compose_file()
     for srv_name, service in docker_compose_data['services'].items():
         if 'kaspad' not in srv_name:
             continue
@@ -94,4 +95,9 @@ def docker_compose_file_exist():
     """
     return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml').is_file()
 
-
+def set_docker_container_network(*, container_name, network_name):
+    data = read_docker_compose_file()
+    service = data['services'][container_name]
+    net_index = [i for i in range(len(service['command'])) if 'net' in service['command'][i]][0]
+    service['command'][net_index] = '--' + network_name
+    write_docker_compose(data)

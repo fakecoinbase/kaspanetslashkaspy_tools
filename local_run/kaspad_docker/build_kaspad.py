@@ -2,7 +2,7 @@ from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.kaspa_model import kaspa_address
 from kaspy_tools.local_run import build_common
 
-kaspad_branch = 'v0.5.0-dev'
+kaspad_branch = 'v0.6.0-dev'
 
 
 def build_and_tag_kaspad_image():

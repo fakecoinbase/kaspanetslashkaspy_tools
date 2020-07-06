@@ -14,7 +14,7 @@ from kaspy_tools.utils import general_utils
 
 # ========== Update Block Methods ========== #
 
-def update_all_valid_block_variables(block_object, block_template, conn=None, native_txs=None):
+def update_all_valid_block_variables(block_object, block_template, conn=None, native_txs=None, netprefix='kaspadev'):
     """
     Initiates the VALID updating process for the entire block
 
@@ -29,7 +29,7 @@ def update_all_valid_block_variables(block_object, block_template, conn=None, na
     update_hash_merkle_root(block_object, block_template)
     update_id_merkle_root(block_object, block_template)
     update_utxo_commitment(block_object, block_template)
-    update_timestamp(block_object, block_template)
+    update_timestamp(block_object, block_template,netprefix=netprefix)
     update_bits(block_object, block_template)
     update_nonce(block_object)
 
@@ -336,13 +336,16 @@ def update_utxo_commitment(block_object, block_template):
     block_object.utxo_commitment_bytes = reversed_utxo_commitment_bytes
 
 
-def update_timestamp(block_object, block_template):
+def update_timestamp(block_object, block_template, netprefix='kaspadev'):
     """
     Updates the block object variable "timestamp" using current time.
 
     :param block_object: The block object that holds the variable to update
     """
-    timestamp_int = int(time.time())
+    if netprefix=='kaspasim':
+        timestamp_int =time.time_ns()//1000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
+    else:
+        timestamp_int = int(time.time()) *1000   # all networks != netsim work in seconds
     timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
     block_object.timestamp_int = timestamp_int
     block_object.timestamp_bytes = timestamp_bytes
@@ -476,7 +479,8 @@ def calculate_nonce(block_object):
     :param block_object: The block header bytes parsed as a list
     :return: New nonce as bytes
     """
-    target = block_object.target_int
+    block_target = block_object.target_int
+    target = min(block_target, kaspad_constants.MAX_BLOCK_TARGET)
     hash = block_object.block_header_hash
     block_object.nonce_int = random.randint(0, kaspad_constants.MAX_UINT64)
 
