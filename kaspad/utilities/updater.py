@@ -29,7 +29,7 @@ def update_all_valid_block_variables(block_object, block_template, conn=None, na
     update_hash_merkle_root(block_object, block_template)
     update_id_merkle_root(block_object, block_template)
     update_utxo_commitment(block_object, block_template)
-    update_timestamp(block_object, block_template,netprefix=netprefix)
+    update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
     update_nonce(block_object)
 
@@ -336,16 +336,13 @@ def update_utxo_commitment(block_object, block_template):
     block_object.utxo_commitment_bytes = reversed_utxo_commitment_bytes
 
 
-def update_timestamp(block_object, block_template, netprefix='kaspadev'):
+def update_timestamp(block_object, block_template):
     """
     Updates the block object variable "timestamp" using current time.
 
     :param block_object: The block object that holds the variable to update
     """
-    if netprefix=='kaspasim':
-        timestamp_int =time.time_ns()//1000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
-    else:
-        timestamp_int = int(time.time()) *1000   # all networks != netsim work in seconds
+    timestamp_int =time.time_ns()//1000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
     timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
     block_object.timestamp_int = timestamp_int
     block_object.timestamp_bytes = timestamp_bytes

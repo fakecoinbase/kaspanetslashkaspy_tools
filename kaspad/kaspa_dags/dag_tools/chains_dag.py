@@ -1,10 +1,9 @@
 import os
 import subprocess
 from kaspy_tools.local_run.run_local_services import run_services
-from kaspy_tools.kaspad import kaspad_constants
-from kaspy_tools.kaspad.json_rpc import json_rpc_requests
 from kaspy_tools.kaspad.utilities import block_generator
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
+from kaspy_tools.kaspad.kaspa_dags.dag_tools import save_restore_dags
 from kaspy_tools.logs import config_logger
 
 KT_logger = config_logger.get_kaspy_tools_logger()
@@ -29,14 +28,15 @@ def submit_saved_blocks(saved_blocks, conn):
     for block in saved_blocks:
         response, response_json = json_rpc_requests.submit_block_request(block, options=None, conn=conn)
 
-def clean_blocks():
+def clean_blocks(*, dir_name='kaspad'):
     run_services.stop_and_remove_all_runners()
-    run_services.clear_kaspad_volume_files()
+    save_restore_dags.clear_dag_files(work_dir=dir_name)
+    run_services.run_kaspanet_services()
+
 
 def get_blocks_from_chain(*, chain_definition=None, clear=True, pay_address, conn):
     if clear:
         clean_blocks()
-        run_services.run_kaspanet_services()
     make_and_submit_single_chain(floors=chain_definition, pay_address=pay_address, conn=conn)
     chain_blocks = get_current_blocks(conn=conn)
     return chain_blocks

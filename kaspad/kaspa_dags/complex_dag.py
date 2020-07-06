@@ -7,12 +7,12 @@ from kaspy_tools.local_run.run_local_services import run_services
 def get_complex_dag(*, conn):
     if not save_restore_dags.volume_dir_exist('complex'):
         addr = make_complex_dag(conn=conn)
-        run_services.docker_compose_stop('kaspad-first', 'kaspad-second')
+        run_services.stop_docker_compose_services('kaspad-first', 'kaspad-second')
         run_services.stop_and_remove_all_runners()
         save_restore_dags.save_volume_files(dag_dir="complex", work_dir='kaspad', miner_address=addr)
         run_services.run_kaspanet_services()  # no kasparov
     else:
-        run_services.docker_compose_stop('kaspad-first', 'kaspad-second')
+        run_services.stop_docker_compose_services('kaspad-first', 'kaspad-second')
         run_services.docker_compose_rm('kaspad-first', 'kaspad-second')
         save_restore_dags.restore_volume_files(dag_dir='complex', work_dir='kaspad')
         run_services.run_kaspanet_services()

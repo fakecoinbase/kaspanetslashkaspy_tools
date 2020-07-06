@@ -76,7 +76,7 @@ services:
       - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
       - --debuglevel=debug
       - --profile=6062
-    container_name: localrun_second
+    container_name: localrun_third
     image: kaspad:latest
     logging:
       driver: json-file
@@ -85,11 +85,75 @@ services:
         max-size: 50m
     network_mode: host
     ports:
-      - 16616:16616
+      - 16617:16617
       - 6062:6062
     restart: always
     user: root
     volumes:
+      - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
+  kaspad-fourth:
+    cap_add:
+      - SYS_PTRACE
+    command:
+      - ./kaspad
+      - --devnet
+      - --acceptanceindex
+      - --connect=127.0.0.1:16611
+      - --rpcuser=user
+      - --rpcpass=pass
+      - --rpclisten=0.0.0.0:16618
+      - --rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert
+      - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
+      - --debuglevel=debug
+      - --profile=6061
+    container_name: localrun_fourth
+    image: kaspad:latest
+    logging:
+      driver: json-file
+      options:
+        max-file: '10'
+        max-size: 50m
+    network_mode: host
+    ports:
+      - 16618:16618
+      - 16611:16611
+      - 6061:6061
+    restart: always
+    user: root
+    volumes:
+      - ~/volumes/kaspad/:/root/.kaspad/
+      - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
+  kaspad-fifth:
+    cap_add:
+      - SYS_PTRACE
+    command:
+      - ./kaspad
+      - --devnet
+      - --acceptanceindex
+      - --connect=127.0.0.1:16611
+      - --rpcuser=user
+      - --rpcpass=pass
+      - --rpclisten=0.0.0.0:16619
+      - --rpccert=/go/src/github.com/kaspanet/devops/devnet/common/rpc.cert
+      - --rpckey=/go/src/github.com/kaspanet/devops/devnet/common/rpc.key
+      - --debuglevel=debug
+      - --profile=6061
+    container_name: localrun_fifth
+    image: kaspad:latest
+    logging:
+      driver: json-file
+      options:
+        max-file: '10'
+        max-size: 50m
+    network_mode: host
+    ports:
+      - 16619:16619
+      - 16611:16611
+      - 6061:6061
+    restart: always
+    user: root
+    volumes:
+      - ~/volumes/kaspad/:/root/.kaspad/
       - ~/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kasparov_migrate:
     command:

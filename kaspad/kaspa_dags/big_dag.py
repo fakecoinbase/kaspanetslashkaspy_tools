@@ -14,14 +14,14 @@ def get_big_dag(*, block_count=big_dag_block_count):
     if not save_restore_dags.volume_dir_exist(very_big_dag_dir):
         generate_very_big_dag(block_count=big_dag_block_count)
     else:
-        run_services.docker_compose_stop('kaspad-builder-1', 'kaspad-builder-2')
+        run_services.stop_docker_compose_services('kaspad-builder-1', 'kaspad-builder-2')
         run_services.docker_compose_rm('kaspad-builder-1', 'kaspad-builder-2')
         save_restore_dags.restore_volume_files(dag_dir=very_big_dag_dir, work_dir=use_dir)
 
 
 def generate_very_big_dag(*, block_count):
     miner_addr = KaspaAddress()
-    run_services.docker_compose_stop('kaspad-builder-1', 'kaspad-builder-2')
+    run_services.stop_docker_compose_services('kaspad-builder-1', 'kaspad-builder-2')
     run_services.docker_compose_rm('kaspad-builder-1', 'kaspad-builder-2')
     save_restore_dags.clear_dag_files(work_dir=very_big_work_dir, dag_dir=very_big_dag_dir)
     run_services.run_docker_compose('kaspad-builder-1', 'kaspad-builder-2')
@@ -36,14 +36,14 @@ def generate_very_big_dag(*, block_count):
         t_now = datetime.now()
         print(f'blocks: {current_blocks_count} time: {t_now-t0}')
     current_blocks_count = json_rpc_requests.get_block_dag_info_request(conn=conn)['result']['blocks']
-    run_services.docker_compose_stop('kaspad-builder-1', 'kaspad-builder-2')
+    run_services.stop_docker_compose_services('kaspad-builder-1', 'kaspad-builder-2')
     run_services.docker_compose_rm('kaspad-builder-1', 'kaspad-builder-2')
     save_restore_dags.save_volume_files(dag_dir=very_big_dag_dir, work_dir=very_big_work_dir, miner_address=miner_addr)
     return miner_addr
 
 
 if __name__ == '__main__':
-    run_services.docker_compose_stop('kaspad-builder-1', 'kaspad-builder-2')
+    run_services.stop_docker_compose_services('kaspad-builder-1', 'kaspad-builder-2')
     run_services.docker_compose_rm('kaspad-builder-1', 'kaspad-builder-2')
     save_restore_dags.clear_dag_files(work_dir=very_big_work_dir, dag_dir=very_big_dag_dir)
     generate_very_big_dag(block_count=big_dag_block_count)
