@@ -4,9 +4,8 @@ from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
 from kaspy_tools.kaspad.kaspa_dags.dag_tools import dag_make, save_restore_dags
 from kaspy_tools.local_run.run_local_services import run_services, docker_compose_utils
 from kaspy_tools.kaspad.json_rpc import json_rpc_requests
-import cProfile
 
-big_dag_block_count = 100000
+big_dag_block_count = 1000000
 very_big_dag_dir = 'very_big_dag'
 very_big_work_dir = 'build'
 use_dir = 'kaspad'
