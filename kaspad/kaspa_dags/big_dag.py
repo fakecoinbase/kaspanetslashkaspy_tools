@@ -14,8 +14,8 @@ def get_big_dag(*, block_count=big_dag_block_count):
     if not save_restore_dags.volume_dir_exist(very_big_dag_dir):
         generate_very_big_dag(block_count=big_dag_block_count)
     else:
-        run_services.stop_docker_compose_services('kaspad-builder-1', 'kaspad-builder-2')
-        run_services.docker_compose_rm('kaspad-builder-1', 'kaspad-builder-2')
+        run_services.stop_docker_compose_services('kaspad-first')
+        run_services.docker_compose_rm('kaspad-first')
         save_restore_dags.restore_volume_files(dag_dir=very_big_dag_dir, work_dir=use_dir)
 
 

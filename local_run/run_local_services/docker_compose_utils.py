@@ -63,8 +63,10 @@ def set_compose_network(*service_names, kaspanet):
     for srv_name in service_names:
         service = data['services'][srv_name]
         net_index = [i for i in range(len(service['command'])) if 'net' in service['command'][i]][0]
-        service['command'][net_index] = kaspanet
-    pass
+        service['command'][net_index] = '--' + kaspanet
+
+    write_docker_compose(data)
+
 
 def get_cons_from_docker_compose():
     """
@@ -99,6 +101,14 @@ def docker_compose_file_exist():
     :return: bool
     """
     return Path(kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services/docker-compose.yaml').is_file()
+
+def set_localrun_network(*, network_name):
+    set_docker_container_network(container_name='kaspad-first', network_name='devnet')
+    set_docker_container_network(container_name='kaspad-second', network_name='devnet')
+    set_docker_container_network(container_name='kaspad-third', network_name='devnet')
+    set_docker_container_network(container_name='kaspad-second', network_name='devnet')
+    set_docker_container_network(container_name='kaspad-first', network_name='devnet')
+
 
 def set_docker_container_network(*, container_name, network_name):
     data = read_docker_compose_file()

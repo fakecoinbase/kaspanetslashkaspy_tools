@@ -56,13 +56,21 @@ def run_docker_compose(*services, detached=True, kaspanet='devnet'):
                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
     cons = docker_compose_utils.get_cons_from_docker_compose()
-    wait_for_node(conn=cons[services[0]])
+    if kaspanet == 'devnet':
+        wait_for_node(conn=cons[services[0]], netprefix='kaspadev')
+    elif kaspanet == 'simnet':
+        wait_for_node(conn=cons[services[0]], netprefix='kaspasim')
 
-def wait_for_node(*, conn):
+
+def wait_for_node(*, conn, netprefix):
     ready_to_start=False
     count=0
     while not ready_to_start:
-        template = json_rpc_requests.get_block_template_request(conn=conn)
+        try:
+            template = json_rpc_requests.get_block_template_request(conn=conn,  netprefix=netprefix)
+        except:
+            time.sleep(1)  # do not try too often
+            continue
         if template['result'] != None:
             KT_logger.info('Kaspa is ready: %s', str(template['result'])[:60])
             ready_to_start = True
@@ -71,12 +79,12 @@ def wait_for_node(*, conn):
         count += 1
         time.sleep(1)   # do not try too often
 
-def hard_restart_docker_compose(*services, clear_dir='kaspad'):
+def hard_restart_docker_compose(*services, clear_dir='kaspad', kaspanet='devnet'):
     stop_docker_compose_services(services)
     docker_compose_rm(*services)
     if clear_dir:
         save_restore_dags.clear_dag_files(work_dir=clear_dir)
-    run_docker_compose(*services)
+    run_docker_compose(*services, kaspanet=kaspanet)
 
 
 def stop_docker_compose_services(*services):
