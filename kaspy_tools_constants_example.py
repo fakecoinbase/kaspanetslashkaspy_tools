@@ -16,6 +16,9 @@ KASPY_TOOLS_PATH = str(Path(__file__).parent.absolute())
 # Path for the local_run folder
 LOCAL_RUN_PATH = KASPY_TOOLS_PATH + "/local_run"
 
+# Path for the remote_run folder
+REMOTE_RUN_PATH = KASPY_TOOLS_PATH + "/remote_run"
+
 # Path for graph images
 GRAPH_IMAGES_PATH = KASPY_TOOLS_PATH + "/kaspad/kaspa_dags/graph_images"
 
