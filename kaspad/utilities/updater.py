@@ -344,7 +344,10 @@ def update_timestamp(block_object, block_template):
 
     :param block_object: The block object that holds the variable to update
     """
-    timestamp_int =time.time_ns()//1000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
+    if block_template['minTime'] > 1000000000000:   # So in miliseconds - vers 0.6.0 and on
+        timestamp_int =time.time_ns()//1000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
+    else:
+        timestamp_int =time.time_ns()//1000000000  # convert nanoseconds to miliseconds, as netsim works in miliseconds
     timestamp_bytes = timestamp_int.to_bytes(8, byteorder='little')
     block_object.timestamp_int = timestamp_int
     block_object.timestamp_bytes = timestamp_bytes

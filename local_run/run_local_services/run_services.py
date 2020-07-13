@@ -103,20 +103,14 @@ def stop_docker_compose_services(*services):
     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 
-# def docker_compose_stop(*services):
-#     """
-#      General tool to stop container(s)
-#      :param services: an iterable of service names (strings) to stop
-#      :return: None
-#      """
-#     cmd_args = []
-#     cmd_args.extend(['docker-compose', 'stop'])
-#     if services is not None:
-#         cmd_args.extend(services)
-#     completed_process = subprocess.run(args=cmd_args, capture_output=True,
-#                                        cwd=kaspy_tools_constants.LOCAL_RUN_PATH + '/run_local_services')
-#     completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
-#
+def node_synced(*, cons, netprefix):
+    for conn in cons:
+        sync_status = json_rpc_requests.get_block_template_request(conn=conn,
+                                                                         netprefix='kaspasim')['result']['isSynced']
+        if sync_status == False:
+            return False
+    else:
+        return True
 
 def docker_compose_rm(*services):
     """

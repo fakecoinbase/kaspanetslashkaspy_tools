@@ -1,39 +1,49 @@
 {
   "testnet_dns_seeder": {
-    "tag": "testnet-DNSSeeder-eu-west-2-0.daglabs.com",
+    "domain": "testnet-DNSSeeder-eu-west-2-0.daglabs.com",
     "ip_addr": "10.6.128.202",
     "rpc-port": 16210,
     "p2p-port": 16211
   },
   "testnet_first": {
-    "tag": "testnet-Kaspad-eu-west-2-0.daglabs.com",
+    "domain": "testnet-Kaspad-eu-west-2-0.daglabs.com",
     "ip_addr": "10.6.146.236",
     "rpc-port": 16210,
-    "p2p-port": 16211
+    "p2p-port": 16211,
+    "user": "user",
+    "pass": "pass"
   },
   "testnet_second": {
-    "tag": "testnet-Kaspad-eu-west-2-1.daglabs.com",
+    "domain": "testnet-Kaspad-eu-west-2-1.daglabs.com",
     "ip_addr": "10.6.136.105",
     "rpc-port": 16210,
-    "p2p-port": 16211
+    "p2p-port": 16211,
+    "user": "user",
+    "pass": "pass"
   },
   "testnet_third": {
-    "tag": "testnet-Kasparov-Syncd-eu-west-2-0.daglabs.com",
+    "domain": "testnet-Kasparov-Syncd-eu-west-2-0.daglabs.com",
     "ip_addr": "10.6.131.8 ",
     "rpc-port": 16210,
-    "p2p-port": 16211
+    "p2p-port": 16211,
+    "user": "user",
+    "pass": "pass"
   },
   "testnet_forth": {
-    "tag": "testnet-Kasparovd-eu-west-2-0.daglabs.com",
+    "domain": "testnet-Kasparovd-eu-west-2-0.daglabs.com",
     "ip_addr": "10.6.132.220",
     "rpc-port": 16210,
-    "p2p-port": 16211
+    "p2p-port": 16211,
+    "user": "user",
+    "pass": "pass"
   },
   "testnet_fifth": {
-    "tag": "testnet-Txgen-eu-west-2-0.daglabs.com",
+    "domain": "testnet-Txgen-eu-west-2-0.daglabs.com",
     "ip_addr": "10.6.140.151 ",
     "rpc-port": 16210,
-    "p2p-port": 16211
+    "p2p-port": 16211,
+    "user": "user",
+    "pass": "pass"
   }
 }
 

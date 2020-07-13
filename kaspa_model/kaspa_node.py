@@ -4,7 +4,7 @@ Includes add relevant data: ip address, port number, passwords etc.
 """
 
 class KaspaNode:
-    def __init__(self, *, conn_name=None, ip_addr:str=None, port_number:int=None, tls:bool=None,
+    def __init__(self, *, conn_name=None, ip_addr:str=None, domain_name:str=None, port_number:int=None, tls:bool=None,
                  username:str='', password:str='', cert_file_path=None):
         """
         Initializes a new KaspaNode instance.
@@ -18,6 +18,7 @@ class KaspaNode:
         """
         self._conn_name = conn_name
         self._ip_addr = ip_addr
+        self._domain_name = domain_name
         self._port_number = str(port_number)
         self._tls=tls
         if tls:
@@ -34,8 +35,14 @@ class KaspaNode:
 
     @property
     def updated_url(self):
-        ret_url = self._protocol +  \
-                  self._ip_addr + ':' + self._port_number
+        if self._domain_name:
+            address = self._domain_name
+        else:
+            address = self._ip_addr
+
+        ret_url = self._protocol + \
+                  self._username + ':' + self._password + '@' + address + ':' +\
+                  self._port_number
 
         return ret_url
 

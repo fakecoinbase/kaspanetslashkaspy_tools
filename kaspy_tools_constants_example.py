@@ -4,6 +4,10 @@ from pathlib import Path
 # Needed to run things as a superuser
 SUDO_PASSWORD = 'abcde\n'
 
+# OpenVpn credentials
+OPENVPN_USER = 'david\n'
+OPENVPN_PASS = 'dave12345\n'
+
 # Path for the top go directory
 KASPAD_TOP_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet/kaspad")
 
@@ -22,13 +26,13 @@ REMOTE_RUN_PATH = KASPY_TOOLS_PATH + "/remote_run"
 # Path for graph images
 GRAPH_IMAGES_PATH = KASPY_TOOLS_PATH + "/kaspad/kaspa_dags/graph_images"
 
-# Path for the local certification file
+# Path for the volumes directory (docker)
 VOLUMES_DIR_PATH = os.path.expanduser("~/volumes")
 
-# Path for the local certification file
+# Path for the logs directory
 LOGS_DIR_PATH = os.path.expanduser("/var/logs/")
 
-# Path for local certificates (rpc.key and rpc.cert)
+# Path for certificates (rpc.key and rpc.cert)
 KEYS_PATH = os.path.expanduser("~/keys")
 
 # Default fees to use when creating transactions

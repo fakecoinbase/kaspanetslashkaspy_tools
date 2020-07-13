@@ -58,6 +58,51 @@ def create_docker_compose_file():
     # Write output
     write_docker_compose(yaml_data=data)
 
+
+def node_edit(*, service_name, listen_address=None, connect_addr=None):
+    data = read_docker_compose_file()
+    service = data['services'][service_name]
+
+    if listen_address != None:
+        edit_or_insert_field(service=service, field_name='listen', field_value='--listen=' + listen_address)
+    else:
+        delete_field(service=service, field_name='listen')
+
+    if connect_addr != None:
+        edit_or_insert_field(service=service, field_name='connect', field_value='--connect=' + connect_addr)
+    else:
+        delete_field(service=service, field_name='connect')
+
+    write_docker_compose(yaml_data=data)
+
+def edit_or_insert_field(*, service, field_name, field_value):
+    field_list = [i for i in range(len(service['command']))
+                  if field_name==get_command_name(parameter=service['command'][i])]
+    if len(field_list) > 0:
+        field_index = field_list[0]
+        service['command'][field_index] = field_value
+    else:
+        service['command'].insert(3, field_value)
+
+def delete_field(*, service, field_name):
+    field_list = [i for i in range(len(service['command'])) if field_name in service['command'][i]]
+    for field_index in field_list:
+        if get_command_name(parameter=service['command'][field_index]) == field_name:
+            service['command'].pop(field_index)
+        else:
+            pass
+
+def get_command_name(*, parameter):
+    if '=' in parameter:
+        first_part = parameter.split('=')[0]
+    else:
+        first_part = parameter
+    if '--' in first_part:
+        just_command = first_part.split('--')[1]
+    else:
+        just_command = first_part
+    return just_command
+
 def set_compose_network(*service_names, kaspanet):
     data = read_docker_compose_file()
     for srv_name in service_names:

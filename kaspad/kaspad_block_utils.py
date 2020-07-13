@@ -24,7 +24,7 @@ def error_handler(response_error):
         return message
 
 
-def submit_valid_block(*, conn=None, native_txs=None):
+def submit_valid_block(*, conn=None, native_txs=None, netprefix='kaspadev'):
     """
     Builds and submit a valid block based on a block template.
     Returns the action's response parsed by the "error_handler" method
@@ -32,7 +32,8 @@ def submit_valid_block(*, conn=None, native_txs=None):
 
     :return: The original response of the submit request, response_json & block_hash_hex
     """
-    block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs)
+    block_bytes, block_hash = block_generator.generate_valid_block_from_template(conn=conn, native_txs=native_txs,
+                                                                                 netprefix=netprefix)
 
     response, response_json = json_rpc_requests.submit_block_request(hex_block=block_bytes.hex(), conn=conn)
     return response, response_json, block_hash.hex()
