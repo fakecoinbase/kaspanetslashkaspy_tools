@@ -4,4 +4,6 @@
 **/docker-compose.yaml
 **/*.dot
 **/*.png
+**/*.ovpn
+**/login.conf
 kaspy_tools_constants.py
