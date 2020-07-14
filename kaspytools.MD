@@ -27,6 +27,9 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 * Transactions
   * Create transactions based on UTXOs in previous blocks.
   
+* [Getting Started](#getting-started)
+  * Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
+  
 
 ###<a name="local_run">Running Locally</a>
 Refer to https://github.com/kaspanet/kaspy_tools/blob/master/local_run/local_run.MD
@@ -42,3 +45,7 @@ Kaspanet addresses are based on the
 https://github.com/kaspanet/kaspy_tools/blob/master/kaspa_model/kaspa_address.py module.
 There is an example here: 
 https://github.com/kaspanet/kaspy_tools/blob/master/examples/kaspa_address_examples.py
+
+
+###<a name="getting-started">Getting Started</a>
+Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
