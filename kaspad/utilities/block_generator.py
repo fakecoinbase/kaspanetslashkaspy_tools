@@ -24,7 +24,8 @@ def generate_valid_block_from_template(*, pay_address=None, conn, native_txs=Non
     return valid_block, reversed_block_hash
 
 
-def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_type=None, conn=None):
+def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_type=None, netprefix='kaspadev',
+                                     conn=None):
     """
     Generates an invalid block using a provided block binary data from the blocks cartridge with specifically updated
     data from the node and local calculations.
@@ -50,23 +51,23 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
         raise SystemExit
     else:
         if variable_str.lower() == variables_list[0]:
-            updater.update_block_variables_using_invalid_version_data(new_block, options, conn=conn)
+            updater.update_block_variables_using_invalid_version_data(new_block, options,netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[1]:
-            updater.update_block_variables_without_parent_block_data(new_block, conn=conn)
+            updater.update_block_variables_without_parent_block_data(new_block, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[2]:
-            updater.update_block_variables_without_txs(new_block, conn=conn)
+            updater.update_block_variables_without_txs(new_block, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[3]:
-            updater.update_block_variables_without_hash_merkle_root(new_block, conn=conn)
+            updater.update_block_variables_without_hash_merkle_root(new_block,netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[4]:
-            updater.update_block_variables_without_id_merkle_root(new_block, conn=conn)
+            updater.update_block_variables_without_id_merkle_root(new_block, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[5]:
-            updater.update_block_variables_without_utxo_commitment(new_block, conn=conn)
+            updater.update_block_variables_without_utxo_commitment(new_block,netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[6]:
-            updater.update_block_variables_with_an_invalid_timestamp(new_block, options, conn=conn)
+            updater.update_block_variables_with_an_invalid_timestamp(new_block, options, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[7]:
-            updater.update_block_variables_with_an_invalid_bits(new_block, invalid_arg_type, conn=conn)
+            updater.update_block_variables_with_an_invalid_bits(new_block, invalid_arg_type, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[8]:
-            updater.update_block_variables_with_an_invalid_nonce(new_block, options, conn=conn)
+            updater.update_block_variables_with_an_invalid_nonce(new_block, options,netprefix=netprefix, conn=conn)
     # block_header = new_block.get_block_header_bytes_array()
     # block_body = new_block.get_block_body_bytes_array()
     # invalid_block = Block.rebuild_block(block_header, block_body)

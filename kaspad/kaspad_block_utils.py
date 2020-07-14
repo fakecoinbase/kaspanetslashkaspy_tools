@@ -70,7 +70,7 @@ def submit_block_with_specific_parents(*, parent_block_hash, options=None, conn=
 
 
 def submit_modified_block(*, invalid_parameter_string, invalid_arg_type=None,
-                          options=None, conn=None):
+                          options=None, netprefix='kaspadev', conn=None):
     """
     Builds and submit an invalid block based on the file path and subnetwork options that were provided to the DAG-block network.
     Returns the action's response parsed by the "error_handler" method as well as the block hash as a hex string.
@@ -89,6 +89,7 @@ def submit_modified_block(*, invalid_parameter_string, invalid_arg_type=None,
     """
     block_bytes, block_hash = block_generator.generate_modified_block_and_hash(variable_str=invalid_parameter_string,
                                                                                invalid_arg_type=invalid_arg_type,
+                                                                               netprefix=netprefix,
                                                                                conn=conn)
     block_hex = block_bytes.hex()
     block_hash_hex = block_hash.hex()

@@ -36,14 +36,14 @@ def update_all_valid_block_variables(block_object, block_template, conn=None, na
     update_nonce(block_object)
 
 
-def update_block_variables_using_invalid_version_data(block_object, version_int, conn, pay_address=None):
+def update_block_variables_using_invalid_version_data(block_object, version_int, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "version" value.
 
     :param version_int: The required version as an int
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
     update_hash_merkle_root(block_object, block_template)
@@ -60,13 +60,13 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
         update_version(block_object, version_int)
 
 
-def update_block_variables_without_parent_block_data(block_object, conn, pay_address=None):
+def update_block_variables_without_parent_block_data(block_object, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "parent block data" variables
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
     update_all_txs(block_object, block_template)
     update_hash_merkle_root(block_object, block_template)
     update_id_merkle_root(block_object, block_template)
@@ -78,13 +78,13 @@ def update_block_variables_without_parent_block_data(block_object, conn, pay_add
     update_nonce(block_object)
 
 
-def update_block_variables_without_txs(block_object, conn, pay_address=None):
+def update_block_variables_without_txs(block_object, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "Txs" objects
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_hash_merkle_root(block_object, block_template)
@@ -95,13 +95,13 @@ def update_block_variables_without_txs(block_object, conn, pay_address=None):
     update_nonce(block_object)
 
 
-def update_block_variables_without_hash_merkle_root(block_object, conn, pay_address=None):
+def update_block_variables_without_hash_merkle_root(block_object, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "hash merkle root" variable
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -112,7 +112,7 @@ def update_block_variables_without_hash_merkle_root(block_object, conn, pay_addr
     update_nonce(block_object)
 
 
-def update_block_variables_without_id_merkle_root(block_object, conn, pay_address=None):
+def update_block_variables_without_id_merkle_root(block_object, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "ID merkle root" variable
 
@@ -120,7 +120,7 @@ def update_block_variables_without_id_merkle_root(block_object, conn, pay_addres
     :param conn: connection details
     :param pay_address: paying address for block
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -131,13 +131,13 @@ def update_block_variables_without_id_merkle_root(block_object, conn, pay_addres
     update_nonce(block_object)
 
 
-def update_block_variables_without_utxo_commitment(block_object, conn, pay_address=None):
+def update_block_variables_without_utxo_commitment(block_object, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, ignoring "utxo commitment" variable
 
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -148,14 +148,14 @@ def update_block_variables_without_utxo_commitment(block_object, conn, pay_addre
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value, conn, pay_address=None):
+def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_value, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "timestamp" value.
 
     :param timestamp_value: The value to use as the invalid timestamp
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -168,14 +168,14 @@ def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_val
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, pay_address=None):
+def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "bits" value.
 
     :param bits_value: The value to use as bits
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
@@ -187,14 +187,14 @@ def update_block_variables_with_an_invalid_bits(block_object, bits_value, conn, 
     update_nonce(block_object)
 
 
-def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn, pay_address=None):
+def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn, netprefix='kaspadev',pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "nonce" value.
 
     :param nonce_value: The value to use as nonce
     :param block_object: The block object that holds the variables to update
     """
-    block_template = json_rpc_requests.get_block_template_request(conn=conn, pay_address=pay_address)['result']
+    block_template = json_rpc_requests.get_block_template_request(conn=conn, netprefix=netprefix,pay_address=pay_address)['result']
 
     update_parent_blocks_data(block_object, block_template)
     update_all_txs(block_object, block_template)
