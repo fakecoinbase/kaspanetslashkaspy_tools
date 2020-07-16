@@ -37,8 +37,16 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 
 #### <a name="getting-tools"> Getting the required tools </a>
 Current kaspy_tools requires python version 3.8.0 and on.<br>
-Here's a [convenient way to install it on ubuntu](https://linuxize.com/post/how-to-install-python-3-8-on-ubuntu-18-04/). <br>
 (Do not try to remove the version pre-installed on your system!!!)<br> 
+Here are the required commands to install python3.8: <br>
+(based on [this](https://linuxize.com/post/how-to-install-python-3-8-on-ubuntu-18-04/) article)
+<pre>
+`sudo apt update`
+`sudo apt install software-properties-common`
+`sudo add-apt-repository ppa:deadsnakes/ppa`
+     (press ENTER to confirm)
+`sudo apt install python3.8` <br>
+</pre>
 
 Make sure you also have pip3 installed:<br>
 `sudo apt install python3-pip`<br>
@@ -80,7 +88,7 @@ kasparov: https://github.com/kaspanet/kasparov <br>
 kaspy_tools: https://github.com/kaspanet/kaspy_tools <br>
 
 #### <a name="instal-dependencies"> Install Dependencies </a>
-
+First, make sure that your venv is activated. <br>
 Install python library dependencies defined in [requirements.txt](https://github.com/kaspanet/kaspy_tools/blob/master/requirements.txt). <br>
 `pip install -r requirements.txt` <br>
 If you are running automation_tests, install the requirements defined there. <br>
