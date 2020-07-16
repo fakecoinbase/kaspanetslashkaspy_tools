@@ -6,11 +6,9 @@ The kaspy_tools toolset can help you build docker images for kaspad, kasparov-sy
 
 ##### Build kaspad
 
-Edit the 
-Go to the main level of kaspad and checkout the desired branch you want
-to build (and don't forget to pull).
+Edit the KASPAD_BRANCH constant in kaspy_tools_constants.py, to the desired value.
 Then call build_and_tag_kaspad_image() function from make_kaspad.py file   
-(you can run the file as __main__).
+
 This should create the image (among other images) kaspad:latest.
 kaspad_branch = 'v0.6.0-dev'
 

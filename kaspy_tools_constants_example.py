@@ -33,7 +33,7 @@ VOLUMES_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/local_run/volumes")
 LOGS_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/logs/files")
 
 # Path for certificates (rpc.key and rpc.cert)
-KEYS_PATH = os.path.expanduser(LOCAL_RUN_PATH + "/keys")
+KEYS_PATH = os.path.expanduser(LOCAL_RUN_PATH + "/run_local_services/keys")
 
 # Default fees to use when creating transactions
 DEFAULT_FEE = 1000000

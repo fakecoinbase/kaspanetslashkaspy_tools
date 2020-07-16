@@ -7,9 +7,10 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
   * [Getting the required tools](#getting-tools)
   * [Directory Structure](#directory-structure)
   * [Install Dependencies](#instal-dependencies)
+  * [set environment variables](#environment-variables)
   * [Prepare Local configuration files](#local-conf-files)
     * [kaspy_tools_constants.py](#kaspy-tools-constants)
-    * [docker-compose.yaml](#docker-compose)    
+    * [docker-compose.yaml](#docker-compose)
 * Current tools and utilities:
   * [Running locally](#local_run)
  
@@ -58,8 +59,15 @@ Install [virtualenv](https://virtualenv.pypa.io/en/latest/): <br>
 `sudo pip3 install virtualenv`<br>
 
 You'll need git installed (I have been using version 2.25.1).<br>
-Install [docker](https://docs.docker.com/engine/install/ubuntu/) 
-and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
+Install [docker](https://docs.docker.com/engine/install/ubuntu/)  <br>
+<pre>
+Configure permissions for docker: <br>
+  `sudo groupadd docker
+   sudo usermod -aG docker $USER
+   newgrp docker`
+Restart to make those changes work.
+</pre>
+Install  [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
 .<br>
 
 
@@ -94,6 +102,13 @@ Install python library dependencies defined in [requirements.txt](https://github
 If you are running automation_tests, install the requirements defined there. <br>
 You should have your own requirements.txt file in your own code as well.
 
+#### <a name="environment-variables"> Set Environment Variables </a>
+Define PYTHONPATH, to hold search path targets for python modules. <br>
+Add the directory where kaspy_tools resides (kaspanet in out example). <br>
+<pre>
+   export PYTHONPATH=~/path/to/kaspanet/
+</pre>
+
 ### <a name="local-conf-files">Prepare Local configuration files </a>
 #### <a name="kaspy-tools-constants">kaspy_tools_constants.py </a>
 This file contains constants required in various places in kaspy_tools.
@@ -101,7 +116,9 @@ You should base your file on kaspy_tools_constants_example.py (or rename that fi
 
 #### <a name="docker-compose">docker-compose.yaml </a>
 This file contains configuration needed to run local containers of various components.<br>
-You should base your file on docker-compose-template.yaml (or rename that file.)
+You should base your file on docker-compose-template.yaml (or rename that file.) <br>
+Consider editing: <br>
+ * SUDO_PASSWORD
 
 ### <a name="local_run">Running Locally</a>
 The kaspy_tools toolset allows you to run kaspanet components locally in docker containers. <br>
