@@ -7,17 +7,12 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
   * [Getting the required tools](#getting-tools)
   * [Directory Structure](#directory-structure)
   * [Install Dependencies](#instal-dependencies)
-  * [Local configuration files](#local-conf-files)
+  * [Prepare Local configuration files](#local-conf-files)
     * [kaspy_tools_constants.py](#kaspy-tools-constants)
     * [docker-compose.yaml](#docker-compose)    
 * Current tools and utilities:
   * [Running locally](#local_run)
-    * Create kaspad docker image
-    * Create kasparov docker images (kasparov-sync, kasparovd)
-    * running services locally: 
-      * a pair of kaspad instances (one with non-volatile storage)
-      * single set of kasparov services
-      * postgres DB for kasparov
+ 
   * [JSON-RPC communication with kaspad](#JSON-RPC) (used with other tools)
   * [Kaspanet addresses](#kaspanet_addresses)
     * create private and public keys
@@ -91,7 +86,7 @@ Install python library dependencies defined in [requirements.txt](https://github
 If you are running automation_tests, install the requirements defined there. <br>
 You should have your own requirements.txt file in your own code as well.
 
-### <a name="local-conf-files">Local configuration files </a>
+### <a name="local-conf-files">Prepare Local configuration files </a>
 #### <a name="kaspy-tools-constants">kaspy_tools_constants.py </a>
 This file contains constants required in various places in kaspy_tools.
 You should base your file on kaspy_tools_constants_example.py (or rename that file.)
@@ -101,8 +96,11 @@ This file contains configuration needed to run local containers of various compo
 You should base your file on docker-compose-template.yaml (or rename that file.)
 
 ### <a name="local_run">Running Locally</a>
+The kaspy_tools toolset allows you to run kaspanet components locally in docker containers. <br>
+Tools can build required images, and run them in various scenarios. <br>
 Refer to https://github.com/kaspanet/kaspy_tools/blob/master/local_run/local_run.MD
 for further explanations.
+   
 
 ### <a name="JSON-RPC">JSON-RPC</a>
 There are various functions that you can use to send json-rpc messages
