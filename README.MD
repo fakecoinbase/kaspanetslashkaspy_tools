@@ -6,6 +6,7 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 * [Getting Started](#getting-started)
   * [Getting the required tools](#getting-tools)
   * [Directory Structure](#directory-structure)
+  * [Install Dependencies](#instal-dependencies)
   * [Local configuration files](#local-conf-files)
     * [kaspy_tools_constants.py](#kaspy-tools-constants)
     * [docker-compose.yaml](#docker-compose)    
@@ -60,6 +61,15 @@ and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on
 
 
 #### <a name="directory-structure"> Directory Structure </a>
+
+The kaspy_tools toolset assumes the following directory structure:<br>
+<pre>
+kaspanet-|-- kaspy_tools
+         |-- kaspad
+         |-- kasparov
+         |-- ...(your code and any code that uses kaspy_tools, e.g: DAGLabs automation_testing)
+         |-- venv (a virtualenv environment to run all)
+</pre>         
 You should create a working directory, let's say we call it here __kaspanet__.<br>
 Create a python virtual environment that uses python3.8 under kaspanet:<br>
 `virtualenv -p /path/to/python3.8  venv`<br>
@@ -68,10 +78,18 @@ Create a python virtual environment that uses python3.8 under kaspanet:<br>
 Activate the virtual environment by typing:<br>
 `source venv\bin\activate`<br>
 Type `python --version` to make sure you have the correct version of python. <br>
-Make sure you activate it whenever you run python code or installing libraries.
+Make sure you activate it whenever you run python code or installing libraries.<br>
+Use `git clone` to clone repositories to place: <br>
+kaspad: https://github.com/kaspanet/kaspad <br>
+kasparov: https://github.com/kaspanet/kasparov <br>
+kaspy_tools: https://github.com/kaspanet/kaspy_tools <br>
 
+#### <a name="instal-dependencies"> Install Dependencies </a>
 
-
+Install python library dependencies defined in [requirements.txt](https://github.com/kaspanet/kaspy_tools/blob/master/requirements.txt). <br>
+`pip install -r requirements.txt` <br>
+If you are running automation_tests, install the requirements defined there. <br>
+You should have your own requirements.txt file in your own code as well.
 
 ### <a name="local-conf-files">Local configuration files </a>
 #### <a name="kaspy-tools-constants">kaspy_tools_constants.py </a>
