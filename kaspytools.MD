@@ -2,6 +2,12 @@
 
 A set of tools that makes it easier to run and use kaspanet tools (kaspad, kasparov).
 
+* [Getting Started](#getting-started)
+  * [Getting the required tools](#getting-tools)
+  * [Directory Structure](#directory-structure)
+  * [Local configuration files](#local-conf-files)
+
+
 ###Current tools and utilities:
 * [Running locally](#local_run)
   * Create kaspad docker image
@@ -27,9 +33,48 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 * Transactions
   * Create transactions based on UTXOs in previous blocks.
   
+<<<<<<< Updated upstream
 * [Getting Started](#getting-started)
+  * [Make your own kaspy_tools_constants.py](#kaspy_tools_constants)
   * Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
+=======
+>>>>>>> Stashed changes
   
+###<a name="getting-started">Getting Started</a>
+####<a name="getting-tools"> Getting the required tools </a>
+Current kaspy_tools requires python version 3.8.0 and on.<br>
+Here's a [convenient way to install it on ubuntu](https://linuxize.com/post/how-to-install-python-3-8-on-ubuntu-18-04/). <br>
+(Do not try to remove the version pre-installed on your system!!!)<br> 
+
+Make sure you also have pip3 installed:<br>
+`sudo apt install python3-pip`<br>
+
+Then upgreade pip:<br>
+`python3 -m pip install --upgrade pip`<br>
+
+Install [virtualenv](https://virtualenv.pypa.io/en/latest/): <br>
+`sudo pip3 install virtualenv`<br>
+
+You'll need git installed (I have been using version 2.25.1).<br>
+Install [docker](https://docs.docker.com/engine/install/ubuntu/) 
+and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
+.<br>
+
+
+####<a name="directory-structure"> Directory Structure </a>
+You should create a working directory, let's say we call it here __kaspanet__.<br>
+Create a python virtual environment that uses python3.8 under kaspanet:<br>
+`virtualenv -p /path/to/python3.8  venv`<br>
+(You can use `which python3.8` to discover the location of the interpreter) <br>
+
+Activate the virtual environment by typing:<br>
+`source venv\bin\activate`<br>
+Type `python --version` to make sure you have the correct version of python. <br>
+Make sure you activate it whenever you run python code or installing libraries.
+
+####<a name="local-conf-files">Local configuration files </a>
+You should create a working directory
+Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
 
 ###<a name="local_run">Running Locally</a>
 Refer to https://github.com/kaspanet/kaspy_tools/blob/master/local_run/local_run.MD
@@ -47,5 +92,12 @@ There is an example here:
 https://github.com/kaspanet/kaspy_tools/blob/master/examples/kaspa_address_examples.py
 
 
+<<<<<<< Updated upstream
 ###<a name="getting-started">Getting Started</a>
-Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
+####<a name="kaspy_tools_constants"> Make your own kaspy_tools_constants.py</a>
+You should have a file called kaspy_tools_constants.py in the top kaspy_tools directory.
+This file contains configuration needed for you installation of kaspy_tools.
+You can base your file on kaspy_tools/kaspy_tools_constants_example.py.
+(or rename that file in your local directory)
+=======
+>>>>>>> Stashed changes

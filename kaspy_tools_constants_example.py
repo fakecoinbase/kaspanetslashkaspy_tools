@@ -27,13 +27,13 @@ REMOTE_RUN_PATH = KASPY_TOOLS_PATH + "/remote_run"
 GRAPH_IMAGES_PATH = KASPY_TOOLS_PATH + "/kaspad/kaspa_dags/graph_images"
 
 # Path for the volumes directory (docker)
-VOLUMES_DIR_PATH = os.path.expanduser("~/volumes")
+VOLUMES_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/local_run/volumes")
 
 # Path for the logs directory
-LOGS_DIR_PATH = os.path.expanduser("/var/logs/")
+LOGS_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/logs/files")
 
 # Path for certificates (rpc.key and rpc.cert)
-KEYS_PATH = os.path.expanduser("~/keys")
+KEYS_PATH = os.path.expanduser(LOCAL_RUN_PATH + "/keys")
 
 # Default fees to use when creating transactions
 DEFAULT_FEE = 1000000
