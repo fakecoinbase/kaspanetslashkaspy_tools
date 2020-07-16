@@ -33,14 +33,9 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 * Transactions
   * Create transactions based on UTXOs in previous blocks.
   
-<<<<<<< Updated upstream
-* [Getting Started](#getting-started)
-  * [Make your own kaspy_tools_constants.py](#kaspy_tools_constants)
-  * Based on kaspy_tools/kaspy_tools_constants_example.py, create your own kaspy_tools/kaspy_tools_constants.py .
-=======
->>>>>>> Stashed changes
   
-###<a name="getting-started">Getting Started</a>
+###<a name="getting-started">Getting Started</a> 
+
 ####<a name="getting-tools"> Getting the required tools </a>
 Current kaspy_tools requires python version 3.8.0 and on.<br>
 Here's a [convenient way to install it on ubuntu](https://linuxize.com/post/how-to-install-python-3-8-on-ubuntu-18-04/). <br>
@@ -92,12 +87,3 @@ There is an example here:
 https://github.com/kaspanet/kaspy_tools/blob/master/examples/kaspa_address_examples.py
 
 
-<<<<<<< Updated upstream
-###<a name="getting-started">Getting Started</a>
-####<a name="kaspy_tools_constants"> Make your own kaspy_tools_constants.py</a>
-You should have a file called kaspy_tools_constants.py in the top kaspy_tools directory.
-This file contains configuration needed for you installation of kaspy_tools.
-You can base your file on kaspy_tools/kaspy_tools_constants_example.py.
-(or rename that file in your local directory)
-=======
->>>>>>> Stashed changes
