@@ -5,6 +5,9 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 
 * [Getting Started](#getting-started)
   * [Getting the required tools](#getting-tools)
+    * [Python and PIP](#python-pip)
+    * [virtualenv](#virtualenv)
+    * [docker and docker-compose]($docker-and-compose )
   * [Directory Structure](#directory-structure)
   * [Install Dependencies](#instal-dependencies)
   * [set environment variables](#environment-variables)
@@ -13,7 +16,6 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
     * [docker-compose.yaml](#docker-compose)
 * Current tools and utilities:
   * [Running locally](#local_run)
- 
   * [JSON-RPC communication with kaspad](#JSON-RPC) (used with other tools)
   * [Kaspanet addresses](#kaspanet_addresses)
     * create private and public keys
@@ -37,6 +39,8 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
 ### <a name="getting-started">Getting Started</a> 
 
 #### <a name="getting-tools"> Getting the required tools </a>
+##### <a name="python-pip"> Python and PIP </a>
+
 Current kaspy_tools requires python version 3.8.0 and on.<br>
 (Do not try to remove the version pre-installed on your system!!!)<br> 
 Here are the required commands to install python3.8: <br>
@@ -53,13 +57,39 @@ Make sure you also have pip3 installed:<br>
 `sudo apt install python3-pip`<br>
 
 Then upgreade pip:<br>
-`python3 -m pip install --upgrade pip`<br>
+`python3.8 -m pip install --upgrade pip`<br>
 
+Verify:
+`python3.8 -m pip --version`
+
+##### <a name="virtualenv"> virtualenv</a>
 Install [virtualenv](https://virtualenv.pypa.io/en/latest/): <br>
-`sudo pip3 install virtualenv`<br>
+`sudo python3.8 -m pip install virtualenv` <br>
+
+##### <a name="docker-and-compose"> docker and docker-compose </a>
 
 You'll need git installed (I have been using version 2.25.1).<br>
 Install [docker](https://docs.docker.com/engine/install/ubuntu/)  <br>
+Here are the list of commands (for ubuntu):
+<pre>
+   sudo apt-get update
+   
+   sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+    
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    
+    sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+   
+   sudo apt-get update
+   sudo apt-get install docker-ce docker-ce-cli containerd.io
 <pre>
 Configure permissions for docker: <br>
   `sudo groupadd docker
@@ -68,7 +98,11 @@ Configure permissions for docker: <br>
 Restart to make those changes work.
 </pre>
 Install  [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
-.<br>
+Here are the commands needed:
+<pre>
+sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+</pre>
 
 
 #### <a name="directory-structure"> Directory Structure </a>
