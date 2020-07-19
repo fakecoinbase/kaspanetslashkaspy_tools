@@ -147,6 +147,8 @@ Install python library dependencies defined in [requirements.txt](https://github
    pip install -r requirements.txt 
 </pre>
 If you are running automation_tests, install the requirements defined there. <br>
+(This may require more libraries to install, needed for pygraphviz.)
+Please look at the install-2.sh script)
 <pre>
    < cd into kaspanet/automation_testing >
    pip install -r requirements.txt 
