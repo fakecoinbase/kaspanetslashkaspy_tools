@@ -180,21 +180,33 @@ It can build required images, and run them in various scenarios. <br>
 
 #####  <a name="build-kasoad">Build kaspad</a>
 
-Edit the KASPAD_BRANCH constant in kaspy_tools_constants.py, to the desired value.
-Then call build_and_tag_kaspad_image() function from make_kaspad.py file   
-
-This should create the image (among other images) kaspad:latest.
-kaspad_branch = 'v0.6.0-dev'
+Build the kaspad image(s) by running the following command: <br>
+(make sure you have activated your environment)
+<pre>
+  cd ~/kaspanet/local_run/kaspad_docker
+  python build_kaspad.py <kaspad-git-commit-number>
+  for example:
+  python build_kaspad.py v0.6.0
+</pre>
+If you ommit the commit number, the command will use the KASPAD_BRANCH constant from 
+kaspy_tools_constants.py   
+The created images will include a kaspad:latest.
 
 ##### <a name="build-kasparov">Build kasparov</a>
 
-Go to the main level of kasparov and checkout the desired branch you want
-to build (and don't forget to pull).
-Then call build_and_tag_kasparov_services() function from make_kasparov.py file   
-(you can run the file as __main__).
-This should create two images (among other images): kaspad:latest.
-- kasparovd:latest
-- kasparov-sync:latest
+Build the kaspad image(s) by running the following command: <br>
+(make sure you have activated your environment)
+<pre>
+  cd ~/kaspanet/local_run/kasparov_docker
+  python build_kasparov.py <kasparov-git-commit-number>
+  for example:
+  python build_kasparov.py v0.6.0
+</pre>
+If you ommit the commit number, the command will use the KASPAROV_BRANCH constant from 
+kaspy_tools_constants.py
+The created images will include: <br>
+- kasparovd:latest <br>
+- kasparov-sync:latest <br>
 
 ##### <a name="run-services">Run Services</a>
 

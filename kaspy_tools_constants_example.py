@@ -4,6 +4,11 @@ from pathlib import Path
 # Needed to run things as a superuser
 SUDO_PASSWORD = 'abcde\n'
 
+# Branhces to get while building kaspad and kasparov
+KASPAD_BRANCH = 'v0.6.0-dev'
+KASPAROV_BRANCH = 'v0.6.0-dev'
+
+
 # OpenVpn credentials
 OPENVPN_USER = 'david\n'
 OPENVPN_PASS = 'dave12345\n'
