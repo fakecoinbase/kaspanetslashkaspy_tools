@@ -36,7 +36,8 @@ def update_all_valid_block_variables(block_object, block_template, conn=None, na
     update_nonce(block_object)
 
 
-def update_block_variables_using_invalid_version_data(block_object, version_int, conn, netprefix='kaspadev',pay_address=None):
+def update_block_variables_using_invalid_version_data(block_object, version_int, conn, netprefix='kaspadev',
+                                                      pay_address=None):
     """
     Initiates the VALID updating process for the block, adding an invalid "version" value.
 
@@ -51,7 +52,7 @@ def update_block_variables_using_invalid_version_data(block_object, version_int,
     update_utxo_commitment(block_object, block_template)
     update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
-    update_version(block_object, 5)  # temporary int
+    update_version(block_object, version_int)  # temporary int
 
     update_nonce(block_object)
     if version_int is None:
@@ -162,7 +163,7 @@ def update_block_variables_with_an_invalid_timestamp(block_object, timestamp_val
     update_hash_merkle_root(block_object, block_template)
     update_id_merkle_root(block_object, block_template)
     update_utxo_commitment(block_object, block_template)
-    update_timestamp_invalid(block_object, timestamp_value)
+    update_timestamp_invalid(block_object)
     update_bits(block_object, block_template)
     block_object.version_int = 0x10000000
     update_nonce(block_object)
@@ -203,7 +204,7 @@ def update_block_variables_with_an_invalid_nonce(block_object, nonce_value, conn
     update_utxo_commitment(block_object, block_template)
     update_timestamp(block_object, block_template)
     update_bits(block_object, block_template)
-    update_nonce_invalid(block_object, nonce_value)
+    update_nonce_invalid(block_object)
 
 
 def update_block_variables_parent_block_data_to_provided_block(block_object, parent_block_hash, conn,
@@ -353,27 +354,18 @@ def update_timestamp(block_object, block_template):
     block_object.timestamp_bytes = timestamp_bytes
 
 
-def update_timestamp_invalid(block_object, timestamp_value):
+def update_timestamp_invalid(block_object):
     """
     Updates the block object variable "timestamp" based on the received value.
 
     :param timestamp_value: The value to use as timestamp
     :param block_object: The block object that holds the variable to update
     """
-    if type(timestamp_value) is int:
-        updated_timestamp_int = (timestamp_value + (1 << 64)) % (1 << 64)
-        updated_timestamp_temp = hex(updated_timestamp_int).replace("0x", "")
-        reverse_updated_timestamp_temp = general_utils.reverse_hex(updated_timestamp_temp)
-        updated_timestamp_bytes = general_utils.convert_hex_to_bytes(reverse_updated_timestamp_temp.ljust(16, "0"))
-        block_object.timestamp_bytes = updated_timestamp_bytes
-        block_object.timestamp_int = updated_timestamp_int
-    elif timestamp_value is None:
-        block_object.timestamp_bytes = b""
-        block_object.timestamp_int = None
-    else:
-        # TODO - what's that ???
-        timestamp_str = timestamp_value
-        block_object.timestamp_bytes = bytes(timestamp_str, "utf-8")
+    updated_timestamp_int = 1514764800
+    updated_timestamp_temp = hex(updated_timestamp_int).replace("0x", "")
+    updated_timestamp_bytes = general_utils.convert_hex_to_bytes(updated_timestamp_temp.ljust(16, "0"))
+    block_object.timestamp_bytes = updated_timestamp_bytes
+    block_object.timestamp_int = updated_timestamp_int
 
 
 def update_bits(block_object, block_template):
@@ -393,18 +385,11 @@ def update_bits_invalid(block_object, bits_value):
     :param bits_value: The value to use as bits
     :param block_object: The block object that holds the variable to update
     """
-    if type(bits_value) is int:
-        updated_bits_temp_int = (bits_value + (1 << 64) % (1 << 64))
-        updated_bits_temp_hex = hex(updated_bits_temp_int).replace("0x", "")
-        reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp_hex)
-        updated_bits_bytes = general_utils.convert_hex_to_bytes(reverse_updated_bits_temp.ljust(16, "0"))
-        block_object.bits_bytes = updated_bits_bytes
-    elif bits_value is None:
-        block_object.bits_bytes = b''
-    else:
-        # TODO - whats that ???
-        bits_str = bits_value
-        block_object.bits_bytes = bytes(bits_str, "utf-8")
+    updated_bits_temp_int = 2 ** 32 - 1
+    updated_bits_temp_hex = hex(updated_bits_temp_int).replace("0x", "")
+    reverse_updated_bits_temp = general_utils.reverse_hex(updated_bits_temp_hex)
+    updated_bits_bytes = general_utils.convert_hex_to_bytes(reverse_updated_bits_temp.ljust(8, "0"))
+    block_object.bits_bytes = updated_bits_bytes
 
 
 def update_nonce(block_object):
@@ -413,30 +398,19 @@ def update_nonce(block_object):
 
     :param block_object: The block object that holds the variable to update
     """
-    # block_header_list = block_object.get_block_header_list()
-    # nonce = calculate_nonce(block_header_list)
+
     nonce = calculate_nonce(block_object)
     block_object.nonce_bytes = nonce
 
 
-def update_nonce_invalid(block_object, nonce_value):
+def update_nonce_invalid(block_object):
     """
-    Updates the block object variable "nonce" based on the received value.
+    Updates the block object variable "nonce" based on the calculations required for find the incorrect block hash.
 
-    :param nonce_value: The value to use as nonce
     :param block_object: The block object that holds the variable to update
     """
-    if type(nonce_value) is int:
-        updated_nonce_temp = hex((nonce_value + (1 << 64)) % (1 << 64)).replace("0x", "")
-        reverse_updated_nonce_temp = general_utils.reverse_hex(updated_nonce_temp)
-        updated_nonce_bytes = general_utils.convert_hex_to_bytes(reverse_updated_nonce_temp.ljust(16, "0"))
-        block_object.nonce_bytes = updated_nonce_bytes
-    elif nonce_value is None:
-        block_object.nonce_bytes = b""
-    else:
-        # TODO ????
-        nonce_str = nonce_value
-        block_object.nonce_bytes = bytes(nonce_str, "utf-8")
+    nonce = calculate_invalid_nonce(block_object)
+    block_object.nonce_bytes = nonce
 
 
 # ========== Update Tx Methods ========== #  >>>>>>>> NEEDS MORE WORK!!!
@@ -495,6 +469,27 @@ def calculate_nonce(block_object):
     KT_logger.debug(f'mining loop:{loop_counter}')
     return block_object.nonce_bytes
 
+
+def calculate_invalid_nonce(block_object):
+    """
+    Looks for a hash that will be higher or equal to the target.
+
+    :param block_object: The block header bytes parsed as a list
+    :return: New nonce as bytes
+    """
+    block_target = block_object.target_int
+    hash = block_object.block_header_hash
+    block_object.nonce_int = random.randint(0, kaspad_constants.MAX_UINT64)
+
+    small_target = block_target-1
+    loop_counter = 0
+    while hash < small_target:
+        block_object.nonce_int = (block_object.nonce_int + 1) % kaspad_constants.MAX_UINT64
+        hash = block_object.block_header_hash
+        loop_counter += 1
+
+    KT_logger.debug(f'mining loop:{loop_counter}')
+    return block_object.nonce_bytes
 
 # ========== Calculate Hash Merkle Root methods ========== #
 
