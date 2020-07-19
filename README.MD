@@ -90,8 +90,10 @@ Here are the list of commands (for ubuntu):
    
    sudo apt-get update
    sudo apt-get install docker-ce docker-ce-cli containerd.io
-<pre>
+</pre>
+
 Configure permissions for docker: <br>
+<pre>
   `sudo groupadd docker
    sudo usermod -aG docker $USER
    newgrp docker`
@@ -117,23 +119,35 @@ kaspanet-|-- kaspy_tools
 </pre>         
 You should create a working directory, let's say we call it here __kaspanet__.<br>
 Create a python virtual environment that uses python3.8 under kaspanet:<br>
-`virtualenv -p /path/to/python3.8  venv`<br>
-(You can use `which python3.8` to discover the location of the interpreter) <br>
+`virtualenv -p $(which python3.8) venv`
 
 Activate the virtual environment by typing:<br>
 `source venv\bin\activate`<br>
 Type `python --version` to make sure you have the correct version of python. <br>
 Make sure you activate it whenever you run python code or installing libraries.<br>
 Use `git clone` to clone repositories to place: <br>
-kaspad: https://github.com/kaspanet/kaspad <br>
-kasparov: https://github.com/kaspanet/kasparov <br>
-kaspy_tools: https://github.com/kaspanet/kaspy_tools <br>
+<pre>
+  git clone kaspad: https://github.com/kaspanet/kaspad
+  git clone kasparov: https://github.com/kaspanet/kasparov
+  git clone kaspy_tools: https://github.com/kaspanet/kaspy_tools
+</pre>
+If you intend to run tests, clone also automation testing:
+<pre>
+  git clone kaspy_tools: https://github.com/kaspanet/automation_testing 
+</pre>
 
 #### <a name="instal-dependencies"> Install Dependencies </a>
 First, make sure that your venv is activated. <br>
 Install python library dependencies defined in [requirements.txt](https://github.com/kaspanet/kaspy_tools/blob/master/requirements.txt). <br>
-`pip install -r requirements.txt` <br>
+<pre>
+   < cd into kaspanet/kaspy_tools >
+   pip install -r requirements.txt 
+</pre>
 If you are running automation_tests, install the requirements defined there. <br>
+<pre>
+   < cd into kaspanet/automation_testing >
+   pip install -r requirements.txt 
+</pre>
 You should have your own requirements.txt file in your own code as well.
 
 #### <a name="environment-variables"> Set Environment Variables </a>
@@ -142,6 +156,7 @@ Add the directory where kaspy_tools resides (kaspanet in out example). <br>
 <pre>
    export PYTHONPATH=~/path/to/kaspanet/
 </pre>
+Add this line to your ~/.bashrc file, to make it persistent.
 
 ### <a name="local-conf-files">Prepare Local configuration files </a>
 #### <a name="kaspy-tools-constants">kaspy_tools_constants.py </a>
@@ -152,7 +167,9 @@ You should base your file on kaspy_tools_constants_example.py (or rename that fi
 This file contains configuration needed to run local containers of various components.<br>
 You should base your file on docker-compose-template.yaml (or rename that file.) <br>
 Consider editing: <br>
- * SUDO_PASSWORD
+ * SUDO_PASSWORD - set to your sudo password
+ * KASPANET_TOP_PATH - set to the location of the top kaspanet directory
+
 
 ### <a name="local_run">Running Locally</a>
 The kaspy_tools toolset allows you to run kaspanet components locally in docker containers. <br>
