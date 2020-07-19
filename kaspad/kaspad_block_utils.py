@@ -66,7 +66,7 @@ def submit_block_with_specific_parents(*, parent_block_hash, options=None, conn=
     block_bytes, block_hash_hex = block_generator.generate_block_to_specific_parent(parent_block_hash, conn=conn)
     block_hex = block_bytes.hex()
     response, response_json = json_rpc_requests.submit_block_request(hex_block=block_hex, options=options, conn=conn)
-    return response, response_json, block_hash_hex
+    return response, response_json, block_hash_hex, block_bytes
 
 
 def submit_modified_block(*, invalid_parameter_string, invalid_arg_type=None,
@@ -106,7 +106,10 @@ def convert_block_data_for_rpc_request(block_bytes, block_hash):
     :return: block_hex and block_hash_hex
     """
     block_hex = block_bytes.hex()
-    block_hash_hex = block_hash.hex()
+    if type(block_hash) is bytes:
+        block_hash_hex = block_hash.hex()
+    else:
+        block_hash_hex = block_hash
     return block_hex, block_hash_hex
 
 
