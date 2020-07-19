@@ -43,15 +43,15 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
     # new_block = Block.parse_block(block_bytes)
     new_block = Block.block_factory()
     variables_list = ["version", "parent_block_data", "txs", "hash_merkle_root", "id_merkle_root", "utxo_commitment",
-                      "timestamp",
-                      "bits", "nonce"]
+                      "timestamp", "bits", "nonce"]
     if variable_str.lower() not in variables_list:
         print("Incorrect variable string provided: " + variable_str)
         print("module: block_generator.py, line: 48")
         raise SystemExit
     else:
         if variable_str.lower() == variables_list[0]:
-            updater.update_block_variables_using_invalid_version_data(new_block, options,netprefix=netprefix, conn=conn)
+            updater.update_block_variables_using_invalid_version_data(new_block, version_int=invalid_arg_type,
+                                                                      netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[1]:
             updater.update_block_variables_without_parent_block_data(new_block, netprefix=netprefix,conn=conn)
         elif variable_str.lower() == variables_list[2]:
@@ -63,21 +63,13 @@ def generate_modified_block_and_hash(*, variable_str, options=None, invalid_arg_
         elif variable_str.lower() == variables_list[5]:
             updater.update_block_variables_without_utxo_commitment(new_block,netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[6]:
-            updater.update_block_variables_with_an_invalid_timestamp(new_block, options, netprefix=netprefix,conn=conn)
+            updater.update_block_variables_with_an_invalid_timestamp(new_block, options, netprefix=netprefix, conn=conn)
         elif variable_str.lower() == variables_list[7]:
-            updater.update_block_variables_with_an_invalid_bits(new_block, invalid_arg_type, netprefix=netprefix,conn=conn)
+            updater.update_block_variables_with_an_invalid_bits(new_block, invalid_arg_type, netprefix=netprefix,
+                                                                conn=conn)
         elif variable_str.lower() == variables_list[8]:
             updater.update_block_variables_with_an_invalid_nonce(new_block, options,netprefix=netprefix, conn=conn)
-    # block_header = new_block.get_block_header_bytes_array()
-    # block_body = new_block.get_block_body_bytes_array()
-    # invalid_block = Block.rebuild_block(block_header, block_body)
-    # block_hash = general_utils.hash_256(block_header)
-    # reversed_block_hash = general_utils.reverse_bytes(block_hash)
 
-    # block_header = new_block.block_header_bytes()
-    # block_body = new_block.get_block_body_bytes_array()
-    # invalid_block = block_header + block_body
-    # return invalid_block, reversed_block_hash
     new_block_bytes = bytes(new_block)
     new_block_hash = new_block.block_header_hash_bytes
     return new_block_bytes, new_block_hash
