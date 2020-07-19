@@ -7,7 +7,7 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
   * [Getting the required tools](#getting-tools)
     * [Python and PIP](#python-pip)
     * [virtualenv](#virtualenv)
-    * [docker and docker-compose]($docker-and-compose )
+    * [docker and docker-compose]($docker-and-compose)
   * [Directory Structure](#directory-structure)
   * [Install Dependencies](#instal-dependencies)
   * [set environment variables](#environment-variables)
