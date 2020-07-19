@@ -16,6 +16,9 @@ A set of tools that makes it easier to run and use kaspanet tools (kaspad, kaspa
     * [docker-compose.yaml](#docker-compose)
 * Current tools and utilities:
   * [Running locally](#local_run)
+    * [Build kaspad](#build-kasoad)
+    * [Build kasparov](#build-kasparov)
+    * [Run Services](#run-services)
   * [JSON-RPC communication with kaspad](#JSON-RPC) (used with other tools)
   * [Kaspanet addresses](#kaspanet_addresses)
     * create private and public keys
@@ -173,9 +176,39 @@ Consider editing: <br>
 
 ### <a name="local_run">Running Locally</a>
 The kaspy_tools toolset allows you to run kaspanet components locally in docker containers. <br>
-Tools can build required images, and run them in various scenarios. <br>
-Refer to https://github.com/kaspanet/kaspy_tools/blob/master/local_run/local_run.MD
-for further explanations.
+It can build required images, and run them in various scenarios. <br>
+
+#####  <a name="build-kasoad">Build kaspad</a>
+
+Edit the KASPAD_BRANCH constant in kaspy_tools_constants.py, to the desired value.
+Then call build_and_tag_kaspad_image() function from make_kaspad.py file   
+
+This should create the image (among other images) kaspad:latest.
+kaspad_branch = 'v0.6.0-dev'
+
+##### <a name="build-kasparov">Build kasparov</a>
+
+Go to the main level of kasparov and checkout the desired branch you want
+to build (and don't forget to pull).
+Then call build_and_tag_kasparov_services() function from make_kasparov.py file   
+(you can run the file as __main__).
+This should create two images (among other images): kaspad:latest.
+- kasparovd:latest
+- kasparov-sync:latest
+
+##### <a name="run-services">Run Services</a>
+
+Running services is based on a docker-compose yaml file.
+This file can be created automatically by calling: 
+docker_compose_utils.create_docker_compose_file() method.
+There is such a call in local_run/run_services/run_services.py file.
+The run_services() method in this file can run all services (including kasparov
+services, postgres database and 2 kaspad services).
+You can see in it how to run fewer services (by calling run_docker_compose()).
+
+Note:
+The local_run/run_all directory is kept for backward compatability only, and
+you should not use it.
    
 
 ### <a name="JSON-RPC">JSON-RPC</a>

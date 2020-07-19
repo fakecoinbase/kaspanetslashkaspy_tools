@@ -21,6 +21,8 @@ def build_image(*, service_name, build_dir, extra_parameter=None, commit_number,
     cmd_args.extend(['-t', service_name + ':' + commit_number])
     cmd_args.extend([context_dir])
     completed_process = subprocess.run(args=cmd_args, capture_output=True, cwd=build_dir)
+    if completed_process.returncode != 0:
+        print(completed_process.stderr)
     completed_process.check_returncode()
 
 
