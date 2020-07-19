@@ -1,19 +1,16 @@
 ## Local Running of kaspanet services
 
-Make sure **docker** and **docker-compose** are installed.
-#### Building
+#### Building Images
 
-Current version of local_run assumes having a 
-kaspad and kasparov local repositories at the same level of kaspy_tools 
-(for example under kaspanet).
+The kaspy_tools toolset can help you build docker images for kaspad, kasparov-sync and kasparovd. <br>
 
 ##### Build kaspad
 
-Go to the main level of kaspad and checkout the desired branch you want
-to build (and don't forget to pull).
+Edit the KASPAD_BRANCH constant in kaspy_tools_constants.py, to the desired value.
 Then call build_and_tag_kaspad_image() function from make_kaspad.py file   
-(you can run the file as __main__).
+
 This should create the image (among other images) kaspad:latest.
+kaspad_branch = 'v0.6.0-dev'
 
 ##### Build kasparov
 

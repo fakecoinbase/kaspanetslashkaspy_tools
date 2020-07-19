@@ -1,6 +1,7 @@
 """
 This module holds the methods that handle all the JSON-RPC requests for the automation project.
 """
+import sys
 from kaspy_tools import kaspy_tools_constants
 from kaspy_tools.logs import config_logger
 from kaspy_tools.kaspa_model.kaspa_address import KaspaAddress
@@ -186,8 +187,12 @@ def get_block_template_request(conn, pay_address=None, netprefix='kaspadev',
     }
     payload_json = json.dumps(payload)
 
-    response = requests.get(conn.updated_url, data=payload_json, headers=headers,
-                             verify=conn.cert_file_path, timeout=timeout)
+    try:
+        response = requests.get(conn.updated_url, data=payload_json, headers=headers,
+                                 verify=conn.cert_file_path, timeout=timeout)
+    except:
+        errs = sys.exc_info()
+
     response_json = response.json()
     if response_json['result'] is None:
         KT_logger.error('template request failed: ', response_json['error'])
