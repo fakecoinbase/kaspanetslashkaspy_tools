@@ -6,7 +6,6 @@ def build_and_tag_kaspad_image():
     """
     Generates a build to be used by the setUpClass() method of the test-kits.
     """
-    print(sys.argv)
     if not sys.argv[1]:
         desired_branch = kaspy_tools_constants.KASPAD_BRANCH
     else:

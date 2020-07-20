@@ -10,7 +10,6 @@ def build_and_tag_kasparov_services():
     Build and tag the kasparov images.
     :return:
     """
-    print(sys.argv)
     if not sys.argv[1]:
         kasparov_branch = kaspy_tools_constants.KASPAROV_BRANCH
     else:

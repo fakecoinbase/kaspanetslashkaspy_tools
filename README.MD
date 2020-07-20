@@ -213,16 +213,17 @@ The created images will include: <br>
 ##### <a name="run-services">Run Services</a>
 
 Running services is based on a docker-compose yaml file.
-This file can be created automatically by calling: 
-docker_compose_utils.create_docker_compose_file() method.
-There is such a call in local_run/run_services/run_services.py file.
-The run_services() method in this file can run all services (including kasparov
-services, postgres database and 2 kaspad services).
-You can see in it how to run fewer services (by calling run_docker_compose()).
-
-Note:
-The local_run/run_all directory is kept for backward compatability only, and
-you should not use it.
+There is a template file called docker-compose-template.yaml, that you
+should use in order to create docker-compose.yaml.
+Edit the `volumes:` part to configure correct directory names in you host. <br>
+Example: <br>
+<pre>
+    volumes:
+      - ~/volumes/build/:/root/.kaspad
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+</pre>
+The last line means that ~/kaspanet/kaspy_tools/local_run/run_local_services/kyes is the correct
+directory where keys are stored in your system, so kaspad container will map that directory.
    
 
 ### <a name="JSON-RPC">JSON-RPC</a>
