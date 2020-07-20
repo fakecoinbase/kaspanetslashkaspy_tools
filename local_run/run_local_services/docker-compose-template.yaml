@@ -29,8 +29,8 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/volumes/kaspad/:/root/.kaspad/
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/volumes/kaspad/:/root/.kaspad/
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-second:
     cap_add:
       - SYS_PTRACE
@@ -60,7 +60,7 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-third:
     cap_add:
       - SYS_PTRACE
@@ -90,7 +90,7 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-fourth:
     cap_add:
       - SYS_PTRACE
@@ -121,8 +121,8 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/volumes/kaspad/:/root/.kaspad/
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/volumes/kaspad/:/root/.kaspad/
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-fifth:
     cap_add:
       - SYS_PTRACE
@@ -153,8 +153,8 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/volumes/kaspad/:/root/.kaspad/
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/volumes/kaspad/:/root/.kaspad/
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kasparov_migrate:
     command:
       - /app/kasparov-syncd
@@ -258,8 +258,8 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/volumes/build/:/root/.kaspad
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/volumes/build/:/root/.kaspad/
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
   kaspad-builder-2:
     cap_add:
       - SYS_PTRACE
@@ -289,5 +289,5 @@ services:
     restart: always
     user: root
     volumes:
-      - ~/GoProjects/src/github.com/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
+      - ~/kaspanet/kaspy_tools/local_run/run_local_services/keys:/go/src/github.com/kaspanet/devops/devnet/common
 version: '3'

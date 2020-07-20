@@ -14,7 +14,7 @@ OPENVPN_USER = 'david\n'
 OPENVPN_PASS = 'dave12345\n'
 
 # Path for the top go directory
-KASPANET_TOP_PATH = os.path.expanduser("~/GoProjects/src/github.com/kaspanet")
+KASPANET_TOP_PATH = os.path.expanduser("~/kaspanet")
 
 # Path for the top go directory
 KASPAD_TOP_PATH = os.path.expanduser(KASPANET_TOP_PATH + "/kaspad")
