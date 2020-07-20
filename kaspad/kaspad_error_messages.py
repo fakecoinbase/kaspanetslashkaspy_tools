@@ -22,4 +22,4 @@ BLOCK_VERSION_TOO_LOW_OR_TOO_HIGH_ERROR_MESSAGE = 'Block decode failed: unexpect
 BLOCK_NOT_FOUND_ERROR_MESSAGE = 'Block not found'
 
 # Orphan block error message
-orphan_block_error_message = "Error Code: -6, Error Message: Block is an orphan"
+ORPHAN_BLOCK_ERROR_MESSAGE = "Error Code: -6, Error Message: Block is an orphan"

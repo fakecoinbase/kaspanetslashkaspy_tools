@@ -130,9 +130,9 @@ Type `python --version` to make sure you have the correct version of python. <br
 Make sure you activate it whenever you run python code or installing libraries.<br>
 Use `git clone` to clone repositories to place: <br>
 <pre>
-  git clone kaspad: https://github.com/kaspanet/kaspad
-  git clone kasparov: https://github.com/kaspanet/kasparov
-  git clone kaspy_tools: https://github.com/kaspanet/kaspy_tools
+  git clone https://github.com/kaspanet/kaspad
+  git clone https://github.com/kaspanet/kasparov
+  git clone https://github.com/kaspanet/kaspy_tools
 </pre>
 If you intend to run tests, clone also automation testing:
 <pre>
