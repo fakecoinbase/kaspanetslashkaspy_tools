@@ -6,4 +6,6 @@
 **/*.png
 **/*.ovpn
 **/login.conf
+**/volumes/**
+**/logs/**
 kaspy_tools_constants.py

@@ -51,6 +51,11 @@ def restore_volume_files(*, dag_dir, work_dir='kaspad'):
 
     KT_logger.debug('Copied: "{}", to: "{}"'.format(dag_dir, work_dir))
 
+def unlock_volumes_dir():
+    cmd = ['sudo', '-S', 'chown', '1000:1000', kaspy_tools_constants.VOLUMES_DIR_PATH]
+    completed_process = subprocess.run(cmd, capture_output=True, input=kaspy_tools_constants.SUDO_PASSWORD,
+                                       encoding='utf-8', cwd=VOLUMES_DIR_PATH)
+    completed_process.check_returncode()  # raise CalledProcessError if return code is not 0
 
 def volume_dir_exist(volume_dir_name):
     """
@@ -70,6 +75,7 @@ def save_miner_address(*, miner_address, dir_name):
     :param dir_name: A directory that contains the DAG matching this address (under VOLUMES directory)
     :return: None
     """
+    unlock_volumes_dir()
     try:
         with open(VOLUMES_DIR_PATH + '/miner_addresses.json', 'r') as addrs_file:
             mining_addresses = json.load(addrs_file)
