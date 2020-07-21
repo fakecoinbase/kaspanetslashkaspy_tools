@@ -5,8 +5,6 @@
 # Then run this script.
 
 # fill git usename and password (to get  automation_testing repository)
-GITUSER=
-GITPASS=
 
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
@@ -21,7 +19,6 @@ source venv\bin\activate
 git clone https://github.com/kaspanet/kaspy_tools
 git clone https://github.com/kaspanet/kaspad
 git clone https://github.com/kaspanet/kasparov
-git clone https://"$GITUSER":"$GITPASS"@github.com/kaspanet/automation_testing
 
 
 # install kaspy_tools dependencies
@@ -31,6 +28,13 @@ pip install -r requirements.txt
 # (optional) install automation_testing requirements
 # First make sure graphviz compilation will pass
 sudo apt-get install libgraphviz-dev -y
-cd ~/kaspanet/automation_testing || exit
-pip install -r requirements.txt
+
+printf "To install automation_testing manually:"
+printf "git clone git@github.com:kaspanet/automation_testing.git"
+printf "or:"
+printf "https://github.com/kaspanet/automation_testing.git"
+printf "Then:"
+printf "cd automation_testing"
+printf "pip install -r requirements.txt"
+
 
