@@ -35,7 +35,7 @@ REMOTE_RUN_PATH = KASPY_TOOLS_PATH + "/remote_run"
 GRAPH_IMAGES_PATH = KASPY_TOOLS_PATH + "/kaspad/kaspa_dags/graph_images"
 
 # Path for the volumes directory (docker)
-VOLUMES_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/local_run/volumes")
+VOLUMES_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/local_run/run_local_services/volumes")
 
 # Path for the logs directory
 LOGS_DIR_PATH = os.path.expanduser(KASPY_TOOLS_PATH + "/logs/files")
