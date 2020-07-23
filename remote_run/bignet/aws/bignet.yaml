@@ -1,0 +1,315 @@
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names
+    Type: String
+
+  ClusterName:
+    Description: The name of the cluster in which this server will to run
+    Type: String
+    AllowedValues: [ "public", "private" ]
+
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t3a.medium
+    ConstraintDescription: must be a valid EC2 instance type.
+
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
+  ServerName:
+    Type: String
+
+  S3FilesPath:
+    Type: String
+
+  LogGroupName:
+    Type: String
+
+  DatabaseName:
+    Type: String
+
+  DatabaseUser:
+    Type: String
+
+  DatabasePassword:
+    Type: String
+
+  TxGenDockerImageName:
+    Type: String
+
+  KaspadDockerImageName:
+    Type: String
+
+  KasparovdDockerImageName:
+    Type: String
+  KasparovSyncdDockerImageName:
+    Type: String
+
+  SeederHostName:
+    Type: String
+    AllowedPattern: "[-0-9a-zA-Z]*"
+    ConstraintDescription: Only alphanumeric
+
+  DdSite:
+    Type: String
+
+  DdApiKey:
+    Type: String
+
+  DdNetwork:
+    Type: String
+
+  IsCritical:
+    Type: Number
+    Default: 0
+
+  ProfilingS3Bucket:
+    Type: String
+
+  KaspadProfileServerPort:
+    Type: String
+
+Transform:
+  Name: 'AWS::Include'
+  Parameters:
+    Location: !Sub ${S3FilesPath}/aws-region-to-ami.yaml
+
+Resources:
+  AuxiliaryServerInstance:
+    Type: 'AWS::EC2::Instance'
+    DependsOn: AuxiliaryLogGroup
+    Properties:
+      ImageId: !FindInMap [ AWSRegionToAMI, !Ref "AWS::Region", AMI ]
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SubnetId:
+        Fn::Select:
+          - 0
+          - Fn::Split:
+              - ","
+              - Fn::ImportValue: !Sub ${EnvironmentName}-PrivateSubnetIDs
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-${ClusterName}-${ServerName}
+        - Key: datadog
+          Value: monitored
+      SecurityGroupIds:
+        - Fn::ImportValue:
+            !Sub ${EnvironmentName}-${ClusterName}-EcsSecurityGroup
+        - !Ref AuxiliarySecurityGroup
+      IamInstanceProfile: !Ref AuxiliaryInstanceProfile
+      UserData:
+        Fn::Base64:
+          Fn::Sub:
+            - |
+              #!/bin/bash
+
+              touch /etc/profile.d/shared_env_vars.sh
+              chown ec2-user:ec2-user /etc/profile.d/shared_env_vars.sh
+
+              # Export environment variables
+              register_env() {
+                export "$1"="$2"
+                echo "export $1=$2" >> /etc/profile.d/shared_env_vars.sh
+              }
+              register_env "SERVER_TYPE" "auxiliary"
+              register_env "IP_ADDRESS" "`curl http://169.254.169.254/2009-04-04/meta-data/local-ipv4`"
+              register_env "AWS_DEFAULT_REGION" "${AWS::Region}" # Required for ECR login
+              register_env "TXGEN_DOCKER_IMAGE_NAME" "${TxGenDockerImageName}"
+              register_env "KASPAD_DOCKER_IMAGE_NAME" "${KaspadDockerImageName}"
+              register_env "KASPAROVD_DOCKER_IMAGE_NAME" "${KasparovdDockerImageName}"
+              register_env "KASPAROV_SYNCD_DOCKER_IMAGE_NAME" "${KasparovSyncdDockerImageName}"
+              register_env "AWS_CLI_CONF_PATH" "${S3FilesPath}/awscli.conf"
+              register_env "AWS_LOGS_CONF_PATH" "${S3FilesPath}/awslogs.conf"
+              register_env "LOG_GROUP_NAME" "${LogGroupName}"
+              register_env "RPC_CERT_PATH" "${S3FilesPath}/rpc.cert"
+              register_env "RPC_KEY_PATH" "${S3FilesPath}/rpc.key"
+              register_env "START_SCRIPT_PATH" "${S3FilesPath}/start.sh"
+              register_env "STOP_SCRIPT_PATH" "${S3FilesPath}/stop.sh"
+              register_env "STARTUP_SCRIPT_PATH" "${S3FilesPath}/startup.sh"
+              register_env "COMMON_INIT_SCRIPT_PATH" "${S3FilesPath}/common-init.sh"
+              register_env "DOCKER_COMPOSE_PATH" "${S3FilesPath}/docker-compose.yaml"
+              register_env "VERSION_FILE_PATH" "${S3FilesPath}/version"
+              register_env "SEEDER_HOST_NAME" "${SeederHostName}"
+              register_env "DATABASE_ADDRESS" "${DatabaseAddress}"
+              register_env "DATABASE_PORT" "${DatabasePort}"
+              register_env "DATABASE_NAME" "${DatabaseName}"
+              register_env "DATABASE_USER" "${DatabaseUser}"
+              register_env "DATABASE_PASSWORD" "${DatabasePassword}"
+              register_env "RABBIT_MQ_CONFIG_PATH" "${S3FilesPath}/rabbitmq"
+              register_env "DD_CONFIGURE_SCRIPT_PATH" "${S3FilesPath}/configure-datadog.py"
+              register_env "DD_LOGS_CONF_PATH" "${S3FilesPath}/datadog-log-conf.yaml"
+              register_env "DD_API_KEY" "${DdApiKey}"
+              register_env "DD_SITE" "${DdSite}"
+              register_env "DD_NETWORK" "${DdNetwork}"
+              register_env "DD_HOSTNAME" "devnet-${ServerName}-$IP_ADDRESS"
+              register_env "IS_CRITICAL" "${IsCritical}"
+              register_env "POLL_PROFILE_SCRIPT_PATH" "${S3FilesPath}/poll-profile.py"
+              register_env "KASPAD_PROFILE_SERVER_PORT" "${KaspadProfileServerPort}"
+              register_env "PROFILING_S3_BUCKET" "${ProfilingS3Bucket}"
+
+              # Install AWS CLI
+              yum update -y
+              yum install -y aws-cli
+
+              # Create the home directory
+              mkdir -p /home/ec2-user
+              cd /home/ec2-user
+
+              # Fetch the init script
+              aws s3 cp ${S3FilesPath}/init.sh /home/ec2-user/init.sh
+
+              # Add execution permissions to the init script
+              chmod +x /home/ec2-user/init.sh
+
+              # Run the init script
+              /home/ec2-user/init.sh
+
+            - DatabaseAddress: !GetAtt KasparovDBInstance.Endpoint.Address
+              DatabasePort: !GetAtt KasparovDBInstance.Endpoint.Port
+
+  AuxiliaryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: [ "sts:AssumeRole" ]
+            Principal: { Service: [ "ec2.amazonaws.com" ] }
+      Policies:
+        - PolicyName: !Sub ${EnvironmentName}-Role-${ServerName}
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:DescribeLogStreams"
+                Resource: "arn:aws:logs:*:*:*"
+              - Effect: Allow
+                Action:
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+                Resource: "*"
+
+  AuxiliaryInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref AuxiliaryRole
+
+  AuxiliarySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for Auxiliary"
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 16610
+          ToPort: 16611
+          CidrIp: 10.0.0.0/8
+        - FromPort: 6061
+          ToPort: 6066
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+        - FromPort: 8080
+          ToPort: 8080
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+        - FromPort: 15672
+          ToPort: 15672
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+        - FromPort: 1883
+          ToPort: 1883
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+        - FromPort: 15675
+          ToPort: 15675
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+
+
+  AuxiliaryLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub ${LogGroupName}
+      RetentionInDays: 7
+
+  AuxiliaryLambdaLogsPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::ImportValue: !Sub ${EnvironmentName}-ES-LambdaIngress
+      Principal: !Sub logs.${AWS::Region}.amazonaws.com
+      Action: lambda:InvokeFunction
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub ${AuxiliaryLogGroup.Arn}
+
+  AuxiliaryLogsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    DependsOn: AuxiliaryLambdaLogsPermission
+    Properties:
+      LogGroupName: !Ref AuxiliaryLogGroup
+      DestinationArn:
+        Fn::ImportValue: !Sub ${EnvironmentName}-ES-LambdaIngressArn
+      FilterPattern: ""
+
+  KasparovDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for Kasparov database"
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-VPCID
+      SecurityGroupIngress:
+        - FromPort: 5432
+          ToPort: 5432
+          IpProtocol: tcp
+          CidrIp: 10.0.0.0/8
+
+  KasparovDBInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      Engine: 'postgres'
+      DBInstanceClass: 'db.t3.small'
+      AllocatedStorage: '20'
+      BackupRetentionPeriod: 7
+      VPCSecurityGroups:
+        - !Ref KasparovDBSecurityGroup
+      DBSubnetGroupName: !Ref KasparovDBSubnetGroup
+      PubliclyAccessible: false
+      DBName: !Ref DatabaseName
+      MasterUsername: !Ref DatabaseUser
+      MasterUserPassword: !Ref DatabasePassword
+      DeleteAutomatedBackups: false
+      StorageType: gp2
+
+  KasparovDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Database subnet group for Kasparov"
+      SubnetIds:
+        Fn::Split:
+          - ","
+          - Fn::ImportValue: !Sub ${EnvironmentName}-PrivateSubnetIDs
+
+  KasparovRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: "daglabs.com."
+      Name: !Sub "kasparov-${EnvironmentName}-${ServerName}.daglabs.com."
+      Type: A
+      TTL: "86400"
+      ResourceRecords:
+        - !GetAtt AuxiliaryServerInstance.PrivateIp
