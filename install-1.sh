@@ -56,7 +56,10 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 # Configure permissions for docker
 printf "%s\n" "${grn}Configure permissions for docker.${end}"
 sudo groupadd -f docker
+printf "%s\n" "${grn}groupadd passed.${end}"
 sudo usermod -aG docker $USER
+printf "%s\n" "${grn}usermod passed.${end}"
 newgrp docker
+printf "%s\n" "${grn}newgrp passed.${end}"
 printf "%s\n" "${grn}===>>> REBOOT <<<===${end}"
 systemctl reboot
