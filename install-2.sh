@@ -43,13 +43,13 @@ pip install -r requirements.txt
 sudo apt-get install libgraphviz-dev -y
 
 printf "%s\n" "${red}$"
-printf "To install automation_testing manually:"
-printf "git clone git@github.com:kaspanet/automation_testing.git"
-printf "or:"
-printf "https://github.com/kaspanet/automation_testing.git"
-printf "Then:"
-printf "cd automation_testing"
-printf "pip install -r requirements.txt"
+printf "To install automation_testing manually:\n"
+printf "git clone git@github.com:kaspanet/automation_testing.git\n"
+printf "or:\n"
+printf "https://github.com/kaspanet/automation_testing.git\n"
+printf "Then:\n"
+printf "cd automation_testing\n"
+printf "pip install -r requirements.txt\n"
 printf "%s\n" "${end}"
 
 
