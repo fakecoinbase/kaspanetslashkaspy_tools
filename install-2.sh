@@ -31,7 +31,7 @@ printf "%s\n" "${grn}Clone public repositories (without automation_testing).${en
 git clone https://github.com/kaspanet/kaspy_tools
 git clone https://github.com/kaspanet/kaspad
 git clone https://github.com/kaspanet/kasparov
-
+export PYTHONPATH=~/kaspanet
 
 # install kaspy_tools dependencies
 printf "%s\n" "${grn}Install kaspy_tools requirements.${end}"
