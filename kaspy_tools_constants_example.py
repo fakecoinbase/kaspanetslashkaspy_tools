@@ -51,3 +51,7 @@ MAX_BLOCKS_IN_TESTS = 1000
 
 # Timeout for requests connection
 REQUEST_TIMEOUT = 100   # seconds
+
+# AWS api key_id and secret kay value
+AWS_ACCESS_KEY_ID='mykey'
+AWS_SECRET_ACCESS_KEY='sdhflkgshdflks'

@@ -9,8 +9,10 @@ AWS_REGION = 'eu-central-1'
 BUCKET_NAME = 'bignet-' + AWS_REGION
 
 class S3_Client:
-    def __init__(self):
-        self.s3_client = boto3.client('s3')
+    def __init__(self, aws_access_key_id, aws_secret_access_key):
+        self.s3_client = boto3.client('s3', aws_access_key_id=aws_access_key_id,
+                                      aws_secret_access_key=aws_secret_access_key)
+
 
     def upload_file(self, body, s3_path):
         s3 = boto3.resource('s3')

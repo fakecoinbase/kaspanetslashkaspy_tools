@@ -18,9 +18,6 @@ This tool makes it possible to run 100 bundles of kaspanet tools.
 
 #### Usage:
 ##### Credentials
-Create ~/.aws/config file, with the following in it:
-<pre>
-[default]
-aws_access_key_id = <your-access-key-id>
-aws_secret_access_key = <your-secret-access-key>
-</pre>
+
+Fill the correct values in the aws credentials fields in your kaspy_tools_constants.py .
+See the parameter names in the kaspy_tools_constants_example.py file.
